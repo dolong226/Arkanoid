@@ -11,6 +11,8 @@ target/
 *.iws
 *.iml
 *.ipr
+*.log
+
 
 ### Eclipse ###
 .apt_generated
@@ -36,3 +38,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Maven ###
+.mvn/
+pom.xml.tag
+release.properties
