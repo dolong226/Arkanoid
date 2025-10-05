@@ -13,5 +13,5 @@ public interface Sprite {
     /**
      * Cập nhật mỗi frame để cập nhật logic, chuyển động, hiệu ứng của đối tượng.
      */
-    void timnePassed();
+    void timePassed();
 }
