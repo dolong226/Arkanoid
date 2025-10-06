@@ -8,10 +8,11 @@ public interface Sprite {
     /**
      * Vẽ đối tượng lên màn hình.
      */
-    void drawOn(GraphicsContext gc);
+    void render(GraphicsContext gc);
 
     /**
      * Cập nhật mỗi frame để cập nhật logic, chuyển động, hiệu ứng của đối tượng.
+     * @param dt: delta time là số giây đã trôi qua kể từ frame trước.
      */
-    void timePassed();
+    void update(double dt);
 }
