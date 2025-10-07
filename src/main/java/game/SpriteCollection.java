@@ -48,7 +48,7 @@ public class SpriteCollection {
     /**
      * Vẽ tất cả ra màn hình với thứ tự hiện có.
      */
-    public void drawAllOn(GraphicsContext gc) {
+    public void render(GraphicsContext gc) {
         for (Sprite sprite: sprites) {
             sprite.render(gc);
         }
