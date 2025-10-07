@@ -28,7 +28,7 @@ public class SpriteCollection {
 
     /**
      * Xoá một sprite.
-     */
+     */ 
     public void removeSprite(Sprite sprite) {
         sprites.remove(sprite);
     }
