@@ -1,3 +1,4 @@
+import geometry.Point;
 import org.junit.Test;
 import org.junit.Assert;
 
