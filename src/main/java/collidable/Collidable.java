@@ -3,6 +3,8 @@ package collidable;
 import ball.Ball;
 import ball.Velocity;
 
+import geometry.Point;
+import geometry.Rectangle;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 
@@ -14,7 +16,7 @@ public interface Collidable {
     /**
      * Trả về vùng bao quanh đối tượng, để tính toán va chạm.
      */
-    Bounds getCollisionBounds();
+    Rectangle getCollisionRectangle();
 
     /**
      * Trả về vận tốc (hướng & tốc độ) sau va chạm của bóng.
@@ -23,5 +25,5 @@ public interface Collidable {
      * @param currentVelocity tốc độ hiện tại.
      * @return
      */
-    Velocity hit (Ball hitter, Point2D collisionPoint, Velocity currentVelocity);
+    Velocity hit (Ball hitter, Point collisionPoint, Velocity currentVelocity);
 }

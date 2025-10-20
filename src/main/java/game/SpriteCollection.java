@@ -38,7 +38,7 @@ public class SpriteCollection {
      * Gọi trong hàm handle() của AnimationTimer.
      */
     public void update(double deltaTime) {
-        // Dùng iteratr thay cho for each, để tránh lỗi sprite bị xóa ngay trong vòng lặp
+        // Dùng iteratr thay cho cfor each, để tránh lỗi sprite bị xóa ngay trong vòng lặp
         Iterator<Sprite> iterator = sprites.iterator();
         while(iterator.hasNext()) {
             Sprite s = iterator.next();
