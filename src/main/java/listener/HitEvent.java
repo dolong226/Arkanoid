@@ -2,6 +2,7 @@ package listener;
 
 import ball.Ball;
 import collidable.Block;
+import geometry.Point;
 import javafx.geometry.Point2D;
 
 /**
@@ -10,9 +11,9 @@ import javafx.geometry.Point2D;
 public class HitEvent {
     private final Ball hitter;
     private final Block target;
-    private final Point2D collisionPoint;
+    private final Point collisionPoint;
 
-    public HitEvent(Ball hitter, Block target, Point2D collisionPoint) {
+    public HitEvent(Ball hitter, Block target, Point collisionPoint) {
         this.hitter = hitter;
         this.target = target;
         this.collisionPoint = collisionPoint;
@@ -26,7 +27,7 @@ public class HitEvent {
         return target;
     }
 
-    public Point2D getCollisionPoint() {
+    public Point getCollisionPoint() {
         return collisionPoint;
     }
 }
