@@ -59,11 +59,14 @@ public class Point {
 
     /**
      * Tính khoảng cách giữa 2 điểm.
+     *
      * @param other Điểm còn lại.
      * @return khoảng cách.
      */
-    public double distance(Point other){
-        double distance = Math.sqrt((x - other.getX())*(x - other.getX()) + (y - other.getY())*(y - other.getY()));
-        return distance;
+    public double distance(Point other) {
+        return 0;
+    }
+
+    public void setLocation(int x, int y) {
     }
 }

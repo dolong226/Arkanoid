@@ -107,4 +107,17 @@ public class Rectangle {
         }
         return intersectionPointList;
     }
+
+    // Kiểm tra xem một điểm có nằm trong hình chữ nhật hay không.
+    public boolean contains(Point point) {
+        double x = point.getX();
+        double y = point.getY();
+
+        double xLeft = upperLeft.getX();
+        double yTop = upperLeft.getY();
+        double xRight = xLeft + length;
+        double yBottom = yTop + width;
+
+        return x >= xLeft && x <= xRight && y >= yTop && y <= yBottom;
+    }
 }

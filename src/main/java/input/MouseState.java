@@ -1,6 +1,8 @@
 package input;
 
-import java.awt.Point;
+
+import geometry.Point;
+
 import java.util.HashSet;
 import java.util.Set;
 
