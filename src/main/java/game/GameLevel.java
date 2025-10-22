@@ -5,13 +5,9 @@ import animation.AnimationRunner;
 import ball.Ball;
 import collidable.Collidable;
 import collidable.Paddle;
-import geometry.Point;
-import input.KeyBoard;
+import input.Keyboard;
 import javafx.scene.canvas.GraphicsContext;
 import level.LevelInformation;
-import listener.BallRemove;
-import listener.BlockRemove;
-import listener.ScoreTrackingListener;
 
 import java.util.List;
 
@@ -28,10 +24,14 @@ public class GameLevel implements Animation {
     private List<Ball> balls;
     private Counter remainingBlocks;
     private Counter remainingBalls;
-    private KeyBoard keyboard;
+    private Keyboard keyboard;
     private boolean running;
 
-    public GameLevel(LevelInformation levelInfo, KeyBoard keyboard, AnimationRunner animationRunner) {
+    public GameLevel(LevelInformation levelInfo) {
+        this.levelInfo = levelInfo;
+    }
+
+    public GameLevel(LevelInformation levelInfo, Keyboard keyboard, AnimationRunner animationRunner) {
         this.levelInfo = levelInfo;
         this.keyboard = keyboard;
         this.animationRunner = animationRunner;
