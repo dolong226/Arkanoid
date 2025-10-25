@@ -26,7 +26,7 @@ public class GameLevel implements Animation {
     private Paddle paddle;
     private Counter score;
     private List<Ball> balls;
-    private Counter remFainingBlocks;
+    private Counter remainingBlocks;
     private Counter remainingBalls;
     private Keyboard keyboard;
     private boolean running;
