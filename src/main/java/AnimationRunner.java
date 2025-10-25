@@ -1,4 +1,5 @@
 import javafx.animation.AnimationTimer;
+import Animation.Animation;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
