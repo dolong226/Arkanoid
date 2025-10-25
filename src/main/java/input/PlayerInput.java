@@ -1,6 +1,6 @@
 package input;
 
-import java.awt.Point;
+import geometry.Point;
 
 public class PlayerInput {
     private Keyboard keyboard;

@@ -64,9 +64,16 @@ public class Point {
      * @return khoảng cách.
      */
     public double distance(Point other) {
-        return 0;
+        double distance = Math.sqrt((x - other.getX()) * (x - other.getX()) + (y - other.getY()) * (y - other.getY()));
+        return distance;
     }
 
     public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public Point getLocation() {
+        return new Point(x,y);
     }
 }

@@ -6,7 +6,7 @@ import ball.Ball;
 import collidable.Collidable;
 import collidable.Paddle;
 import geometry.Point;
-import input.KeyBoard;
+import input.Keyboard;
 import javafx.scene.canvas.GraphicsContext;
 import level.LevelInformation;
 import listener.BallRemove;
@@ -26,12 +26,12 @@ public class GameLevel implements Animation {
     private Paddle paddle;
     private Counter score;
     private List<Ball> balls;
-    private Counter remainingBlocks;
+    private Counter remFainingBlocks;
     private Counter remainingBalls;
-    private KeyBoard keyboard;
+    private Keyboard keyboard;
     private boolean running;
 
-    public GameLevel(LevelInformation levelInfo, KeyBoard keyboard, AnimationRunner animationRunner) {
+    public GameLevel(LevelInformation levelInfo, Keyboard keyboard, AnimationRunner animationRunner) {
         this.levelInfo = levelInfo;
         this.keyboard = keyboard;
         this.animationRunner = animationRunner;
