@@ -15,7 +15,7 @@ public class AnimationRunner {
     public void run(Animation animation) {
         if ( gc == null ) {
             int frame = 0;
-            while (!animation.shouldStop()) {
+            while (!animation.isFinished()) {
                 ++frame;
                 try {
                     Thread.sleep((long) (1000 / fps));
@@ -40,13 +40,16 @@ public class AnimationRunner {
                 double deltaTime = (now - lastTime) / 1e9;
                 lastTime = now;
                 accumulator += deltaTime;
-                if (accumulator >= timePerFrame) {
-                    double canvasWidth = gc.getCanvas().getWidth();
-                    double canvasHeight = gc.getCanvas().getHeight();
-                    animation.doOneFrame(gc, accumulator);
-                    accumulator = 0;
+
+                while (accumulator >= timePerFrame) {
+                    animation.update(timePerFrame);
+                    accumulator -= timePerFrame;
                 }
-                if (animation.shouldStop()) {
+                double canvasWidth = gc.getCanvas().getWidth();
+                double canvasHeight = gc.getCanvas().getHeight();
+                animation.render(gc);
+
+                if (animation.isFinished()) {
                     stop();
                 }
             }
