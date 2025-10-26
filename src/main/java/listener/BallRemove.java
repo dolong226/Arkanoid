@@ -24,7 +24,6 @@ public class BallRemove implements HitListener {
 
         if (beingHit.isDeathRegion()) {
             game.removeSprite(hitter);
-            game.removeCollidable(hitter);
             remainingBalls.decrease(1);
         }
     }

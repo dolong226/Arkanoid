@@ -4,6 +4,7 @@ import java.util.List;
 
 import ball.Ball;
 import ball.Velocity;
+import com.sun.org.apache.xerces.internal.impl.dv.xs.BooleanDV;
 import geometry.*;
 import game.Sprite;
 import listener.HitListener;
@@ -40,6 +41,12 @@ public class Paddle implements Sprite, Collidable {
      */
     private double[] regionBorders;
 
+    public Paddle() {
+        this.step = 1;
+        this.color = new Color(100, 100, 100, 50);
+        this.paddle = new Rectangle(new Point(200, 400), 40, 100);
+    }
+
     /**
      * Khởi tạo paddle
      * @param step vận tốc
@@ -48,6 +55,8 @@ public class Paddle implements Sprite, Collidable {
      * @param minBound giới hạn min cửa sổ
      * @param maxBound giới hạn max cửa sổ
      */
+
+
     public Paddle(int step, Color color, Rectangle paddle, double minBound, double maxBound){
         this.step = step;
         this.color = color;
@@ -55,6 +64,23 @@ public class Paddle implements Sprite, Collidable {
         this.minBoundary = minBound;
         this.maxBoundary = maxBound;
         this.regionBorders = new double[4];
+    }
+
+    public double getX() {
+        return paddle.getUpperLeft().getX();
+    }
+
+    public double getY() {
+        return paddle.getUpperLeft().getY();
+    }
+
+    public double getWidth() {
+        return paddle.getWidth();
+    }
+    // Dùng để đặt lại vị trí paddle
+    public void setX(double x) {
+        Point oldUpperLeft = paddle.getUpperLeft();
+        paddle = new Rectangle(new Point(x, oldUpperLeft.getY()), paddle.getWidth(), paddle.getLength());
     }
 
     /** 

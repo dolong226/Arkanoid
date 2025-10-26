@@ -13,6 +13,7 @@ public class Velocity {
      */
     private double Dy;
 
+
     /**
      * Khởi tạo vận tốc
      * @param dx vận tốc theo chiều x

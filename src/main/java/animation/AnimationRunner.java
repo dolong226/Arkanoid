@@ -14,6 +14,10 @@ public class AnimationRunner {
         this.fps = fps;
     }
 
+    public GraphicsContext getGraphicsContext() {
+        return gc;
+    }
+
     public void run(Animation animation) {
         if ( gc == null ) {
             while (!animation.isFinished()) {

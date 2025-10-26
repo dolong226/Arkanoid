@@ -11,6 +11,11 @@ public class GameKeyboard implements Keyboard {
         this.timer = new KeyTimer(KeyTimer.DEFAULT_DEBOUNCE_DELAY);
     }
 
+    public GameKeyboard(KeyboardState state, KeyTimer timer) {
+        this.state = state;
+        this.timer = timer;
+    }
+
     private Key mapKeyCodeToKey(int keyCode) {
         switch (keyCode) {
             case KeyEvent.VK_LEFT:

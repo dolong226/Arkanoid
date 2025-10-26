@@ -1,5 +1,6 @@
 package ball;
 
+import collidable.Collidable;
 import game.Sprite;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

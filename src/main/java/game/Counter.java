@@ -11,6 +11,7 @@ public class Counter {
         this.value = value;
     }
 
+    public static Counter ZERO = new Counter(0);
     public void increase(int number) {
         this.value += number;
     }

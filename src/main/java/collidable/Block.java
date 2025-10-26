@@ -31,7 +31,11 @@ public class Block implements Sprite, Collidable, HitNotifier {
      * Màu khối
      */
     private Color color;
-    
+
+    private int hitPoints = 1; // Độ cứng của block, có thể điều chỉnh trong level
+
+    private boolean isDeathRegion = false;  // Vùng bên dưới màn hình, bóng ra ngoài sẽ biến mất
+
     /**
      * Khởi tạo block
      * @param rectangle Khối block
@@ -41,6 +45,19 @@ public class Block implements Sprite, Collidable, HitNotifier {
         this.color = color;
         this.rectangle = rectangle;
         hitListeners = new ArrayList<>();
+    }
+
+    public Block(int hitPoints, Color color, Rectangle rectangle) {
+        this.hitPoints = hitPoints;
+        this.color = color;
+        this.rectangle = rectangle;
+    }
+
+    public Block(Rectangle rectangle, Color color, int hitPoints, boolean isDeathRegion) {
+        this.color = color;
+        this.hitPoints = hitPoints;
+        this.rectangle = rectangle;
+        this.isDeathRegion = isDeathRegion;
     }
 
     /**
@@ -53,7 +70,22 @@ public class Block implements Sprite, Collidable, HitNotifier {
         this.rectangle = new Rectangle(leftUpperCorner, width, height);
         hitListeners = new ArrayList<>();
     }
-    
+
+    public boolean isDeathRegion() {
+        return isDeathRegion;
+    }
+
+    // trả về độ cứng của Block
+    public int getHitPoints() {
+        return hitPoints;
+    }
+
+    public void decreaseHitPoints() {
+        if (hitPoints > 0) {
+            hitPoints--;
+        }
+    }
+
     /**
      * Vẽ lại khối block
      */
@@ -136,6 +168,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
                 upDateVelocity.setDy(currentVelocity.getDy() * (-1));
         }
     }
+        this.decreaseHitPoints();
         this.notifyHit(hitter, collisionPoint);
         return upDateVelocity;
     }
