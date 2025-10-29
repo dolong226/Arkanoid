@@ -1,6 +1,7 @@
 package game;
 
 import animation.AnimationRunner;
+import animation.PauseAnimation;
 import geometry.Point;
 import input.GameKeyboard;
 import input.Keyboard;
@@ -41,10 +42,6 @@ public class GameFlow {
             while (level.getRemainingBlocks() > 0  && level.getRemainingBalls() > 0) {
                 level.playOneTurn();
                 level.run();
-
-                while(!level.isFinished()) {
-                    sleep(50);
-                }
             }
 
             // Cộng điểm
@@ -71,14 +68,6 @@ public class GameFlow {
         System.out.println("Tong diem");
 
         // đóng cửa số sau 30s
-        sleep(30000);
-    }
-
-    private void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        runner.run(new PauseAnimation(30000));
     }
 }

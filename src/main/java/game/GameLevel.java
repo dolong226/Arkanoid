@@ -22,8 +22,6 @@ import listener.ScoreTrackingListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Thread.sleep;
-
 /**
  * Lớp này sẽ trình bày các đặc tính của một level, quản lý sprite, collildables, paddle, balls, background, là logic vòng lặp.
  */
@@ -39,6 +37,11 @@ public class GameLevel implements Animation {
     private Counter remainingBalls;
     private Keyboard keyboard;
     private boolean running;
+    private boolean needRestart = false;
+
+    // SỬA: Thêm trạng thái chờ bấm Enter và đã bắn bóng chưa
+    private boolean waitingForEnter = false;
+    private boolean ballsLaunched = false;
 
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
@@ -86,10 +89,11 @@ public class GameLevel implements Animation {
         // tạo và thêm paddle
         double paddleWidth = levelInfo.paddleWidth();
         double paddleSpeed = levelInfo.paddleSpeed();
-            // chọn vị trí paddle
+        // chọn vị trí paddle
         double paddleX = (SCREEN_WIDTH - paddleWidth)/2;
         double paddleY = SCREEN_HEIGHT - PADDLE_HEIGHT - 10;
         Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), paddleWidth, PADDLE_HEIGHT);
+        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, 40, SCREEN_WIDTH - 40);
 
         sprites.addSprite(paddle); // vẽ + update
         environment.addCollidable(paddle); // va chạm
@@ -141,82 +145,90 @@ public class GameLevel implements Animation {
 
     // Chạy level (vòng lặp chính)
     public void run() {
-        running = true;
-        animationRunner.run(this);
+        initialize(); // Khởi tạo level 1 lần duy nhất
+
+        do {
+            playOneTurn();
+
+            if (remainingBalls.getValue() > 0) {
+                running = true;
+                animationRunner.run(this); // chạy 1 turn
+            } else {
+                running = false; // Hết bóng thì dừng
+            }
+
+            if (remainingBlocks.getValue() <= 0) {
+                score.increase(100);
+                break;
+            }
+        } while (needRestart && remainingBalls.getValue() > 0);
     }
 
     public void playOneTurn() {
-        if (remainingBalls.getValue() <= 0) {
-            running = false;
-            return;
-        }
-
-        // xóa bóng
-        for (Ball ball: balls) {
+        // Xóa bóng cũ
+        for (Ball ball: new ArrayList<>(balls)) {
             removeSprite(ball);
         }
         balls.clear();
 
-        // đặt paddle về giữa
+        // Đặt paddle về giữa
         double centerX = (SCREEN_WIDTH - paddle.getCollisionRectangle().getWidth()) / 2;
         paddle.setX(centerX);
 
+        // Tạo bóng mới với vận tốc 0
         List<Velocity> ballVelocities = levelInfo.initialBallVelocities();
         for (int i = 0; i < levelInfo.numberOfBalls(); i++) {
             double ballX = paddle.getX() + paddle.getWidth() / 2;
             double ballY = paddle.getY() - BALL_RADIUS - 1;
             Point center = new Point(ballX, ballY);
 
-            // Tạo bóng, velocity = 0 (chưa bắn)
-            Ball ball = new Ball(center, BALL_RADIUS, Color.WHITE, new Velocity(0.0, 0.0), environment);
+            Ball ball = new Ball(center, BALL_RADIUS, Color.WHITE, new Velocity(0, 0), environment);
             balls.add(ball);
             sprites.addSprite(ball);
         }
 
-        GraphicsContext gc = animationRunner.getGraphicsContext();
-        // Chở nhấn Enter để tiếp tục
-        while (!keyboard.isPressed(Key.ENTER)) {
-            render(gc);
-            gc.setFill(Color.WHITE);
-            gc.fillText("Press Enter to launch balls", 250, 300);
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        // Bắn bóng (k bắn bóng sẽ rơi xuống.
-        for (int i = 0; i < balls.size(); i++) {
-            Ball ball = balls.get(i);
-            Velocity v = ballVelocities.get(i);
-            ball.setVelocity(v);
-        }
+        // Reset các cờ trạng thái
+        waitingForEnter = true;
+        ballsLaunched = false;
+        running = true; //  Set running ở đây thay vì trong run()
+        needRestart = false; //  Reset needRestart
     }
 
     @Override
     public void update(double dt) {
+        keyboard.update();
+
         if (!running) return;
+
+        // Xử lý trạng thái chờ bấm Enter
+        if (waitingForEnter) {
+            if (keyboard.isPressed(Key.ENTER)) {
+                waitingForEnter = false;
+                ballsLaunched = true;
+                // Bắn bóng
+                List<Velocity> velocities = levelInfo.initialBallVelocities();
+                for (int i = 0; i < balls.size(); i++) {
+                    balls.get(i).setVelocity(velocities.get(i));
+                }
+            }
+            return; // Không update sprite khi đang chờ
+        }
+
+        if (!ballsLaunched) return;
 
         sprites.update(dt);
 
-        // Chuyển dộng của paddle
-        if(keyboard.isPressed(Key.LEFT)) {
-            paddle.moveLeft(dt);
-        }
+        // paddle movement
+        if(keyboard.isPressed(Key.LEFT)) paddle.moveLeft(dt);
+        if(keyboard.isPressed(Key.RIGHT)) paddle.moveRight(dt);
 
-        if (keyboard.isPressed(Key.RIGHT)) {
-            paddle.moveRight(dt);
-        }
-
-        // Ktra hết bóng chơi lại
         if (remainingBalls.getValue() <= 0) {
-            playOneTurn();
+            needRestart = true;
+            running = false; // dừng animation hiện tại
         }
 
-        // Kiểm tra thắng
         if (remainingBlocks.getValue() <= 0) {
-            running = false; // dừng level
+            running = false;
         }
     }
 
@@ -224,12 +236,19 @@ public class GameLevel implements Animation {
     public void render(GraphicsContext gc) {
         sprites.render(gc);
 
+        //Hiển thị thông báo khi chờ bấm Enter
+        if (waitingForEnter) {
+            gc.setFill(Color.WHITE);
+            gc.fillText("Press ENTER to launch balls", 250, 300);
+        }
+
         // Vẽ các thứ khác
     }
 
     @Override
     public boolean isFinished() {
-        return remainingBalls.getValue() <= 0 || remainingBlocks.getValue() <= 0;
+        System.out.println("isFinished? running=" + running);
+        return !running;
     }
 
     public void addSprite(Sprite s) {

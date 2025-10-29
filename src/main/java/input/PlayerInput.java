@@ -11,6 +11,14 @@ public class PlayerInput {
         this.mouse = mouse;
     }
 
+    public Keyboard getKeyboard() {
+        return keyboard;
+    }
+
+    public Mouse getMouse() {
+        return mouse;
+    }
+
     public boolean isMoveLeft() {
         return keyboard.isPressed(Key.LEFT);
     }

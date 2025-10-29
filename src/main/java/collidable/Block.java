@@ -22,7 +22,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
     /**
      * Danh sách thông báo sự kiện va chạm
      */
-    private List<HitListener> hitListeners;
+    private List<HitListener> hitListeners = new ArrayList<>();
     /**
      * Khối block
      */

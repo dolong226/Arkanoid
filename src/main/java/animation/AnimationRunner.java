@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 public class AnimationRunner {
     private final double fps;
     private final GraphicsContext gc;
+    private AnimationTimer currentTimer;
 
     public AnimationRunner(GraphicsContext gc, double fps) {
         this.gc = gc;
@@ -19,26 +20,18 @@ public class AnimationRunner {
     }
 
     public void run(Animation animation) {
-        if ( gc == null ) {
-            while (!animation.isFinished()) {
-                animation.update(1.0/fps);
-                try {
-                    Thread.sleep((long) (1000 / fps));
-                } catch (InterruptedException e ) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-            return;
+        if (currentTimer != null) {
+            currentTimer.stop();
         }
 
-        new AnimationTimer() {
+        currentTimer = new AnimationTimer() {
             private long lastTime = -1;
             private double accumulator = 0;
             private final double timePerFrame = 1.0 / fps;
 
-            public void handle (long now) {
-                if (lastTime < 0 ) {
+            @Override
+            public void handle(long now) {
+                if (lastTime < 0) {
                     lastTime = now;
                     return;
                 }
@@ -50,15 +43,16 @@ public class AnimationRunner {
                     animation.update(timePerFrame);
                     accumulator -= timePerFrame;
                 }
-                double canvasWidth = gc.getCanvas().getWidth();
-                double canvasHeight = gc.getCanvas().getHeight();
+
                 animation.render(gc);
 
                 if (animation.isFinished()) {
                     stop();
+                    currentTimer = null; // XÓA THAM CHIẾU
                 }
             }
-        }.start();
+        };
+        currentTimer.start();
     }
 
     public static void makeCanvasResizable(Canvas canvas, Pane parent) {

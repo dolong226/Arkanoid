@@ -4,6 +4,7 @@ import animation.Animation;
 import game.Sprite;
 import geometry.Rectangle;
 import input.Mouse;
+import input.PlayerInput;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -13,14 +14,14 @@ import java.util.List;
 public class MenuAnimation<T> implements Menu<T>, Animation {
     private List<Selection<T>> selections = new ArrayList<>();
     private T status;
-    private Mouse mouse;
+    private PlayerInput input;
     private Sprite background;
 
-    public MenuAnimation(Sprite background, Mouse mouse) {
+    public MenuAnimation(Sprite background, PlayerInput input) {
         this.selections = new ArrayList<>();
         this.status = null;
         this.background = background;
-        this.mouse = mouse;
+        this.input = input;
     }
 
     @Override
@@ -40,10 +41,9 @@ public class MenuAnimation<T> implements Menu<T>, Animation {
 
     @Override
     public void update(double dt) {
-        mouse.update();
 
         for (Selection<T> selection: selections) {
-            if (selection.isClicked(mouse)) {
+            if (selection.isClicked(input.getMouse())) {
                 status = selection.getReturnVal();
                 break;
             }

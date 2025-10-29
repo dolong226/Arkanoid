@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
  * Định nghĩa cho các đối tượng quản lí menu trong game.
  * Menu được kế thừa từ Animation.
  */
-public interface Menu<T> extends Animation {
+public interface Menu<T> {
 
     /**
      * Thêm một lựa chọn vào menu.
