@@ -37,7 +37,7 @@ public class LevelTest implements LevelInformation {
 
     @Override
     public double paddleWidth() {
-        return 100;
+        return 180;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class LevelTest implements LevelInformation {
             @Override
             public void render(GraphicsContext gc) {
                 gc.save();
-                gc.setFill(Color.rgb(0, 100, 200)); // xanh dương đậm
+                gc.setFill(Color.rgb(0, 100, 200));
                 gc.fillRect(0, 0, 800, 600);
                 gc.restore();
             }
@@ -66,19 +66,20 @@ public class LevelTest implements LevelInformation {
     @Override
     public List<Block> blocks() {
         List<Block> blocks = new ArrayList<>();
-        int blockWidth = 70;
-        int blockHeight = 30;
+        int blockWidth = 50;
+        int blockHeight = 20;
         int startX = 65;
         int startY = 150;
 
         for (int i = 0; i < 10; i++) {
             double x = startX + i * (blockWidth + 5);
-            Rectangle rect = new Rectangle(new Point(x, startY), blockWidth, blockHeight);
+            Rectangle rect = new Rectangle(new Point(x, startY), blockHeight, blockWidth);
             Block block = new Block(rect, Color.RED);
             blocks.add(block);
         }
         return blocks;
     }
+
 
     @Override
     public int numberOfBlocksToRemove() {

@@ -96,8 +96,8 @@ public class Block implements Sprite, Collidable, HitNotifier {
             gc.setFill(color);
             gc.fillRect(rectangle.getUpperLeft().getX(),
                     rectangle.getUpperLeft().getY(),
-                    rectangle.getWidth(),
-                    rectangle.getLength());
+                    rectangle.getLength(),
+                    rectangle.getWidth());
         }
         gc.restore();
     }

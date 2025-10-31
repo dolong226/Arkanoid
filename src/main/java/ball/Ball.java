@@ -230,20 +230,19 @@ public class Ball implements Sprite {
      * Update lại trạng thái bóng sau các sự kiện xảy ra
      */
     public void update(double dt) {
-        // Tính điểm đến dự kiến
         Point intended = new Point(
                 center.getX() + velocity.getDx() * dt,
                 center.getY() + velocity.getDy() * dt
         );
-        Line path = new Line(center, intended);
 
+        Line path = new Line(center, intended);
         CollisionInfo collision = gameEnvironment.getClosetCollision(path);
 
         if (collision != null) {
             Point p = collision.getClosetPoint();
+
             this.velocity = collision.getCollidable().hit(this, p, velocity);
 
-            // Đẩy ra ngoài 1px theo hướng mới
             double speed = Math.hypot(velocity.getDx(), velocity.getDy());
             if (speed > 0) {
                 double offset = 1.0;
@@ -255,7 +254,6 @@ public class Ball implements Sprite {
                 this.center = p;
             }
         } else {
-            // Di chuyển bình thường với dt
             this.center = velocity.applyToPoint(center, dt);
         }
     }
@@ -292,5 +290,4 @@ public class Ball implements Sprite {
         return this.center;
     }
 
-    // XÓA HOÀN TOÀN HÀM changeDirectionIfMoveNear() - KHÔNG CẦN NỮA
 }

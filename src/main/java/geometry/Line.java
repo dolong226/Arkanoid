@@ -421,73 +421,78 @@ public class Line {
      * @return Giao điểm của 2 đường thẳng hoặc null nếu không giao nhau.
      */
     public Point intersectionPoint(Line other){
-        // Trường hợp 1: không giao nhau --> return null.
-        if(isIntersecting(other) != true){
+        if(!isIntersecting(other)){
             return null;
         }
-        // Trường hợp 2: có thể giao nhau .
-        else{
-            double x1 = start.getX();
-            double x2 = end.getX();
-            double x3 = other.start.getX();
-            double x4 = other.end.getX();
-            double y1 = start.getY();
-            double y2 = end.getY();
-            double y3 = other.start.getY();
-            double y4 = other.end.getY();
-            // Hai đường đều là đường thẳng đứng nên không thể có 1 giao điểm được (vì có thể không có giao điểm nào hoặc có vô số giao điểm).
-            if(Math.abs(x1 - x2) < EPSILON && Math.abs(x3 - x4) < EPSILON){
-                return null;
+
+        double x1 = start.getX();
+        double x2 = end.getX();
+        double x3 = other.start.getX();
+        double x4 = other.end.getX();
+        double y1 = start.getY();
+        double y2 = end.getY();
+        double y3 = other.start.getY();
+        double y4 = other.end.getY();
+
+        // Trường hợp 1: Cả 2 đều là đường thẳng đứng
+        if(Math.abs(x1 - x2) < EPSILON && Math.abs(x3 - x4) < EPSILON){
+            // Hai đường thẳng đứng trùng nhau
+            if(Math.abs(x1 - x3) < EPSILON) {
+                // Trả về điểm gần start nhất
+                double d1 = start.distance(other.start);
+                double d2 = start.distance(other.end);
+                return d1 < d2 ? other.start : other.end;
             }
-            //Một trong hai đường thẳng là đường thẳng đứng.
-            else if(Math.abs(x1 - x2) < EPSILON || Math.abs(x3 - x4) < EPSILON){
-                if(Math.abs(x1 - x2) < EPSILON){ // Đường thẳng 1 là đường thẳng đứng.
-                    double slope2 = (y3 - y4)/(x3 - x4);
-                    double y_intercept_2 = y3 - slope2*x3;
-                    double y_result = slope2*x1 + y_intercept_2;
-                    if(y_result >= Math.min(y1, y2) && y_result <= Math.max(y1, y2) && x1 >= Math.min(x3, x4) && x1 <= Math.max(x3, x4)){
-                        Point intersectionPoint = new Point();
-                        intersectionPoint.setX(x1);
-                        intersectionPoint.setY(y_result);
-                        return intersectionPoint;
-                    }
-                    else{
-                        return null;
-                    }
-                }
-                else{ // Đường thẳng 2 là đường thẳng đứng.
-                    double slope1 = (y1 - y2)/(x1 - x2);
-                    double y_intercept_1 =  y1 -slope1*x1;
-                    double y_result = slope1*x3 + y_intercept_1;
-                    if(y_result >= Math.min(y3, y4) && y_result <= Math.max(y3, y4) && x3 >= Math.min(x1, x2) && x3 <= Math.max(x1, x2)){
-                        Point intersectionPoint = new Point();
-                        intersectionPoint.setX(x3);
-                        intersectionPoint.setY(y_result);
-                        return intersectionPoint;
-                    }
-                }
-            }
-            // Cả 2 đều là các trường hợp ngoài các trường hợp trên.
-            else{
-                double slope1 = (y1 - y2)/(x1 - x2);
-                double slope2 = (y3 - y4)/(x3 - x4);
-                double y_intercept_1 =  y1 -slope1*x1;
-                double y_intercept_2 = y3 - slope2*x3;
-                if(Math.abs(slope1 - slope2) < EPSILON){
-                    if (Math.abs(y_intercept_1 - y_intercept_2) < EPSILON) {
-                        // Hai đường trùng nhau → trả về điểm gần start nhất
-                        double d1 = this.start.distance(other.start);
-                        double d2 = this.start.distance(other.end);
-                        return d1 < d2 ? other.start : other.end;
-                    }
-                    return null;
-                }
-                double x_value = (y_intercept_2 - y_intercept_1) / (slope1 - slope2);
-                double y_value = slope1 * x_value + y_intercept_1;
-                return new Point(x_value, y_value);
-            }
+            return null;
         }
-        return null; // Không đến đây
+
+        // Trường hợp 2: Chỉ đường thẳng 1 là đường thẳng đứng
+        if(Math.abs(x1 - x2) < EPSILON){
+            double slope2 = (y3 - y4)/(x3 - x4);
+            double y_intercept_2 = y3 - slope2*x3;
+            double y_result = slope2*x1 + y_intercept_2;
+
+            if(y_result >= Math.min(y1, y2) && y_result <= Math.max(y1, y2) &&
+                    x1 >= Math.min(x3, x4) && x1 <= Math.max(x3, x4)){
+                return new Point(x1, y_result);
+            }
+            return null;
+        }
+
+        // Trường hợp 3: Chỉ đường thẳng 2 là đường thẳng đứng
+        if(Math.abs(x3 - x4) < EPSILON){
+            double slope1 = (y1 - y2)/(x1 - x2);
+            double y_intercept_1 = y1 - slope1*x1;
+            double y_result = slope1*x3 + y_intercept_1;
+
+            if(y_result >= Math.min(y3, y4) && y_result <= Math.max(y3, y4) &&
+                    x3 >= Math.min(x1, x2) && x3 <= Math.max(x1, x2)){
+                return new Point(x3, y_result);
+            }
+            return null;
+        }
+
+        // Trường hợp 4: Không có đường nào là đường thẳng đứng
+        double slope1 = (y1 - y2)/(x1 - x2);
+        double slope2 = (y3 - y4)/(x3 - x4);
+        double y_intercept_1 = y1 - slope1*x1;
+        double y_intercept_2 = y3 - slope2*x3;
+
+        // Hai đường song song hoặc trùng nhau
+        if(Math.abs(slope1 - slope2) < EPSILON){
+            if(Math.abs(y_intercept_1 - y_intercept_2) < EPSILON) {
+                // Hai đường trùng nhau
+                double d1 = start.distance(other.start);
+                double d2 = start.distance(other.end);
+                return d1 < d2 ? other.start : other.end;
+            }
+            return null;
+        }
+
+        // Tính giao điểm
+        double x_value = (y_intercept_2 - y_intercept_1) / (slope1 - slope2);
+        double y_value = slope1 * x_value + y_intercept_1;
+        return new Point(x_value, y_value);
     }
 
     /**
@@ -495,8 +500,11 @@ public class Line {
      * @param rectangle Hình chữ nhật.
      * @return null hoặc giao điểm gần với điểm đầu của đường thẳng.
      */
+
+
     public Point closestIntersectionToStartOfLine(Rectangle rectangle){
         Point start = this.getStart();
+        Point end = this.getEnd();
         Point closest = null;
         double minDistance = Double.MAX_VALUE;
 
@@ -511,28 +519,29 @@ public class Line {
         sidesOfRectangle[2] = new Line(ul.getX(), ul.getY(), ul.getX(), ul.getY() + width); // left
         sidesOfRectangle[3] = new Line(ul.getX() + length, ul.getY(), ul.getX() + length, ul.getY() + width); // right
 
-        for (Line side : sidesOfRectangle) {
+        for (int i = 0; i < 4; i++) {
+            Line side = sidesOfRectangle[i];
             Point intersection = this.intersectionPoint(side);
+
             if (intersection != null) {
-                // Kiểm tra điểm nằm trên đoạn cạnh
-                double minX = Math.min(side.getStart().getX(), side.getEnd().getX());
-                double maxX = Math.max(side.getStart().getX(), side.getEnd().getX());
-                double minY = Math.min(side.getStart().getY(), side.getEnd().getY());
-                double maxY = Math.max(side.getStart().getY(), side.getEnd().getY());
+                double distance = start.distance(intersection);
+                double trajectoryLength = start.distance(end);
 
-                boolean onSegment = intersection.getX() >= minX - EPSILON && intersection.getX() <= maxX + EPSILON
-                        && intersection.getY() >= minY - EPSILON && intersection.getY() <= maxY + EPSILON;
+                if (distance > EPSILON && distance <= trajectoryLength + EPSILON) {
+                    double dx = end.getX() - start.getX();
+                    double dy = end.getY() - start.getY();
+                    double ix = intersection.getX() - start.getX();
+                    double iy = intersection.getY() - start.getY();
+                    double dotProduct = dx * ix + dy * iy;
 
-                if (onSegment) {
-                    double distance = start.distance(intersection);
-                    if (distance > EPSILON && distance < minDistance) {
+                    if (dotProduct > 0 && distance < minDistance) {
                         minDistance = distance;
                         closest = intersection;
                     }
                 }
             }
         }
+
         return closest;
     }
-
 }
