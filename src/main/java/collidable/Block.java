@@ -96,7 +96,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
             gc.setFill(color);
             gc.fillRect(rectangle.getUpperLeft().getX(),
                     rectangle.getUpperLeft().getY(),
-                    rectangle.getLength(),
+                    rectangle.getHeight(),
                     rectangle.getWidth());
         }
         gc.restore();
@@ -135,7 +135,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
             /**
              * Bóng va vào giữa cạnh (không tính hai đỉnh biên)
              */
-            if(x > upperLeftX && x < upperLeftX + this.rectangle.getLength()){
+            if(x > upperLeftX && x < upperLeftX + this.rectangle.getHeight()){
             upDateVelocity.setDy(currentVelocity.getDy() * (-1));
             dyChanged = true;
         }
@@ -144,7 +144,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
         /**
          * Nếu bóng va vào cạnh bên trái và phải của block
          */
-        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.rectangle.getLength())) < epsilon){
+        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.rectangle.getHeight())) < epsilon){
             /**
              * Bóng va vào giữa cạnh (Không tính hai đỉnh biên)
              */
@@ -163,7 +163,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
         /**
          * Nếu bóng va chạm rất gần góc (để loại trừ sai số của epsilon)
          */
-        else if((Math.abs(y - upperLeftY) < epsilon || Math.abs(y - (upperLeftY + this.rectangle.getWidth())) < epsilon) && (Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.rectangle.getLength())) < epsilon)){
+        else if((Math.abs(y - upperLeftY) < epsilon || Math.abs(y - (upperLeftY + this.rectangle.getWidth())) < epsilon) && (Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.rectangle.getHeight())) < epsilon)){
             if(!dxChanged){
                 upDateVelocity.setDx(currentVelocity.getDx() * (-1));
             }

@@ -44,7 +44,7 @@ public class Selection<T> {
                 rectangle.getUpperLeft().getX(),
                 rectangle.getUpperLeft().getY(),
                 rectangle.getWidth(),
-                rectangle.getLength()
+                rectangle.getHeight()
         );
 
         // Màu và phông chữ
@@ -53,7 +53,7 @@ public class Selection<T> {
 
         // Căn giữa
         double textX = rectangle.getUpperLeft().getX() + (rectangle.getWidth() - gc.getFont().getSize() * message.length() / 2) / 2;
-        double textY = rectangle.getUpperLeft().getY() + (rectangle.getLength() + gc.getFont().getSize()) / 2;
+        double textY = rectangle.getUpperLeft().getY() + (rectangle.getHeight() + gc.getFont().getSize()) / 2;
 
         // Vẽ string
         gc.fillText(message, textX, textY);

@@ -10,8 +10,10 @@ import collidable.Collidable;
 import collidable.Paddle;
 import geometry.Point;
 import geometry.Rectangle;
+import input.GameMouse;
 import input.Key;
 import input.Keyboard;
+import input.PlayerInput;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -35,6 +37,7 @@ public class GameLevel implements Animation {
     private Counter remainingBalls;
     private Keyboard keyboard;
     private boolean running;
+    private PlayerInput input;
 
     private boolean waitingForEnter = true;
     private boolean ballsLaunched = false;
@@ -48,9 +51,10 @@ public class GameLevel implements Animation {
     public static final int BALL_RADIUS = 6;
     public static final int DEATH_REGION_HEIGHT = 50;
 
-    public GameLevel(LevelInformation levelInfo, Keyboard keyboard, AnimationRunner animationRunner) {
+    public GameLevel(LevelInformation levelInfo, PlayerInput input, AnimationRunner animationRunner) {
         this.levelInfo = levelInfo;
-        this.keyboard = keyboard;
+        this.input = input;
+        this.keyboard = input.getKeyboard();
         this.animationRunner = animationRunner;
     }
 
@@ -179,6 +183,7 @@ public class GameLevel implements Animation {
     public void update(double dt) {
         keyboard.update();
 
+        ((GameMouse) input.getMouse()).update();
         if (!running) return;
 
         // Xử lý chờ Enter
@@ -232,7 +237,6 @@ public class GameLevel implements Animation {
         gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         sprites.render(gc);
 
-        // Debug info
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", 15));
         gc.fillText("Score: " + score.getValue(), 10, 20);

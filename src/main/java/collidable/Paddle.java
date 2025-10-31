@@ -80,7 +80,7 @@ public class Paddle implements Sprite, Collidable {
     // Dùng để đặt lại vị trí paddle
     public void setX(double x) {
         Point oldUpperLeft = paddle.getUpperLeft();
-        paddle = new Rectangle(new Point(x, oldUpperLeft.getY()), paddle.getWidth(), paddle.getLength());
+        paddle = new Rectangle(new Point(x, oldUpperLeft.getY()), paddle.getWidth(), paddle.getHeight());
     }
 
     /** 
@@ -92,7 +92,7 @@ public class Paddle implements Sprite, Collidable {
         if(newX <= this.minBoundary){
             newX = this.minBoundary;
         }
-        this.paddle = new Rectangle(new Point(newX, this.paddle.getUpperLeft().getY()), this.paddle.getWidth(), this.paddle.getLength());
+        this.paddle = new Rectangle(new Point(newX, this.paddle.getUpperLeft().getY()), this.paddle.getWidth(), this.paddle.getHeight());
     }
 
     /** 
@@ -101,10 +101,10 @@ public class Paddle implements Sprite, Collidable {
      */
     public void moveRight(double dt){
         double newX = this.paddle.getUpperLeft().getX() + this.step*dt;
-        if(newX + this.paddle.getLength() >= this.maxBoundary){
-            newX = this.maxBoundary - this.paddle.getLength();
+        if(newX + this.paddle.getHeight() >= this.maxBoundary){
+            newX = this.maxBoundary - this.paddle.getHeight();
         }
-        this.paddle = new Rectangle(new Point(newX, this.paddle.getUpperLeft().getY()), this.paddle.getWidth(), this.paddle.getLength());
+        this.paddle = new Rectangle(new Point(newX, this.paddle.getUpperLeft().getY()), this.paddle.getWidth(), this.paddle.getHeight());
     }
 
     /** 
@@ -123,7 +123,7 @@ public class Paddle implements Sprite, Collidable {
         gc.setFill(color);
         double upperLeftX = this.paddle.getUpperLeft().getX();
         double upperLeftY = this.paddle.getUpperLeft().getY();
-        double length = this.paddle.getLength();
+        double length = this.paddle.getHeight();
         double width = this.paddle.getWidth();
         gc.fillRect(upperLeftX, upperLeftY, length,width);
     }
@@ -150,12 +150,12 @@ public class Paddle implements Sprite, Collidable {
         double upperLeftX = this.paddle.getUpperLeft().getX();
         double upperLeftY = this.paddle.getUpperLeft().getY();
 
-        if(Math.abs(y - upperLeftY) < epsilon && collisionPoint.getX() >= upperLeftX && collisionPoint.getX() <= upperLeftX + this.paddle.getLength()){
+        if(Math.abs(y - upperLeftY) < epsilon && collisionPoint.getX() >= upperLeftX && collisionPoint.getX() <= upperLeftX + this.paddle.getHeight()){
             int region = this.checkRegion(collisionPoint);
             upDateVelocity = this.changeVelocity(region, upDateVelocity);
             return upDateVelocity;
         }
-        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.paddle.getLength())) < epsilon){
+        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.paddle.getHeight())) < epsilon){
             if(y > upperLeftY && y < upperLeftY + this.paddle.getWidth()){
                 upDateVelocity.setDx(upDateVelocity.getDx() *(-1));
             }
@@ -174,7 +174,7 @@ public class Paddle implements Sprite, Collidable {
      */
     public int checkRegion(Point collisionPoint){
         double UpperLeftX = this.paddle.getUpperLeft().getX();
-        double eachRegionSize = this.paddle.getLength()/5;
+        double eachRegionSize = this.paddle.getHeight()/5;
         regionBorders[0] = UpperLeftX + eachRegionSize;
         regionBorders[1] = UpperLeftX + eachRegionSize * 2;
         regionBorders[2] = UpperLeftX + eachRegionSize * 3;
@@ -191,7 +191,7 @@ public class Paddle implements Sprite, Collidable {
         if(collisionPoint.getX() >= this.regionBorders[2] && collisionPoint.getX() < this.regionBorders[3]){
             return 4;
         }
-        if(collisionPoint.getX() >= this.regionBorders[3] && collisionPoint.getX() <= UpperLeftX + this.paddle.getLength()){
+        if(collisionPoint.getX() >= this.regionBorders[3] && collisionPoint.getX() <= UpperLeftX + this.paddle.getHeight()){
             return 5;
         }
         return 0;

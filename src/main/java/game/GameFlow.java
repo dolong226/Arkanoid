@@ -4,6 +4,7 @@ import animation.AnimationRunner;
 import animation.PauseAnimation;
 import input.GameKeyboard;
 import input.Keyboard;
+import input.PlayerInput;
 import level.LevelInformation;
 
 import java.util.List;
@@ -12,18 +13,15 @@ public class GameFlow {
     private final AnimationRunner runner;
     private final Keyboard keyboard;
     private final Counter globalScore;
+    private final PlayerInput input;
 
-    public GameFlow(Keyboard keyboard, AnimationRunner runner) {
-        this.keyboard = keyboard;
+    public GameFlow(AnimationRunner runner, PlayerInput input, Counter globalScore) {
         this.runner = runner;
-        globalScore = new Counter(0);
+        this.input = input;
+        this.keyboard = input.getKeyboard();
+        this.globalScore = globalScore;
     }
 
-    public GameFlow(AnimationRunner runner, GameKeyboard keyboard, Counter score) {
-        this.runner = runner;
-        this.keyboard = keyboard;
-        this.globalScore = score;
-    }
 
     // chạy level
     public void runLevels(List<LevelInformation> levels) {
@@ -33,12 +31,11 @@ public class GameFlow {
         }
 
         for (LevelInformation lv: levels) {
-            GameLevel level = new GameLevel(lv, keyboard,runner);
+            GameLevel level = new GameLevel(lv, input,runner);
             int i = 1;
             System.out.println("Bắt đầu level " + i);
             i++;
             level.run();
         }
-        // AnimationTimer sẽ tự động dừng khi isFinished() = true
     }
 }

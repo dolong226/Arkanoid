@@ -1,28 +1,35 @@
 package input;
 
 import geometry.Point;
-import java.awt.event.MouseEvent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseButton;
 
 public class GameMouse implements Mouse {
     private MouseState state;
     private KeyTimer timer;
+    private Canvas canvas;
 
     public GameMouse() {
         this.state = new MouseState();
         this.timer = new KeyTimer(KeyTimer.DEFAULT_DEBOUNCE_DELAY);
     }
 
-    private Key mapButtonToKey(int button) {
-        switch (button) {
-            case MouseEvent.BUTTON1:
-                return Key.MOUSE_LEFT;
-            case MouseEvent.BUTTON2:
-                return Key.MOUSE_MIDDLE;
-            case MouseEvent.BUTTON3:
-                return Key.MOUSE_RIGHT;
-            default:
-                return null;
+    public GameMouse(Canvas canvas) {
+        this.canvas = canvas;
+        this.state = new MouseState();
+        this.timer = new KeyTimer(KeyTimer.DEFAULT_DEBOUNCE_DELAY);
+    }
+
+    private Key mapButtonToKey(MouseButton button) {
+        if (button == MouseButton.PRIMARY) {
+            return Key.MOUSE_LEFT;
+        } else if (button == MouseButton.MIDDLE) {
+            return Key.MOUSE_MIDDLE;
+        } else if (button == MouseButton.SECONDARY) {
+            return Key.MOUSE_RIGHT;
         }
+        return null;
     }
 
     public void onMousePressed(MouseEvent event) {
@@ -41,7 +48,12 @@ public class GameMouse implements Mouse {
     }
 
     public void onMouseMoved(MouseEvent event) {
-        state.setMousePosition(event.getX(), event.getY());
+        double sceneX = event.getSceneX();
+        double sceneY = event.getSceneY();
+
+        double canvasX = sceneX - canvas.getLayoutX();
+        double canvasY = sceneY - canvas.getLayoutY();
+        state.setMousePosition(canvasX, canvasY);
     }
 
     @Override

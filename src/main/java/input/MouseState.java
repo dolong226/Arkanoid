@@ -37,7 +37,7 @@ public class MouseState {
     }
 
     // Cập nhật vị trí chuột
-    public void setMousePosition(int x, int y) {
+    public void setMousePosition(double x, double y) {
         this.mousePosition.setLocation(x, y);
     }
 
