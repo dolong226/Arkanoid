@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import level.LevelInformation;
 import level.LevelTest;
@@ -29,6 +30,7 @@ public class MainGame extends Application {
     public void start(Stage primaryStage) {
         // Tạo Canvas và Pane
         Canvas canvas = new Canvas(SCREEN_WIDTH, SCREEN_HEIGHT);
+
         Pane root = new Pane(canvas);
         root.setPrefSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 

@@ -50,7 +50,9 @@ public class SpriteCollection {
      */
     public void render(GraphicsContext gc) {
         for (Sprite sprite: sprites) {
-            sprite.render(gc);
+            if (sprite != null) {
+                sprite.render(gc);
+            }
         }
     }
 }

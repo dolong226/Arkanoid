@@ -5,6 +5,7 @@ import collidable.Block;
 import collidable.Paddle;
 import geometry.Point;
 import geometry.Rectangle;
+import javafx.scene.canvas.GraphicsContext;
 import level.LevelInformation;
 import game.Sprite;
 
@@ -48,9 +49,11 @@ public class LevelTest implements LevelInformation {
     public Sprite getBackground() {
         return new Sprite() {
             @Override
-            public void render(javafx.scene.canvas.GraphicsContext gc) {
+            public void render(GraphicsContext gc) {
+                gc.save();
                 gc.setFill(Color.rgb(0, 100, 200)); // xanh dương đậm
                 gc.fillRect(0, 0, 800, 600);
+                gc.restore();
             }
 
             @Override

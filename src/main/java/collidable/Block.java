@@ -91,12 +91,15 @@ public class Block implements Sprite, Collidable, HitNotifier {
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.setFill(color);
-        double upperLeftX = rectangle.getUpperLeft().getX();
-        double upperLeftY = rectangle.getUpperLeft().getY();
-        double length = rectangle.getLength();
-        double width = rectangle.getWidth();
-        gc.fillRect(upperLeftX, upperLeftY, length, width);
+        gc.save();
+        if (color != null) {
+            gc.setFill(color);
+            gc.fillRect(rectangle.getUpperLeft().getX(),
+                    rectangle.getUpperLeft().getY(),
+                    rectangle.getWidth(),
+                    rectangle.getLength());
+        }
+        gc.restore();
     }
 
     /**
@@ -151,7 +154,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
         }
     }
         /**
-         * Nếu bóng va chạm vào góc 
+         * Nếu bóng va chạm vào góc
          */
         if(!dyChanged && !dxChanged){
             upDateVelocity.setDx(currentVelocity.getDx() * (-1));
@@ -172,6 +175,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
         this.notifyHit(hitter, collisionPoint);
         return upDateVelocity;
     }
+
 
     @Override
     /**

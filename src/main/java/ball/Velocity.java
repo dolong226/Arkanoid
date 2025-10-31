@@ -97,6 +97,10 @@ public class Velocity {
         return new Point(onePoint.getX() + Dx, onePoint.getY() + Dy);
     }
 
+    public Point applyToPoint(Point onePoint, double dt){
+        return new Point(onePoint.getX() + Dx * dt, onePoint.getY() + Dy * dt);
+    }
+
     /**
      * Trả về giá trị vận tốc theo x
      * @return vận tốc theo x
