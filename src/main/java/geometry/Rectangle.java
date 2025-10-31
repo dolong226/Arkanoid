@@ -10,18 +10,18 @@ public class Rectangle {
      * Các thuộc tính của 1 hình chữ nhật gồm điểm trên cùng bên trái, chiều dài, chiều rộng.
      */
     private double width;
-    private double length;
+    private double height;
     private Point upperLeft;
 
     /**
      * Hàm khởi tạo 1 hình chữ nhật.
      * @param upperLeft Điểm trên cùng bên trái.
      * @param width Chiều rộng.
-     * @param length Chiều dài.
+     * @param height Chiều dài.
      */
-    public Rectangle(Point upperLeft, double width, double length){
+    public Rectangle(Point upperLeft, double width, double height){
         this.width = width;
-        this.length = length;
+        this.height = height;
         this.upperLeft = upperLeft;
     }
 
@@ -45,8 +45,8 @@ public class Rectangle {
      * Lấy ra chiều dài.
      * @return chiều dài.
      */
-    public double getLength(){
-        return this.length;
+    public double getHeight(){
+        return this.height;
     }
     
     /**
@@ -57,11 +57,11 @@ public class Rectangle {
         double x_upperLeft = this.upperLeft.getX();
         double y_upperLeft = this.upperLeft.getY();
         double theWidth = this.width;
-        double theLength = this.length;
+        double theHeight = this.height;
         corners[0] = this.getUpperLeft();
 
         Point upperRight = new Point();
-        upperRight.setX(x_upperLeft + theLength);
+        upperRight.setX(x_upperLeft + theHeight);
         upperRight.setY(y_upperLeft);
         corners[1] = upperRight;
 
@@ -71,7 +71,7 @@ public class Rectangle {
         corners[2] = downLeft;
 
         Point downRight = new Point();
-        downRight.setX(x_upperLeft + theLength);
+        downRight.setX(x_upperLeft + theHeight);
         downRight.setY(y_upperLeft + theWidth);
         corners[3] = downRight;
     }
@@ -115,8 +115,8 @@ public class Rectangle {
 
         double xLeft = upperLeft.getX();
         double yTop = upperLeft.getY();
-        double xRight = xLeft + length;
-        double yBottom = yTop + width;
+        double xRight = xLeft + width;
+        double yBottom = yTop + height;
 
         return x >= xLeft && x <= xRight && y >= yTop && y <= yBottom;
     }

@@ -510,7 +510,7 @@ public class Line {
 
         // Tạo 4 cạnh của rectangle
         Point ul = rectangle.getUpperLeft();
-        double length = rectangle.getLength();
+        double length = rectangle.getHeight();
         double width = rectangle.getWidth();
 
         Line[] sidesOfRectangle = new Line[4];

@@ -26,7 +26,7 @@ public class LevelTest implements LevelInformation {
     @Override
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
-        velocities.add(Velocity.fromAngleAndSpeed(0, 300)); // bắn thẳng lên, tốc độ 300
+        velocities.add(Velocity.fromAngleAndSpeed(0, 500)); // bắn thẳng lên, tốc độ 300
         return velocities;
     }
 
