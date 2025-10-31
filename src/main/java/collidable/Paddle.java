@@ -44,7 +44,7 @@ public class Paddle implements Sprite, Collidable {
     public Paddle() {
         this.step = 1;
         this.color = new Color(100, 100, 100, 50);
-        this.paddle = new Rectangle(new Point(200, 400), 40, 100);
+        this.paddle = new Rectangle(new Point(200, 400), 100, 100);
     }
 
     /**
@@ -125,7 +125,7 @@ public class Paddle implements Sprite, Collidable {
         double upperLeftY = this.paddle.getUpperLeft().getY();
         double length = this.paddle.getLength();
         double width = this.paddle.getWidth();
-        gc.fillRect(upperLeftX, upperLeftY, width, length);
+        gc.fillRect(upperLeftX, upperLeftY, length,width);
     }
 
     /**

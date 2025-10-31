@@ -48,7 +48,7 @@ public class AnimationRunner {
 
                 if (animation.isFinished()) {
                     stop();
-                    currentTimer = null; // XÓA THAM CHIẾU
+                    currentTimer = null; // xóa tham chiếu
                 }
             }
         };

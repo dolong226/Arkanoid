@@ -36,23 +36,28 @@ public class GameEnvironment {
         Point start = trajectory.getStart();
         CollisionInfo closest = null;
         double minDistance = Double.MAX_VALUE;
+        final double EPSILON = 1e-5;
+
+        List<Collidable> collidablesCopy = new ArrayList<>(this.collisionList);
 
         for (Collidable collidable : collisionList) {
             Rectangle rect = collidable.getCollisionRectangle();
-            final double EPSILON = 1e-5;
 
-            // DÙNG CHÍNH XÁC HÀM TRONG UML
+
             Point intersection = trajectory.closestIntersectionToStartOfLine(rect);
 
             if (intersection != null) {
                 double distance = start.distance(intersection);
-                // Chỉ xét điểm nằm TRƯỚC (trên đường đi), tránh điểm start
                 if (distance > EPSILON && distance < minDistance) {
                     minDistance = distance;
                     closest = new CollisionInfo(intersection, collidable);
                 }
             }
         }
+
         return closest;
+    }
+    public List<Collidable> getCollisionList() {
+        return collisionList;
     }
 }
