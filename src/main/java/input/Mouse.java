@@ -1,6 +1,6 @@
 package input;
 
-import java.awt.Point;
+import geometry.Point;
 
 public interface Mouse {
     boolean isPressed(Key key);

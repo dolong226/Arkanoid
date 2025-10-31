@@ -34,29 +34,25 @@ public class GameEnvironment {
      */
     public CollisionInfo getClosetCollision(Line trajectory) {
         Point start = trajectory.getStart();
-        Point closetPoint = null;
-        Collidable closetCollidable = null;
-        double minDistance = Double.POSITIVE_INFINITY;
-        for (Collidable collidable: collisionList) {
-            Rectangle rect = collidable.getCollisionRectangle();
+        CollisionInfo closest = null;
+        double minDistance = Double.MAX_VALUE;
 
-            // Tìm giao điểm của đường trajectory với rectangle này.
+        for (Collidable collidable : collisionList) {
+            Rectangle rect = collidable.getCollisionRectangle();
+            final double EPSILON = 1e-5;
+
+            // DÙNG CHÍNH XÁC HÀM TRONG UML
             Point intersection = trajectory.closestIntersectionToStartOfLine(rect);
 
             if (intersection != null) {
                 double distance = start.distance(intersection);
-                if (distance < minDistance) {
+                // Chỉ xét điểm nằm TRƯỚC (trên đường đi), tránh điểm start
+                if (distance > EPSILON && distance < minDistance) {
                     minDistance = distance;
-                    closetPoint = intersection;
-                    closetCollidable = collidable;
+                    closest = new CollisionInfo(intersection, collidable);
                 }
             }
         }
-
-        if (closetPoint == null) {
-            return null;
-        }
-
-        return new CollisionInfo(closetPoint, closetCollidable);
+        return closest;
     }
 }

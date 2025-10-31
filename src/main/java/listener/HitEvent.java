@@ -26,7 +26,6 @@ public class HitEvent {
     public Block getTarget() {
         return target;
     }
-
     public Point getCollisionPoint() {
         return collisionPoint;
     }

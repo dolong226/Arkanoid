@@ -13,6 +13,7 @@ public interface Animation {
      * @param dt delta time.
      */
     void update(double dt);
+
     /**
      * Vẽ một khung hình lên.
      */

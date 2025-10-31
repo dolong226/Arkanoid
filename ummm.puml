@@ -1,0 +1,489 @@
+@startuml
+class geometry.Line {
+- Point start
+- Point end
+- {static} double EPSILON
++ Point getStart()
++ Point getEnd()
++ boolean isIntersecting(Line)
++ Point intersectionPoint(Line)
++ Point closestIntersectionToStartOfLine(Rectangle)
+}
+
+
+interface level.BlockCreator {
+~ Block createBlock(double,double)
+~ double getBlockWidth()
+~ double getBlockHeight()
+}
+
+class animation.PauseAnimation {
+- long durationMs
+- long startTime
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
+}
+
+
+enum input.Key {
++  LEFT
++  RIGHT
++  ENTER
++  ESC
++  PAUSE
++  RESUME
++  CONFIRM
++  CHAR_INPUT
++  MOUSE_LEFT
++  MOUSE_RIGHT
++  MOUSE_MIDDLE
+}
+
+class level.LevelTest {
++ int numberOfBalls()
++ List<Velocity> initialBallVelocities()
++ double paddleSpeed()
++ double paddleWidth()
++ String levelName()
++ Sprite getBackground()
++ List<Block> blocks()
++ int numberOfBlocksToRemove()
+}
+
+class listener.LevelNameIndicator {
+- String levelName
++ void draw(GraphicsContext)
+}
+
+
+class collidable.Block {
+- List<HitListener> hitListeners
+- Rectangle rectangle
+- Color color
+- int hitPoints
+- boolean isDeathRegion
++ boolean isDeathRegion()
++ int getHitPoints()
++ void decreaseHitPoints()
++ void render(GraphicsContext)
++ void update(double)
++ Velocity hit(Ball,Point,Velocity)
++ void addHitListener(HitListener)
++ void removeHitListener(HitListener)
++ void notifyHit(Ball,Point)
++ Rectangle getCollisionRectangle()
++ Color getColor()
+}
+
+
+class game.SpriteCollection {
+- List<Sprite> sprites
++ List<Sprite> getSprites()
++ void addSprite(Sprite)
++ void removeSprite(Sprite)
++ void update(double)
++ void render(GraphicsContext)
+}
+
+
+class listener.HitEvent {
+- Ball hitter
+- Block target
+- Point collisionPoint
++ Ball getHitter()
++ Block getTarget()
++ Point getCollisionPoint()
+}
+
+
+class collidable.Paddle {
+- int step
+- Color color
+- Rectangle paddle
+- double minBoundary
+- double maxBoundary
+- double[] regionBorders
++ double getX()
++ double getY()
++ double getWidth()
++ void setX(double)
++ void moveLeft(double)
++ void moveRight(double)
++ Rectangle getCollisionRectangle()
++ void render(GraphicsContext)
++ void update(double)
++ Velocity hit(Ball,Point,Velocity)
++ int checkRegion(Point)
++ void differentVelocity(Velocity,Velocity[])
++ Velocity changeVelocity(int,Velocity)
+}
+
+
+class listener.PrintingHitListener {
++ void hitEvent(HitEvent)
+}
+
+class animation.AnimationRunner {
+- double fps
+- GraphicsContext gc
+- AnimationTimer currentTimer
++ GraphicsContext getGraphicsContext()
++ void run(Animation)
++ {static} void makeCanvasResizable(Canvas,Pane)
+}
+
+
+class game.GameFlow {
+- AnimationRunner runner
+- Keyboard keyboard
+- Counter globalScore
++ void runLevels(List<LevelInformation>)
+}
+
+
+class menu.Selection {
+- Rectangle rectangle
+- Color color
+- String message
+- T returnVal
++ boolean isClicked(Mouse)
++ T getReturnVal()
++ String getMessage()
++ void render(GraphicsContext)
+}
+
+
+class geometry.Rectangle {
+- double width
+- double length
+- Point upperLeft
++ Point getUpperLeft()
++ double getWidth()
++ double getLength()
++ void rectangle4Corners(Point[])
++ void rectangle4Sides(Line[],Point[])
++ java.util.List<Point> intersectionPoints(Line)
++ boolean contains(Point)
+}
+
+
+interface level.LevelInformation {
+~ int numberOfBalls()
+~ List<Velocity> initialBallVelocities()
+~ double paddleSpeed()
+~ double paddleWidth()
+~ String levelName()
+~ Sprite getBackground()
+~ List<Block> blocks()
+~ int numberOfBlocksToRemove()
+}
+
+class menu.MenuAnimation {
+- List<Selection<T>> selections
+- T status
+- PlayerInput input
+- Sprite background
++ void addSelection(String,T,Rectangle,Color)
++ T getStatus()
++ void reset()
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
+}
+
+
+class input.MouseState {
+- Set<Key> pressedButtons
+- Set<Key> justPressedButtons
+- Point mousePosition
++ void pressButton(Key)
++ void releaseButton(Key)
++ void setMousePosition(int,int)
++ boolean isPressed(Key)
++ boolean isJustPressed(Key)
++ Point getMousePosition()
++ void resetJustPressed()
+}
+
+
+interface animation.Animation {
+~ void update(double)
+~ void render(GraphicsContext)
+~ boolean isFinished()
+}
+
+class input.KeyTimer {
+- Map<Key,Long> lastPressedTime
+- long debounceDelay
++ {static} long DEFAULT_DEBOUNCE_DELAY
++ long getDebounceDelay()
++ void setDebounceDelay(long)
++ boolean canTrigger(Key)
++ void updatePressTime(Key)
+}
+
+
+interface collidable.Collidable {
+~ Rectangle getCollisionRectangle()
+~ Velocity hit(Ball,Point,Velocity)
+}
+
+class listener.BallRemove {
+- GameLevel game
+- Counter remainingBalls
++ void hitEvent(HitEvent)
+}
+
+
+class game.MainGame {
++ {static} int SCREEN_WIDTH
++ {static} int SCREEN_HEIGHT
++ {static} double FPS
++ void start(Stage)
++ {static} void main(String[])
+}
+
+
+interface listener.HitListener {
+~ void hitEvent(HitEvent)
+}
+
+class game.Counter {
+- int value
++ {static} Counter ZERO
++ void increase(int)
++ void decrease(int)
++ void setValue(int)
++ int getValue()
++ void reset()
+}
+
+
+class input.GameMouse {
+- MouseState state
+- KeyTimer timer
+- Key mapButtonToKey(int)
++ void onMousePressed(MouseEvent)
++ void onMouseReleased(MouseEvent)
++ void onMouseMoved(MouseEvent)
++ boolean isPressed(Key)
++ boolean wasJustPressed(Key)
++ Point getMousePosition()
++ void update()
+}
+
+
+class listener.ScoreTrackingListener {
+- Counter score
++ void hitEvent(HitEvent)
+}
+
+
+interface listener.HitNotifier {
+~ void addHitListener(HitListener)
+~ void removeHitListener(HitListener)
+}
+
+interface menu.Menu {
+~ void addSelection(String,T,Rectangle,Color)
+~ T getStatus()
+~ void reset()
+}
+
+interface game.Sprite {
+~ void render(GraphicsContext)
+~ void update(double)
+}
+
+class input.PlayerInput {
+- Keyboard keyboard
+- Mouse mouse
++ Keyboard getKeyboard()
++ Mouse getMouse()
++ boolean isMoveLeft()
++ boolean isMoveRight()
++ boolean isActivatePower()
++ boolean isPause()
++ boolean isExit()
++ boolean isConfirm()
++ char readChar()
++ boolean isClickLeft()
++ Point getMousePosition()
+}
+
+
+class input.KeyboardState {
+- Set<Key> pressedKeys
+- Set<Key> justPressedKeys
+- Set<Key> previousPressedKeys
++ void pressedKey(Key)
++ void releaseKey(Key)
++ boolean isPressed(Key)
++ boolean wasJustPressed(Key)
++ void update()
+}
+
+
+interface input.Keyboard {
+~ boolean isPressed(Key)
+~ boolean wasJustPressed(Key)
+~ void update()
+}
+
+class geometry.Point {
+- double x
+- double y
++ double getX()
++ double getY()
++ void setX(double)
++ void setY(double)
++ double distance(Point)
++ void setLocation(int,int)
++ Point getLocation()
+}
+
+
+class ball.Ball {
+- double radius
+- Point center
+- Color color
+- Velocity velocity
+- GameEnvironment gameEnvironment
++ void render(GraphicsContext)
++ void update(double)
++ void setVelocity(double,double)
++ void setVelocity(Velocity)
++ Velocity getVelocity()
++ Point getCenter()
++ Point changeDirectionIfMoveNear()
+}
+
+
+class game.GameLevel {
+- LevelInformation levelInfo
+- SpriteCollection sprites
+- GameEnvironment environment
+- AnimationRunner animationRunner
+- Paddle paddle
+- Counter score
+- List<Ball> balls
+- Counter remainingBlocks
+- Counter remainingBalls
+- Keyboard keyboard
+- boolean running
+- boolean needRestart
+- boolean waitingForEnter
+- boolean ballsLaunched
++ {static} int SCREEN_WIDTH
++ {static} int SCREEN_HEIGHT
++ {static} int PADDLE_HEIGHT
++ {static} int BALL_RADIUS
++ {static} int DEATH_REGION_HEIGHT
++ Counter getScore()
++ int getRemainingBlocks()
++ int getRemainingBalls()
++ List<Ball> getBalls()
++ Paddle getPaddle()
++ void initialize()
++ void run()
++ void playOneTurn()
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
++ void addSprite(Sprite)
++ void addCollidable(Collidable)
++ void removeSprite(Sprite)
++ void removeCollidable(Collidable)
+}
+
+
+class listener.BlockRemove {
+- GameLevel game
+- Counter remainingBlocks
++ void hitEvent(HitEvent)
+}
+
+
+class ball.Velocity {
+- double Dx
+- double Dy
++ {static} Velocity fromAngleAndSpeed(double,double)
++ Point applyToPoint(Point)
++ double getDx()
++ double getDy()
++ void setDx(double)
++ void setDy(double)
+}
+
+
+interface input.Mouse {
+~ boolean isPressed(Key)
+~ boolean wasJustPressed(Key)
+~ Point getMousePosition()
+~ void update()
+}
+
+class collidable.CollisionInfo {
+~ Point closetPoint
+~ Collidable closetCollidable
++ Point getClosetPoint()
++ Collidable getCollidable()
+}
+
+
+interface menu.Task {
+}
+class game.GameEnvironment {
+- List<Collidable> collisionList
++ void addCollidable(Collidable)
++ void removeCollidable(Collidable)
++ CollisionInfo getClosetCollision(Line)
+}
+
+
+class listener.ScoreIndicator {
+- Counter score
++ void draw(GraphicsContext)
+}
+
+
+class input.MultiInputHandler {
+- List<PlayerInput> players
++ PlayerInput getPlayerInput(int)
+}
+
+
+class input.GameKeyboard {
+- KeyboardState state
+- KeyTimer timer
+- Key mapKeyCodeToKey(KeyEvent)
++ void onKeyPressed(KeyEvent)
++ void onKeyReleased(KeyEvent)
++ boolean isPressed(Key)
++ boolean wasJustPressed(Key)
++ void update()
+}
+
+
+
+
+animation.Animation <|.. animation.PauseAnimation
+level.LevelInformation <|.. level.LevelTest
+game.Sprite <|.. collidable.Block
+collidable.Collidable <|.. collidable.Block
+listener.HitNotifier <|.. collidable.Block
+game.Sprite <|.. collidable.Paddle
+collidable.Collidable <|.. collidable.Paddle
+listener.HitListener <|.. listener.PrintingHitListener
+menu.Menu <|.. menu.MenuAnimation
+animation.Animation <|.. menu.MenuAnimation
+listener.HitListener <|.. listener.BallRemove
+javafx.application.Application <|-- game.MainGame
+input.Mouse <|.. input.GameMouse
+listener.HitListener <|.. listener.ScoreTrackingListener
+game.Sprite <|.. ball.Ball
+animation.Animation <|.. game.GameLevel
+listener.HitListener <|.. listener.BlockRemove
+input.Keyboard <|.. input.GameKeyboard
+@enduml

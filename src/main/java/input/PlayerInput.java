@@ -1,6 +1,6 @@
 package input;
 
-import java.awt.Point;
+import geometry.Point;
 
 public class PlayerInput {
     private Keyboard keyboard;
@@ -9,6 +9,14 @@ public class PlayerInput {
     public PlayerInput(Keyboard keyboard, Mouse mouse) {
         this.keyboard = keyboard;
         this.mouse = mouse;
+    }
+
+    public Keyboard getKeyboard() {
+        return keyboard;
+    }
+
+    public Mouse getMouse() {
+        return mouse;
     }
 
     public boolean isMoveLeft() {

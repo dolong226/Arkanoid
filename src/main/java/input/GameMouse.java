@@ -1,6 +1,6 @@
 package input;
 
-import java.awt.Point;
+import geometry.Point;
 import java.awt.event.MouseEvent;
 
 public class GameMouse implements Mouse {
