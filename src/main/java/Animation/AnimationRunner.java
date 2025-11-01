@@ -15,12 +15,12 @@ public class AnimationRunner {
     }
 
     public void run(Animation animation) {
-        if (gc == null ) {
+        if ( gc == null ) {
             while (!animation.isFinished()) {
-                animation.update(1.0 / fps);
+                animation.update(1.0/fps);
                 try {
                     Thread.sleep((long) (1000 / fps));
-                } catch (InterruptedException e) {
+                } catch (InterruptedException e ) {
                     e.printStackTrace();
                     break;
                 }
@@ -33,7 +33,6 @@ public class AnimationRunner {
             private double accumulator = 0;
             private final double timePerFrame = 1.0 / fps;
 
-            @Override
             public void handle (long now) {
                 if (lastTime < 0 ) {
                     lastTime = now;
@@ -63,4 +62,3 @@ public class AnimationRunner {
         canvas.heightProperty().bind(parent.heightProperty());
     }
 }
-
