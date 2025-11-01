@@ -1,6 +1,7 @@
 package menu;
 
 import animation.AnimationRunner;
+import data.HighScoreTable;
 import game.Counter;
 import game.GameFlow;
 import input.GameKeyboard;
@@ -9,7 +10,6 @@ import input.PlayerInput;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -24,15 +24,17 @@ public class MainMenuScene {
     private final Stage stage;
     private final PlayerInput input;
     private Runnable onStartGame;
+    private HighScoreTable highScoreTable;
 
-    public MainMenuScene(PlayerInput input, Stage stage,  Runnable onStartGame) {
+    public MainMenuScene(PlayerInput input, Stage stage,  Runnable onStartGame, HighScoreTable highScoreTable) {
         this.input = input;
         this.stage = stage;
         this.onStartGame = onStartGame;
+        this.highScoreTable = highScoreTable;
     }
 
     public void show() {
-        Canvas canvas = new Canvas(800,600);
+        Canvas canvas = new Canvas(800, 600);
         StackPane root = new StackPane(canvas);
         root.setAlignment(Pos.CENTER);
         Scene scene = new Scene(root, 800, 600);
@@ -62,7 +64,8 @@ public class MainMenuScene {
 
 
         Counter globalScore = new Counter(0);
-        GameFlow gameFlow = new GameFlow(runner, input, globalScore);
+
+        GameFlow gameFlow = new GameFlow(runner, input, globalScore, highScoreTable, stage, canvas);
 
         List<LevelInformation> levels = new ArrayList<>();
         levels.add(new LevelTest());
@@ -75,7 +78,7 @@ public class MainMenuScene {
         this.onStartGame = startGameAction;
 
         // Tạo và chạy menu
-        MainMenuAnimation menuAnim = new MainMenuAnimation(canvas, input, startGameAction);
+        MainMenuAnimation menuAnim = new MainMenuAnimation(canvas, input, startGameAction, highScoreTable);
         runner.run(menuAnim);
     }
 
