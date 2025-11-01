@@ -42,7 +42,6 @@ public class GameLevel implements Animation {
     private boolean waitingForEnter = true;
     private boolean ballsLaunched = false;
 
-    // THÊM BIẾN NÀY
     private List<Velocity> initialBallVelocities;
 
     public static final int SCREEN_WIDTH = 800;
@@ -97,7 +96,7 @@ public class GameLevel implements Animation {
             double ballY = paddleY - BALL_RADIUS - 1;
             Point ballCenter = new Point(ballX, ballY);
 
-            // TẠO BÓNG VỚI VẬN TỐC = 0
+            // tạo bóng với v = 0
             Ball ball = new Ball(ballCenter, BALL_RADIUS, Color.WHITE, new Velocity(0, 0), environment);
 
             balls.add(ball);
@@ -145,7 +144,7 @@ public class GameLevel implements Animation {
         environment.addCollidable(rightWall);
 
         running = true;
-        // Đặt waitingForEnter = true
+        // chờ enter
         waitingForEnter = true;
         ballsLaunched = false;
     }
@@ -209,7 +208,7 @@ public class GameLevel implements Animation {
                 ballsLaunched = true;
             }
 
-            return; // Không update sprites khác
+            return;
         }
 
         sprites.update(dt);

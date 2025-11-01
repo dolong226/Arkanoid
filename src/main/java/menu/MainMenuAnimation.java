@@ -2,10 +2,14 @@ package menu;
 
 import animation.Animation;
 
+import animation.AnimationRunner;
+import animation.HighScoreAnimation;
+import data.HighScoreTable;
 import geometry.Point;
 import input.PlayerInput;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -17,35 +21,63 @@ public class MainMenuAnimation implements Animation {
     private final Canvas canvas;
     private final GraphicsContext gc;
     private PlayerInput input;
-    private final List<MenuButton> buttons;
+    private final List<MenuImageButton> buttons;
     private boolean shouldStop = false;
     private Runnable onStartGame;
+    private final HighScoreTable highScoreTable;
 
-    public MainMenuAnimation(Canvas canvas, PlayerInput input, Runnable onStartGame) {
+    private static final String IMG_PATH = "/Default/";
+    private Image startNormal, startHover;
+    private Image highScoreNormal, highScoreHover;
+    private Image settingsNormal, settingsHover;
+    private Image quitNormal, quitHover;
+
+
+    public MainMenuAnimation(Canvas canvas, PlayerInput input, Runnable onStartGame, HighScoreTable highScoreTable) {
         this.canvas = canvas;
         this.input = input;
         this.gc = canvas.getGraphicsContext2D();
         this.buttons = new ArrayList<>();
         this.onStartGame = onStartGame;
+        this.highScoreTable = highScoreTable;
 
-        buttons.add(new MenuButton("START", 300, 200, 200, 60, Color.GREEN));
-        buttons.add(new MenuButton("HIGH SCORE", 300, 280, 200, 60, Color.YELLOW));
-        buttons.add(new MenuButton("SETTINGS", 300, 360, 200, 60, Color.CYAN));
-        buttons.add(new MenuButton("QUIT", 300, 440, 200, 60, Color.RED));
+        loadImages();
+        createButtons();
+
     }
+
+    private void loadImages() {
+        Class<?> clazz = getClass();
+        startNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+        startHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        highScoreNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+        highScoreHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        settingsNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        settingsHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+        quitNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        quitHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+    }
+
+    private void createButtons() {
+        buttons.add(new MenuImageButton("START", startNormal, startHover, 300, 200, 200, 60));
+        buttons.add(new MenuImageButton("HIGH SCORE", highScoreNormal, highScoreHover, 300, 280, 200, 60));
+        buttons.add(new MenuImageButton("SETTINGS", settingsNormal, settingsHover, 300, 360, 200, 60));
+        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 300, 440, 200, 60));
+    }
+
 
     @Override
     public void update(double dt) {
         Point mouse = input.getMousePosition();
-        System.out.println("MOUSE: " + mouse.getX() + ", " + mouse.getY());
+
         //  Hover
-        for (MenuButton btn : buttons) {
+        for (MenuImageButton btn : buttons) {
             btn.updateHover(mouse);
         }
 
         //  Click (trước khi reset)
         if (input.isClickLeft()) {
-            for (MenuButton btn : buttons) {
+            for (MenuImageButton btn : buttons) {
                 if (btn.isClicked(mouse)) {
                     handleClick(btn.text);
                     return;
@@ -69,7 +101,7 @@ public class MainMenuAnimation implements Animation {
         gc.fillText("ARKANOID", 220, 120);
 
         // Vẽ các nút
-        for (MenuButton btn : buttons) {
+        for (MenuImageButton btn : buttons) {
             btn.render(gc);
         }
     }
@@ -83,6 +115,10 @@ public class MainMenuAnimation implements Animation {
             if (onStartGame != null) {
                 onStartGame.run();
             }
+        } else if ("HIGH SCORE".equals(text)) {
+            HighScoreAnimation highScoreAnim = new HighScoreAnimation(canvas, input, highScoreTable);
+            AnimationRunner tempRunner = new AnimationRunner(gc, 60);
+            tempRunner.run(highScoreAnim);
         }
     }
 
