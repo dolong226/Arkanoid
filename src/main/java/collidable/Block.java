@@ -171,7 +171,9 @@ public class Block implements Sprite, Collidable, HitNotifier {
                 upDateVelocity.setDy(currentVelocity.getDy() * (-1));
         }
     }
-        this.decreaseHitPoints();
+        if(this.getHitPoints() > 0){
+            this.decreaseHitPoints();
+        }
         this.notifyHit(hitter, collisionPoint);
         return upDateVelocity;
     }

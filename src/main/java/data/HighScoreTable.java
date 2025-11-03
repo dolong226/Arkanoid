@@ -28,7 +28,7 @@ public class HighScoreTable {
         scores.add(new ScoreEntry(name, score));
         scores.sort((a, b) -> Integer.compare(b.score, a.score));
         if (scores.size() > MAX_SCORES) {
-            scores = scores.subList(0, MAX_SCORES);
+            scores = new ArrayList<>(scores.subList(0, MAX_SCORES));
         }
         saveToFile();
     }
@@ -51,7 +51,7 @@ public class HighScoreTable {
             // sort và giữ 5 cao nhất
             scores.sort((a, b) -> Integer.compare(b.score, a.score));
             if (scores.size() > MAX_SCORES) {
-                scores = scores.subList(0, MAX_SCORES);
+                scores = new ArrayList<>(scores.subList(0, MAX_SCORES));
             }
         } catch (IOException e) {
             // File không tồn tại -> tạo file mưới

@@ -26,7 +26,11 @@ public class MainMenuAnimation implements Animation {
     private Runnable onStartGame;
     private final HighScoreTable highScoreTable;
 
-    private static final String IMG_PATH = "/Default/";
+    private static final String IMG_BUTTON_PATH = "/Default/";
+    private static final String IMG_BACKGROUND_PATH = "/image/";
+
+    private Image backgroundMenu;
+
     private Image startNormal, startHover;
     private Image highScoreNormal, highScoreHover;
     private Image settingsNormal, settingsHover;
@@ -48,21 +52,24 @@ public class MainMenuAnimation implements Animation {
 
     private void loadImages() {
         Class<?> clazz = getClass();
-        startNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
-        startHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
-        highScoreNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
-        highScoreHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
-        settingsNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
-        settingsHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
-        quitNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
-        quitHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+
+        backgroundMenu = new Image(clazz.getResourceAsStream(IMG_BACKGROUND_PATH + "background2.jpg"));
+
+        startNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
+        startHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
+        highScoreNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
+        highScoreHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
+        settingsNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
+        settingsHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
+        quitNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
+        quitHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
     }
 
     private void createButtons() {
-        buttons.add(new MenuImageButton("START", startNormal, startHover, 300, 200, 200, 60));
-        buttons.add(new MenuImageButton("HIGH SCORE", highScoreNormal, highScoreHover, 300, 280, 200, 60));
-        buttons.add(new MenuImageButton("SETTINGS", settingsNormal, settingsHover, 300, 360, 200, 60));
-        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 300, 440, 200, 60));
+        buttons.add(new MenuImageButton("START", startNormal, startHover, 400, 200, 200, 60));
+        buttons.add(new MenuImageButton("HIGH SCORE", highScoreNormal, highScoreHover, 400, 280, 200, 60));
+        buttons.add(new MenuImageButton("SETTINGS", settingsNormal, settingsHover, 400, 360, 200, 60));
+        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 400, 440, 200, 60));
     }
 
 
@@ -92,13 +99,12 @@ public class MainMenuAnimation implements Animation {
     @Override
     public void render(GraphicsContext gc) {
         // Nền
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, 800, 600);
-
-        // Tiêu đề
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 48));
-        gc.fillText("ARKANOID", 220, 120);
+        if (backgroundMenu != null) {
+            gc.drawImage(backgroundMenu,0,0, 800, 600);
+        } else {
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0,0,800,600);
+        }
 
         // Vẽ các nút
         for (MenuImageButton btn : buttons) {

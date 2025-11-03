@@ -5,6 +5,7 @@ import data.HighScoreTable;
 import input.PlayerInput;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import geometry.Point;
@@ -16,6 +17,8 @@ public class GameOverAnimation implements Animation {
     private final int finalScore;
     private final HighScoreTable highScoreTable;
     private final Runnable onBackToMenu;
+
+    private Image gameOverBg;
 
     // Nút HOME
     private double homeX = 300, homeY = 350, homeW = 200, homeH = 60;
@@ -35,8 +38,16 @@ public class GameOverAnimation implements Animation {
         this.finalScore = finalScore;
         this.highScoreTable = highScoreTable;
         this.onBackToMenu = onBackToMenu;
+
+        loadImage();
+
     }
 
+    public void loadImage() {
+        Class<?> clazz = getClass();
+
+        gameOverBg = new Image(clazz.getResourceAsStream("/image/game_over_temp_image.jpg"));
+    }
     @Override
     public void update(double dt) {
         Point mouse = input.getMousePosition();
@@ -48,9 +59,6 @@ public class GameOverAnimation implements Animation {
         // Xử lý click
         if (input.isClickLeft()) {
             if (homeHovered) {
-                if (finalScore > 0) {
-                    highScoreTable.addScore("Player", finalScore);
-                }
                 shouldStop = true;
                 onBackToMenu.run();
             } else if (exitHovered) {
@@ -64,13 +72,12 @@ public class GameOverAnimation implements Animation {
     @Override
     public void render(GraphicsContext gc) {
         // Nền
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, 800, 600);
-
-        // Tiêu đề
-        gc.setFill(Color.RED);
-        gc.setFont(Font.font("Arial", 64));
-        gc.fillText("GAME OVER", 180, 180);
+        if (gameOverBg != null) {
+            gc.drawImage(gameOverBg, 0, 0, 800, 600);
+        } else {
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0, 0, 800, 600);
+        }
 
         // Điểm
         gc.setFill(Color.YELLOW);
