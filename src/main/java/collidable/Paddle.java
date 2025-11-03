@@ -4,7 +4,6 @@ import java.util.List;
 
 import ball.Ball;
 import ball.Velocity;
-import com.sun.org.apache.xerces.internal.impl.dv.xs.BooleanDV;
 import geometry.*;
 import game.Sprite;
 import listener.HitListener;

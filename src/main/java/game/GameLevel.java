@@ -4,6 +4,7 @@ package game;
 import animation.Animation;
 import animation.AnimationRunner;
 import ball.Ball;
+import ball.BallType;
 import ball.Velocity;
 import collidable.Block;
 import collidable.Collidable;
@@ -38,6 +39,8 @@ public class GameLevel implements Animation {
     private Keyboard keyboard;
     private boolean running;
     private PlayerInput input;
+    private Runnable onLevelComplete;
+    private Runnable onGameOver;
 
     private boolean waitingForEnter = true;
     private boolean ballsLaunched = false;
@@ -57,6 +60,12 @@ public class GameLevel implements Animation {
         this.animationRunner = animationRunner;
     }
 
+    public void setOnLevelComplete(Runnable callback) {
+        this.onLevelComplete = callback;
+    }
+    public void setOnGameOver(Runnable callback) {
+        this.onGameOver = callback;
+    }
     public Counter getScore() { return score; }
     public int getRemainingBlocks() { return remainingBlocks.getValue(); }
     public int getRemainingBalls() { return remainingBalls.getValue(); }
@@ -113,7 +122,6 @@ public class GameLevel implements Animation {
             block.addHitListener(new BlockRemove(this, remainingBlocks));
         }
 
-
         // Death Region
         Point deathUpperLeft = new Point(0, SCREEN_HEIGHT);
         Rectangle deathRect = new Rectangle(deathUpperLeft, DEATH_REGION_HEIGHT, SCREEN_WIDTH);
@@ -125,21 +133,21 @@ public class GameLevel implements Animation {
         // Tường trên: cao 20px, rộng SCREEN_WIDTH
         Point topLeft = new Point(0, 0);
         Rectangle topRect = new Rectangle(topLeft, 20, SCREEN_WIDTH);
-        Block topWall = new Block(topRect, Color.GRAY, Integer.MAX_VALUE, false);
+        Block topWall = new Block(topRect, Color.GRAY, Integer.MAX_VALUE, true);
         sprites.addSprite(topWall);
         environment.addCollidable(topWall);
 
         // Tường trái: rộng 20px, cao SCREEN_HEIGHT
         Point leftTop = new Point(0, 0);
         Rectangle leftRect = new Rectangle(leftTop, SCREEN_HEIGHT, 20);
-        Block leftWall = new Block(leftRect, Color.GRAY, Integer.MAX_VALUE, false);
+        Block leftWall = new Block(leftRect, Color.GRAY, Integer.MAX_VALUE, true);
         sprites.addSprite(leftWall);
         environment.addCollidable(leftWall);
 
         // Tường phải: rộng 20px, cao SCREEN_HEIGHT
         Point rightTop = new Point(SCREEN_WIDTH - 20, 0);
         Rectangle rightRect = new Rectangle(rightTop, SCREEN_HEIGHT, 20);
-        Block rightWall = new Block(rightRect, Color.GRAY, Integer.MAX_VALUE, false);
+        Block rightWall = new Block(rightRect, Color.GRAY, Integer.MAX_VALUE, true);
         sprites.addSprite(rightWall);
         environment.addCollidable(rightWall);
 
@@ -221,6 +229,9 @@ public class GameLevel implements Animation {
         if (remainingBalls.getValue() <= 0) {
             System.out.println("Hết bóng!");
             running = false;
+            if (onGameOver != null) {
+                onGameOver.run();
+            }
             return;
         }
 

@@ -4,7 +4,6 @@ import animation.AnimationRunner;
 import animation.GameOverAnimation;
 import input.Keyboard;
 import input.PlayerInput;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 import level.LevelInformation;
@@ -21,7 +20,8 @@ public class GameFlow {
     private final Stage stage;
     private final Canvas canvas;
 
-    public GameFlow(AnimationRunner runner, PlayerInput input, Counter globalScore, HighScoreTable highScoreTable, Stage stage, Canvas canvas) {
+    public GameFlow(AnimationRunner runner, PlayerInput input, Counter globalScore,
+                    HighScoreTable highScoreTable, Stage stage, Canvas canvas) {
         this.runner = runner;
         this.input = input;
         this.keyboard = input.getKeyboard();
@@ -31,38 +31,62 @@ public class GameFlow {
         this.canvas = canvas;
     }
 
-
-    // chạy level
     public void runLevels(List<LevelInformation> levels) {
         if (levels.isEmpty()) {
             System.out.println("Không có level nào!");
             return;
         }
 
-        for (LevelInformation lv : levels) {
-            GameLevel level = new GameLevel(lv, input, runner);
-            int i = 1;
-            System.out.println("Bắt đầu level " + i);
-            i++;
-            level.run();
+        // Chạy level đầu tiên
+        runLevel(0, levels);
+    }
 
-            if (level.getRemainingBalls() <= 0) {
-                GameOverAnimation gameOver = new GameOverAnimation(
-                        canvas, input, globalScore.getValue(), highScoreTable,
-                        () -> {
-                            if (globalScore.getValue() > 0) {
-                                highScoreTable.addScore("Player", globalScore.getValue());
-                            }
-                            new menu.MainMenuScene(input, stage, () -> {}, highScoreTable).show();
-                        }
-                );
-                runner.run(gameOver);
-                return;
-            }
+    //  đệ quy để chạy từng level
+    private void runLevel(int levelIndex, List<LevelInformation> levels) {
+        if (levelIndex >= levels.size()) {
+            // hoàn thành tất cả các level, hiện gameOver
+            showGameOver();
+            return;
         }
 
-        if (globalScore.getValue() > 0) { // Có điểm
-            highScoreTable.addScore("Player", globalScore.getValue()); // Tên tạm
-        }
+        LevelInformation lv = levels.get(levelIndex);
+        GameLevel level = new GameLevel(lv, input, runner);
+
+        // khi hoàn thành level, callback gọi level tiếp theo
+        level.setOnLevelComplete(() -> {
+            System.out.println("Level " + (levelIndex + 1) + " hoàn thành!");
+            globalScore.increase(level.getScore().getValue());
+            // Chạy level tiếp theo
+            runLevel(levelIndex + 1, levels);
+        });
+
+        // set call back khi kết thúc
+        level.setOnGameOver(() -> {
+            System.out.println("Game Over!");
+            globalScore.increase(level.getScore().getValue());
+            showGameOver();
+        });
+
+        level.run();
+    }
+
+    // hiển thị gameover
+    private void showGameOver() {
+        GameOverAnimation gameOver = new GameOverAnimation(
+                canvas,
+                input,
+                globalScore.getValue(),
+                highScoreTable,
+                () -> {
+                    // Lưu điểm
+                    if (globalScore.getValue() > 0) {
+                        highScoreTable.addScore("Player", globalScore.getValue());
+                    }
+                    // reset điểm và quay về menu
+                    globalScore.reset();
+                    new menu.MainMenuScene(input, stage, () -> {}, highScoreTable).show();
+                }
+        );
+        runner.run(gameOver);
     }
 }
