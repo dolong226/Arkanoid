@@ -1,0 +1,129 @@
+package menu;
+
+import animation.Animation;
+
+import animation.AnimationRunner;
+import animation.HighScoreAnimation;
+import data.HighScoreTable;
+import geometry.Point;
+import input.PlayerInput;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainMenuAnimation implements Animation {
+    private final Canvas canvas;
+    private final GraphicsContext gc;
+    private PlayerInput input;
+    private final List<MenuImageButton> buttons;
+    private boolean shouldStop = false;
+    private Runnable onStartGame;
+    private final HighScoreTable highScoreTable;
+
+    private static final String IMG_PATH = "/Default/";
+    private Image startNormal, startHover;
+    private Image highScoreNormal, highScoreHover;
+    private Image settingsNormal, settingsHover;
+    private Image quitNormal, quitHover;
+
+
+    public MainMenuAnimation(Canvas canvas, PlayerInput input, Runnable onStartGame, HighScoreTable highScoreTable) {
+        this.canvas = canvas;
+        this.input = input;
+        this.gc = canvas.getGraphicsContext2D();
+        this.buttons = new ArrayList<>();
+        this.onStartGame = onStartGame;
+        this.highScoreTable = highScoreTable;
+
+        loadImages();
+        createButtons();
+
+    }
+
+    private void loadImages() {
+        Class<?> clazz = getClass();
+        startNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+        startHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        highScoreNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+        highScoreHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        settingsNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        settingsHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+        quitNormal = new Image(clazz.getResourceAsStream(IMG_PATH + "button_grey.png"));
+        quitHover = new Image(clazz.getResourceAsStream(IMG_PATH + "button_blue.png"));
+    }
+
+    private void createButtons() {
+        buttons.add(new MenuImageButton("START", startNormal, startHover, 300, 200, 200, 60));
+        buttons.add(new MenuImageButton("HIGH SCORE", highScoreNormal, highScoreHover, 300, 280, 200, 60));
+        buttons.add(new MenuImageButton("SETTINGS", settingsNormal, settingsHover, 300, 360, 200, 60));
+        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 300, 440, 200, 60));
+    }
+
+
+    @Override
+    public void update(double dt) {
+        Point mouse = input.getMousePosition();
+
+        //  Hover
+        for (MenuImageButton btn : buttons) {
+            btn.updateHover(mouse);
+        }
+
+        //  Click (trước khi reset)
+        if (input.isClickLeft()) {
+            for (MenuImageButton btn : buttons) {
+                if (btn.isClicked(mouse)) {
+                    handleClick(btn.text);
+                    return;
+                }
+            }
+        }
+
+        //  Reset justPressed
+        input.getMouse().update();
+    }
+
+    @Override
+    public void render(GraphicsContext gc) {
+        // Nền
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, 800, 600);
+
+        // Tiêu đề
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", 48));
+        gc.fillText("ARKANOID", 220, 120);
+
+        // Vẽ các nút
+        for (MenuImageButton btn : buttons) {
+            btn.render(gc);
+        }
+    }
+
+    private void handleClick(String text) {
+        System.out.println("Clicked: " + text);
+        if("QUIT".equals(text)) {
+            System.exit(0);
+        } else if ("START".equals(text)) {
+            shouldStop = true;
+            if (onStartGame != null) {
+                onStartGame.run();
+            }
+        } else if ("HIGH SCORE".equals(text)) {
+            HighScoreAnimation highScoreAnim = new HighScoreAnimation(canvas, input, highScoreTable);
+            AnimationRunner tempRunner = new AnimationRunner(gc, 60);
+            tempRunner.run(highScoreAnim);
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return shouldStop;
+    }
+}
