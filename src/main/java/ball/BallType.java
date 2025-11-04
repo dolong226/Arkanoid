@@ -27,5 +27,4 @@ public enum BallType {
     public boolean getPenetration(){
         return this.canPenetrate;
     }
-
 }

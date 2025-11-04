@@ -32,6 +32,7 @@ public class GameFlow {
     }
 
     public void runLevels(List<LevelInformation> levels) {
+
         if (levels.isEmpty()) {
             System.out.println("Không có level nào!");
             return;
@@ -50,6 +51,7 @@ public class GameFlow {
         }
 
         LevelInformation lv = levels.get(levelIndex);
+
         GameLevel level = new GameLevel(lv, input, runner);
 
         // khi hoàn thành level, callback gọi level tiếp theo
@@ -57,7 +59,13 @@ public class GameFlow {
             System.out.println("Level " + (levelIndex + 1) + " hoàn thành!");
             globalScore.increase(level.getScore().getValue());
             // Chạy level tiếp theo
-            runLevel(levelIndex + 1, levels);
+//            runLevel(levelIndex + 1, levels);
+            new java.util.Timer().schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    javafx.application.Platform.runLater(() -> runLevel(levelIndex + 1, levels));
+                }
+            }, 200);
         });
 
         // set call back khi kết thúc

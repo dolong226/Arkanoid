@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 import level.LevelInformation;
 import level.LevelTest;
+import level.LevelTest3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +70,7 @@ public class MainMenuScene {
 
         List<LevelInformation> levels = new ArrayList<>();
         levels.add(new LevelTest());
+        levels.add(new LevelTest3());
 
         // Callback khi bấm START
         Runnable startGameAction = () -> {

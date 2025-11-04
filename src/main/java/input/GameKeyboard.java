@@ -1,6 +1,6 @@
 package input;
 
-import javafx.scene.input.KeyEvent; // ✅ Dùng KeyEvent của JavaFX, không phải AWT
+import javafx.scene.input.KeyEvent;
 
 public class GameKeyboard implements Keyboard {
     private KeyboardState state;
