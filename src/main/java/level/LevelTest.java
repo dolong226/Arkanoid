@@ -2,42 +2,49 @@ package level;
 
 import ball.Velocity;
 import collidable.Block;
-import collidable.Paddle;
+import game.Sprite;
 import geometry.Point;
 import geometry.Rectangle;
-import javafx.scene.canvas.GraphicsContext;
-import level.LevelInformation;
-import game.Sprite;
-
 import javafx.scene.paint.Color;
+import powerup.PowerUp;
+import powerup.PowerUpType;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Level đơn giản để test game: 1 hàng 10 block, 1 bóng, paddle nhanh.
- */
 public class LevelTest implements LevelInformation {
 
     @Override
     public int numberOfBalls() {
-        return 1;
+        return 20;
     }
 
     @Override
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
-        velocities.add(Velocity.fromAngleAndSpeed(0, 500)); // bắn thẳng lên, tốc độ 300
+        int numberOfBalls = 20;
+        double speed = 500;
+
+        // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
+        double startAngle = -60;
+        double endAngle = 60;
+        double angleStep = (endAngle - startAngle) / (numberOfBalls - 1);
+
+        for (int i = 0; i < numberOfBalls; i++) {
+            double angle = startAngle + i * angleStep;
+            velocities.add(Velocity.fromAngleAndSpeed(angle, speed));
+        }
         return velocities;
     }
 
     @Override
     public double paddleSpeed() {
-        return 500; // paddle di chuyển nhanh
+        return 300;
     }
 
     @Override
     public double paddleWidth() {
-        return 180;
+        return 700;
     }
 
     @Override
@@ -47,42 +54,60 @@ public class LevelTest implements LevelInformation {
 
     @Override
     public Sprite getBackground() {
-        return new Sprite() {
-            @Override
-            public void render(GraphicsContext gc) {
-                gc.save();
-                gc.setFill(Color.rgb(0, 100, 200));
-                gc.fillRect(0, 0, 800, 600);
-                gc.restore();
-            }
-
-            @Override
-            public void update(double dt) {
-                // không cần cập nhật gì
-            }
-        };
+        return new GradientBackground();
     }
 
     @Override
     public List<Block> blocks() {
         List<Block> blocks = new ArrayList<>();
-        int blockWidth = 50;
-        int blockHeight = 20;
-        int startX = 65;
-        int startY = 150;
 
-        for (int i = 0; i < 10; i++) {
-            double x = startX + i * (blockWidth + 5);
-            Rectangle rect = new Rectangle(new Point(x, startY), blockHeight, blockWidth);
-            Block block = new Block(rect, Color.RED);
-            blocks.add(block);
+        // Tạo 5 hàng x 10 cột blocks
+        for (int row = 0; row < 5; row++) {
+            for (int col = 0; col < 10; col++) {
+                double x = 50 + col * 70;
+                double y = 100 + row * 30;
+                Point upperLeft = new Point(x, y);
+                Rectangle rect = new Rectangle(upperLeft, 30, 70);
+
+                // Random màu
+                Color color = getRandomColor();
+                Block block = new Block(rect, color, 1, false);
+
+                if (Math.random() < 0.3) {
+                    PowerUpType type = getRandomPowerUpType();
+                    Point powerUpPos = new Point(x + 35, y + 15); // Giữa block
+                    PowerUp powerUp = new PowerUp(type, powerUpPos, null);
+                    block.setPowerUp(powerUp);
+                }
+
+                blocks.add(block);
+            }
         }
+
         return blocks;
     }
 
-
     @Override
     public int numberOfBlocksToRemove() {
-        return blocks().size();
+        return 50; // 5x10
+    }
+
+
+    private Color getRandomColor() {
+        Color[] colors = {
+                Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW,
+                Color.ORANGE, Color.PURPLE, Color.PINK, Color.CYAN
+        };
+        return colors[(int)(Math.random() * colors.length)];
+    }
+
+    private PowerUpType getRandomPowerUpType() {
+        PowerUpType[] types = {
+                PowerUpType.EXPAND_PADDLE,
+                PowerUpType.EXTRA_BALL,
+                PowerUpType.FIRE_BALL,
+                PowerUpType.BIG_BALL
+        };
+        return types[(int)(Math.random() * types.length)];
     }
 }

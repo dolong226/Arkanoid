@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
 import level.LevelTest;
 import data.HighScoreTable;
+import level.LevelTest3;
 import menu.MainMenuScene;
 
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class MainGame extends Application {
             Counter score = new Counter();
             AnimationRunner runner = new AnimationRunner(canvas.getGraphicsContext2D(), FPS);
             GameFlow gameFlow = new GameFlow(runner, input, score, highScoreTable, primaryStage, canvas);
-            gameFlow.runLevels(Arrays.asList(new LevelTest()));
+            gameFlow.runLevels(Arrays.asList(new LevelTest(), new LevelTest3()));
         };
         MainMenuScene mainMenu = new MainMenuScene(input, primaryStage, startGame, highScoreTable);
         mainMenu.show();

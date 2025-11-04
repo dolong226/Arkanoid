@@ -15,6 +15,7 @@ import input.GameMouse;
 import input.Key;
 import input.Keyboard;
 import input.PlayerInput;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -22,6 +23,8 @@ import level.LevelInformation;
 import listener.BallRemove;
 import listener.BlockRemove;
 import listener.ScoreTrackingListener;
+import powerup.PowerUp;
+import powerup.PowerUpType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +44,13 @@ public class GameLevel implements Animation {
     private PlayerInput input;
     private Runnable onLevelComplete;
     private Runnable onGameOver;
+    private Runnable pendingCallback = null;
 
     private boolean waitingForEnter = true;
     private boolean ballsLaunched = false;
 
     private List<Velocity> initialBallVelocities;
+    private List<PowerUp> activePowerUps = new ArrayList<>();
 
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
@@ -60,6 +65,10 @@ public class GameLevel implements Animation {
         this.animationRunner = animationRunner;
     }
 
+    public GameEnvironment getEnvironment() {
+        return environment;
+    }
+
     public void setOnLevelComplete(Runnable callback) {
         this.onLevelComplete = callback;
     }
@@ -68,7 +77,7 @@ public class GameLevel implements Animation {
     }
     public Counter getScore() { return score; }
     public int getRemainingBlocks() { return remainingBlocks.getValue(); }
-    public int getRemainingBalls() { return remainingBalls.getValue(); }
+    public Counter getRemainingBalls() { return remainingBalls; }
     public List<Ball> getBalls() { return balls; }
     public Paddle getPaddle() { return paddle; }
 
@@ -79,7 +88,7 @@ public class GameLevel implements Animation {
         score = new Counter(0);
         remainingBalls = new Counter(levelInfo.numberOfBalls());
         remainingBlocks = new Counter(levelInfo.numberOfBlocksToRemove());
-
+        activePowerUps.clear();
         // Background
         Sprite background = levelInfo.getBackground();
         if (background != null) {
@@ -93,7 +102,7 @@ public class GameLevel implements Animation {
         double paddleY = SCREEN_HEIGHT - PADDLE_HEIGHT - 10;
         Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), PADDLE_HEIGHT, paddleWidth);
         // boundary cho paddle sát tường
-        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, 20, SCREEN_WIDTH - 20);
+        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, 1 , SCREEN_WIDTH - 1);
 
         sprites.addSprite(paddle);
         environment.addCollidable(paddle);
@@ -116,10 +125,12 @@ public class GameLevel implements Animation {
         List<Block> blocks = levelInfo.blocks();
 
         for (Block block: blocks) {
-            sprites.addSprite(block);
-            environment.addCollidable(block);
-            block.addHitListener(new ScoreTrackingListener(score));
-            block.addHitListener(new BlockRemove(this, remainingBlocks));
+            if (!block.isDeathRegion()) {
+                sprites.addSprite(block);
+                environment.addCollidable(block);
+                block.addHitListener(new ScoreTrackingListener(score));
+                block.addHitListener(new BlockRemove(this, remainingBlocks));
+            }
         }
 
         // Death Region
@@ -132,22 +143,22 @@ public class GameLevel implements Animation {
 
         // Tường trên: cao 20px, rộng SCREEN_WIDTH
         Point topLeft = new Point(0, 0);
-        Rectangle topRect = new Rectangle(topLeft, 20, SCREEN_WIDTH);
-        Block topWall = new Block(topRect, Color.GRAY, Integer.MAX_VALUE, true);
+        Rectangle topRect = new Rectangle(topLeft, 1, SCREEN_WIDTH);
+        Block topWall = new Block(topRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(topWall);
         environment.addCollidable(topWall);
 
         // Tường trái: rộng 20px, cao SCREEN_HEIGHT
         Point leftTop = new Point(0, 0);
-        Rectangle leftRect = new Rectangle(leftTop, SCREEN_HEIGHT, 20);
-        Block leftWall = new Block(leftRect, Color.GRAY, Integer.MAX_VALUE, true);
+        Rectangle leftRect = new Rectangle(leftTop, SCREEN_HEIGHT, 1);
+        Block leftWall = new Block(leftRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(leftWall);
         environment.addCollidable(leftWall);
 
         // Tường phải: rộng 20px, cao SCREEN_HEIGHT
-        Point rightTop = new Point(SCREEN_WIDTH - 20, 0);
-        Rectangle rightRect = new Rectangle(rightTop, SCREEN_HEIGHT, 20);
-        Block rightWall = new Block(rightRect, Color.GRAY, Integer.MAX_VALUE, true);
+        Point rightTop = new Point(SCREEN_WIDTH - 1, 0);
+        Rectangle rightRect = new Rectangle(rightTop, SCREEN_HEIGHT, 1);
+        Block rightWall = new Block(rightRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(rightWall);
         environment.addCollidable(rightWall);
 
@@ -225,13 +236,35 @@ public class GameLevel implements Animation {
         if(keyboard.isPressed(Key.LEFT)) paddle.moveLeft(dt);
         if(keyboard.isPressed(Key.RIGHT)) paddle.moveRight(dt);
 
+        // Thêm xử lí power up
+        List<PowerUp> toRemove = new ArrayList<>();
+        Rectangle paddleRect = paddle.getCollisionRectangle();
+
+        for (PowerUp powerUp: activePowerUps) {
+            Rectangle powerUpRect = powerUp.getCollisionRectangle();
+
+            // Kiểm tra va chạm với paddle
+            if (paddleRect.intersects(powerUpRect)) {
+                powerUp.applyEffect(this);
+                toRemove.add(powerUp);
+                removeSprite(powerUp);
+                removeCollidable(powerUp);
+            }
+
+            // Kiểm tra rơi ra ngoài
+            else if (powerUp.isOutOfBounds()) {
+                toRemove.add(powerUp);
+                removeSprite(powerUp);
+                removeCollidable(powerUp);
+            }
+        }
+        activePowerUps.removeAll(toRemove);
+
         // Kiểm tra điều kiện kết thúc
         if (remainingBalls.getValue() <= 0) {
             System.out.println("Hết bóng!");
             running = false;
-            if (onGameOver != null) {
-                onGameOver.run();
-            }
+            pendingCallback = onGameOver;
             return;
         }
 
@@ -239,6 +272,8 @@ public class GameLevel implements Animation {
             System.out.println("Phá hết block!");
             score.increase(100);
             running = false;
+            pendingCallback = onLevelComplete;
+            return;
         }
     }
 
@@ -263,6 +298,12 @@ public class GameLevel implements Animation {
 
     @Override
     public boolean isFinished() {
+        if (!running && pendingCallback != null) {
+            Runnable callback = pendingCallback;
+            pendingCallback = null;
+
+            callback.run();
+        }
         return !running;
     }
 
@@ -271,7 +312,13 @@ public class GameLevel implements Animation {
     }
 
     public void addCollidable(Collidable c) {
-        if (c != null) environment.addCollidable(c);
+        if (c != null) {
+            environment.addCollidable(c);
+
+            if (c instanceof PowerUp) {
+                activePowerUps.add((PowerUp) c);
+            }
+        }
     }
 
     public void removeSprite(Sprite sprite) {

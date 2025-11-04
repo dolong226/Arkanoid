@@ -13,6 +13,7 @@ import ball.*;
 import geometry.*;
 import listener.HitEvent;
 import listener.HitListener;
+import powerup.PowerUp;
 
 /**
  * Hàm này định nghĩa về block (khối hình) trong trò chơi, cập nhật khối hình sau sự kiện, tính toán vận tốc của bóng sau khi va chạm và thông báo sự kiện va chạm
@@ -35,6 +36,8 @@ public class Block implements Sprite, Collidable, HitNotifier {
     private int hitPoints = 1; // Độ cứng của block, có thể điều chỉnh trong level
 
     private boolean isDeathRegion = false;  // Vùng bên dưới màn hình, bóng ra ngoài sẽ biến mất
+
+    private PowerUp containedPowerUp = null; // chứ powerup
 
     /**
      * Khởi tạo block
@@ -86,6 +89,19 @@ public class Block implements Sprite, Collidable, HitNotifier {
         }
     }
 
+    // thêm power up
+    public void setPowerUp(PowerUp powerUp) {
+        this.containedPowerUp = powerUp;
+    }
+
+    public boolean hasPowerUp() {
+        return containedPowerUp != null;
+    }
+
+    public PowerUp getPowerUp() {
+        return containedPowerUp;
+    }
+
     /**
      * Vẽ lại khối block
      */
@@ -98,6 +114,15 @@ public class Block implements Sprite, Collidable, HitNotifier {
                     rectangle.getUpperLeft().getY(),
                     rectangle.getHeight(),
                     rectangle.getWidth());
+
+            // Hiển thị icon nếu có power up
+            if (hasPowerUp()) {
+                gc.setFill(containedPowerUp.getType().getColor());
+                gc.setFont(javafx.scene.text.Font.font("Arial", 12));
+                double centerX = rectangle.getUpperLeft().getX() + rectangle.getHeight() / 2 - 3;
+                double centerY = rectangle.getUpperLeft().getY() + rectangle.getWidth() / 2 + 4;
+                gc.fillText(containedPowerUp.getType().getIcon(), centerX, centerY);
+            }
         }
         gc.restore();
     }

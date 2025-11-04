@@ -40,10 +40,16 @@ public class Paddle implements Sprite, Collidable {
      */
     private double[] regionBorders;
 
+    /**
+     * lưu width gốc
+     */
+    private double originalWidth;
+
     public Paddle() {
         this.step = 1;
         this.color = new Color(100, 100, 100, 50);
         this.paddle = new Rectangle(new Point(200, 400), 100, 100);
+        originalWidth = 100;
     }
 
     /**
@@ -63,6 +69,7 @@ public class Paddle implements Sprite, Collidable {
         this.minBoundary = minBound;
         this.maxBoundary = maxBound;
         this.regionBorders = new double[4];
+        originalWidth = paddle.getWidth();
     }
 
     public double getX() {
@@ -76,6 +83,30 @@ public class Paddle implements Sprite, Collidable {
     public double getWidth() {
         return paddle.getWidth();
     }
+
+    public double getOriginalWidth() {
+        return originalWidth;
+    }
+
+    public void setWidth(double newWidth) {
+        Point upperLeft = paddle.getUpperLeft();
+        double height = paddle.getHeight();
+
+        double currentCenterX = upperLeft.getX() + height / 2;
+        double newX = currentCenterX - (newWidth / 2.0 * height / paddle.getWidth());
+
+        if (newX < minBoundary) {
+            newX = minBoundary;
+        }
+
+        if (newX + height > maxBoundary) {
+            newX = maxBoundary - height;
+        }
+
+        this.paddle = new Rectangle(new Point(newX, upperLeft.getY()), newWidth, height);
+
+    }
+
     // Dùng để đặt lại vị trí paddle
     public void setX(double x) {
         Point oldUpperLeft = paddle.getUpperLeft();
@@ -114,6 +145,20 @@ public class Paddle implements Sprite, Collidable {
         return this.paddle;
     }
 
+    /**
+     * Mở rộng paddle theo tỉ lệ
+     */
+    public void expandWidth(double scale) {
+        double currentWidth = paddle.getWidth();
+        setWidth(currentWidth * scale);
+    }
+
+    /**
+     * reset paddle
+     */
+    public void resetWidth () {
+        setWidth(originalWidth);
+    }
     /** 
      * Vẽ lại thanh paddle 
      * @param gc

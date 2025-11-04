@@ -4,6 +4,7 @@ import ball.Ball;
 import collidable.Block;
 import game.Counter;
 import game.GameLevel;
+import powerup.PowerUp;
 
 /**
  * Listener loại bỏ block khi bị đánh trúng đến khi hitpoints = 0,
@@ -24,6 +25,13 @@ public class BlockRemove implements HitListener {
         Ball hitter = event.getHitter();
 
         if (beingHit.getHitPoints() <= 0) {
+            // kiểm tra power up và thả xuống
+            if (beingHit.hasPowerUp()) {
+                PowerUp powerUp = beingHit.getPowerUp();
+                game.addSprite(powerUp);
+                game.addCollidable(powerUp);
+                System.out.println("power up");
+            }
             game.removeSprite(beingHit);
             game.removeCollidable(beingHit);
             remainingBlocks.decrease(1);

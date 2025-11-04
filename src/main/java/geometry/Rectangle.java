@@ -120,4 +120,23 @@ public class Rectangle {
 
         return x >= xLeft && x <= xRight && y >= yTop && y <= yBottom;
     }
+
+    /**
+     * Kiểm tra xem hình chữ nhật này có giao với hình chữ nhật khác không
+     */
+    public boolean intersects(Rectangle other) {
+        double thisX = upperLeft.getX();
+        double thisY = upperLeft.getY();
+        double thisRight = thisX + height;
+        double thisBottom = thisY + width;
+
+        double otherX = other.getUpperLeft().getX();
+        double otherY = other.getUpperLeft().getY();
+        double otherRight = otherX + other.getHeight();
+        double otherBottom = otherY + other.getWidth();
+
+        return !(thisRight < otherX || otherRight < thisX ||
+                thisBottom < otherY || otherBottom < thisY);
+    }
+
 }
