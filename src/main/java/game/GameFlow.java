@@ -54,6 +54,8 @@ public class GameFlow {
 
         GameLevel level = new GameLevel(lv, input, runner);
 
+        level.setHighScoreTable(highScoreTable);
+
         // khi hoàn thành level, callback gọi level tiếp theo
         level.setOnLevelComplete(() -> {
             System.out.println("Level " + (levelIndex + 1) + " hoàn thành!");

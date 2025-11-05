@@ -19,8 +19,8 @@ import java.util.Arrays;
  */
 public class MainGame extends Application {
 
-    public static final int SCREEN_WIDTH = 600;
-    public static final int SCREEN_HEIGHT = 800;
+    public static final int SCREEN_WIDTH = 980;
+    public static final int SCREEN_HEIGHT = 600;
     public static final double FPS = 60.0;
 
     @Override

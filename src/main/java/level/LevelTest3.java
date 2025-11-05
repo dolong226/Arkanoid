@@ -85,7 +85,7 @@ public class LevelTest3 implements LevelInformation {
         for (int i = 0; i < 10; i++) {
             double x = startX + i * (blockWidth + 5);
             Rectangle rect = new Rectangle(new Point(x, startY), blockHeight, blockWidth);
-            Block block = new Block(rect, Color.RED);
+            Block block = new Block(rect, Color.RED, 5, false);
             blocks.add(block);
         }
         return blocks;

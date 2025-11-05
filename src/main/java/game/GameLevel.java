@@ -9,6 +9,7 @@ import ball.Velocity;
 import collidable.Block;
 import collidable.Collidable;
 import collidable.Paddle;
+import data.HighScoreTable;
 import geometry.Point;
 import geometry.Rectangle;
 import input.GameMouse;
@@ -25,6 +26,7 @@ import listener.BlockRemove;
 import listener.ScoreTrackingListener;
 import powerup.PowerUp;
 import powerup.PowerUpType;
+import ui.GameInfoPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +54,13 @@ public class GameLevel implements Animation {
     private List<Velocity> initialBallVelocities;
     private List<PowerUp> activePowerUps = new ArrayList<>();
 
+    private GameInfoPanel infoPanel;
+    private HighScoreTable highScoreTable;
+
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
+    public static final int PANEL_WIDTH = 180;
+    public static final int TOTAL_WIDTH = SCREEN_WIDTH + PANEL_WIDTH;
     public static final int PADDLE_HEIGHT = 20;
     public static final int BALL_RADIUS = 6;
     public static final int DEATH_REGION_HEIGHT = 50;
@@ -63,6 +70,10 @@ public class GameLevel implements Animation {
         this.input = input;
         this.keyboard = input.getKeyboard();
         this.animationRunner = animationRunner;
+    }
+
+    public void setHighScoreTable(HighScoreTable highScoreTable) {
+        this.highScoreTable = highScoreTable;
     }
 
     public GameEnvironment getEnvironment() {
@@ -89,6 +100,16 @@ public class GameLevel implements Animation {
         remainingBalls = new Counter(levelInfo.numberOfBalls());
         remainingBlocks = new Counter(levelInfo.numberOfBlocksToRemove());
         activePowerUps.clear();
+
+        // Khởi tạo Info Panel
+        infoPanel = new GameInfoPanel(SCREEN_WIDTH + 10, 10, PANEL_WIDTH - 20, SCREEN_HEIGHT - 20);
+        infoPanel.setLevelName(levelInfo.levelName());
+        infoPanel.setCurrentScore(score);
+        infoPanel.setHighScoreTable(highScoreTable);
+        infoPanel.setRemainingBalls(remainingBalls);
+        infoPanel.setRemainingBlocks(remainingBlocks);
+
+
         // Background
         Sprite background = levelInfo.getBackground();
         if (background != null) {
@@ -279,14 +300,16 @@ public class GameLevel implements Animation {
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        // Vẽ background toàn màn hình (bao gồm cả panel)
+        gc.setFill(Color.rgb(20, 20, 30));
+        gc.fillRect(0, 0, TOTAL_WIDTH, SCREEN_HEIGHT);
+
         sprites.render(gc);
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 15));
-        gc.fillText("Score: " + score.getValue(), 10, 20);
-        gc.fillText("Balls: " + remainingBalls.getValue(), 10, 40);
-        gc.fillText("Blocks: " + remainingBlocks.getValue(), 10, 60);
+        // Vẽ Info Panel bên phải
+        if (infoPanel != null) {
+            infoPanel.render(gc);
+        }
 
         //  Hiển thị thông báo chờ Enter
         if (waitingForEnter) {
