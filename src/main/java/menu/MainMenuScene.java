@@ -3,6 +3,7 @@ package menu;
 import animation.AnimationRunner;
 import data.HighScoreTable;
 import game.Counter;
+import game.GameController;
 import game.GameFlow;
 import input.GameKeyboard;
 import input.GameMouse;
@@ -72,7 +73,7 @@ public class MainMenuScene {
 
 
         Counter globalScore = new Counter(0);
-
+        GameController gameController = new GameController();
         GameFlow gameFlow = new GameFlow(runner, input, globalScore, highScoreTable, stage, canvas);
 
         List<LevelInformation> levels = new ArrayList<>();

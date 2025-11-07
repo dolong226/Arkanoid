@@ -17,7 +17,7 @@ public class LevelTest implements LevelInformation {
 
     @Override
     public int numberOfBalls() {
-        return 5;
+        return 1;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class LevelTest implements LevelInformation {
         // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
         double startAngle = -60;
         double endAngle = 60;
-        double angleStep = (endAngle - startAngle) / (numberOfBalls - 1);
+        double angleStep = (endAngle - startAngle) / numberOfBalls;
 
         for (int i = 0; i < numberOfBalls; i++) {
             double angle = startAngle + i * angleStep;

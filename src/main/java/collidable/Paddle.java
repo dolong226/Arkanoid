@@ -7,16 +7,18 @@ import ball.Velocity;
 import geometry.*;
 import game.Sprite;
 import javafx.scene.image.Image;
+import listener.HitEvent;
 import listener.HitListener;
 
 import javafx.scene.paint.Color;
 import javafx.scene.canvas.GraphicsContext;
+import listener.HitNotifier;
 import ui.ImageLoader;
 
 /**
  * Class này định nghĩa về thanh paddle (người chơi thao tác với game), thao tác di chuyển thanh paddle, tính toán vận tốc khi bóng đập vào thanh 
  */
-public class Paddle implements Sprite, Collidable {
+public class Paddle implements Sprite, Collidable, HitNotifier {
     /**
      * Vận tốc thanh
      */
@@ -197,6 +199,8 @@ public class Paddle implements Sprite, Collidable {
         if(Math.abs(y - upperLeftY) < epsilon && collisionPoint.getX() >= upperLeftX && collisionPoint.getX() <= upperLeftX + this.paddle.getWidth()){
             int region = this.checkRegion(collisionPoint);
             upDateVelocity = this.changeVelocity(region, upDateVelocity);
+
+            notifyHit(hitter, collisionPoint);
             return upDateVelocity;
         }
         if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.paddle.getWidth())) < epsilon){
@@ -208,6 +212,8 @@ public class Paddle implements Sprite, Collidable {
                 upDateVelocity.setDy(upDateVelocity.getDy() * (-1));
             }
         }
+
+        notifyHit(hitter, collisionPoint);
         return upDateVelocity;
     }
 
@@ -270,4 +276,24 @@ public class Paddle implements Sprite, Collidable {
         Velocity newVelo = differentVelo[region];
         return newVelo;
     }
+
+    // sound
+    private List<HitListener> hitListeners = new ArrayList<>();
+
+        @Override
+        public void addHitListener(HitListener h) {
+            hitListeners.add(h);
+        }
+
+        @Override
+        public void removeHitListener(HitListener h) {
+            hitListeners.remove(h);
+        }
+
+        private void notifyHit(Ball hitter, Point collisionPoint) {
+            for (HitListener hl: new ArrayList<>(hitListeners)) {
+                hl.hitEvent(new HitEvent(hitter, this, collisionPoint));
+            }
+        }
+
 }

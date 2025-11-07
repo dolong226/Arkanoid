@@ -5,6 +5,8 @@ import collidable.Block;
 import game.Counter;
 import game.GameLevel;
 import powerup.PowerUp;
+import sound.AudioResource;
+import sound.SoundManager;
 
 /**
  * Listener loại bỏ block khi bị đánh trúng đến khi hitpoints = 0,
@@ -21,7 +23,7 @@ public class BlockRemove implements HitListener {
 
     @Override
     public void hitEvent(HitEvent event) {
-        Block beingHit = event.getTarget();
+        Block beingHit = (Block) event.getHitObject();
         Ball hitter = event.getHitter();
 
         if (beingHit.getHitPoints() <= 0) {
@@ -30,6 +32,7 @@ public class BlockRemove implements HitListener {
                 PowerUp powerUp = beingHit.getPowerUp();
                 game.addSprite(powerUp);
                 game.addCollidable(powerUp);
+                SoundManager.getInstance().playSFX(AudioResource.POWERUP_SPAWN.name());
                 System.out.println("power up");
             }
             game.removeSprite(beingHit);

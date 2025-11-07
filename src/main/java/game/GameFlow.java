@@ -64,7 +64,7 @@ public class GameFlow {
 
         LevelInformation lv = levels.get(levelIndex);
 
-        GameLevel level = new GameLevel(lv, input, runner);
+        GameLevel level = new GameLevel(lv, input, runner, gameController);
 
         level.setHighScoreTable(highScoreTable);
 

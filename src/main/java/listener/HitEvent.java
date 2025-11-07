@@ -2,6 +2,7 @@ package listener;
 
 import ball.Ball;
 import collidable.Block;
+import collidable.Collidable;
 import geometry.Point;
 import javafx.geometry.Point2D;
 
@@ -9,13 +10,13 @@ import javafx.geometry.Point2D;
  * Chứa thông tin về một va chạm giữa bóng và block.
  */
 public class HitEvent {
-    private final Ball hitter;
-    private final Block target;
-    private final Point collisionPoint;
+    private Ball hitter;
+    private Collidable hitObject;
+    private Point collisionPoint;
 
-    public HitEvent(Ball hitter, Block target, Point collisionPoint) {
+    public HitEvent(Ball hitter, Collidable hitObject, Point collisionPoint) {
         this.hitter = hitter;
-        this.target = target;
+        this.hitObject = hitObject;
         this.collisionPoint = collisionPoint;
     }
 
@@ -23,9 +24,10 @@ public class HitEvent {
         return hitter;
     }
 
-    public Block getTarget() {
-        return target;
+    public Collidable getHitObject() {
+        return hitObject;
     }
+
     public Point getCollisionPoint() {
         return collisionPoint;
     }
