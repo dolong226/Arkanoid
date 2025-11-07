@@ -8,6 +8,8 @@ import javafx.scene.canvas.GraphicsContext;
 import game.Sprite;
 
 import javafx.scene.paint.Color;
+import sound.AudioResource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,4 +98,10 @@ public class LevelTest3 implements LevelInformation {
     public int numberOfBlocksToRemove() {
         return blocks().size();
     }
+
+    @Override
+    public String getBackgroundMusic() {
+        return AudioResource.BACKGROUND_MUSIC.name();
+    }
+
 }

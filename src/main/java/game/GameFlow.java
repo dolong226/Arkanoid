@@ -8,6 +8,9 @@ import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 import level.LevelInformation;
 import data.HighScoreTable;
+import sound.AudioResource;
+import sound.SoundManager;
+import sun.security.provider.ConfigFile;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ public class GameFlow {
     private final HighScoreTable highScoreTable;
     private final Stage stage;
     private final Canvas canvas;
+    private final GameController gameController;
 
     public GameFlow(AnimationRunner runner, PlayerInput input, Counter globalScore,
                     HighScoreTable highScoreTable, Stage stage, Canvas canvas) {
@@ -29,6 +33,7 @@ public class GameFlow {
         this.highScoreTable = highScoreTable;
         this.stage = stage;
         this.canvas = canvas;
+        this.gameController = new GameController();
     }
 
     public void runLevels(List<LevelInformation> levels) {
@@ -37,6 +42,13 @@ public class GameFlow {
             System.out.println("Không có level nào!");
             return;
         }
+
+        // Khởi tạo âm thanh khi bắt đầu game
+        System.out.println("Đang load âm thanh");
+        SoundManager soundManager = SoundManager.getInstance();
+        soundManager.preloadAll();
+        soundManager.playMusic(AudioResource.BACKGROUND_MUSIC.name());
+        System.out.println("Am thanh da duoc khoi tao");
 
         // Chạy level đầu tiên
         runLevel(0, levels);
@@ -56,25 +68,43 @@ public class GameFlow {
 
         level.setHighScoreTable(highScoreTable);
 
+        // sound
+        SoundManager soundManager = SoundManager.getInstance();
+        soundManager.stopAllMusic();
+        soundManager.preloadAll();
+        soundManager.playMusic(lv.getBackgroundMusic());
+
         // khi hoàn thành level, callback gọi level tiếp theo
         level.setOnLevelComplete(() -> {
             System.out.println("Level " + (levelIndex + 1) + " hoàn thành!");
+
+            gameController.onLevelComplete();
+
             globalScore.increase(level.getScore().getValue());
-            // Chạy level tiếp theo
-//            runLevel(levelIndex + 1, levels);
+
+            // chay level tiep theo
             new java.util.Timer().schedule(new java.util.TimerTask() {
                 @Override
                 public void run() {
                     javafx.application.Platform.runLater(() -> runLevel(levelIndex + 1, levels));
                 }
-            }, 200);
+            }, 2000);
         });
 
         // set call back khi kết thúc
         level.setOnGameOver(() -> {
             System.out.println("Game Over!");
+
+            gameController.onGameOver();
+
             globalScore.increase(level.getScore().getValue());
-            showGameOver();
+            // Delay trước khi show game over screen
+            new java.util.Timer().schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    javafx.application.Platform.runLater(() -> showGameOver());
+                }
+            }, 2000);
         });
 
         level.run();
@@ -94,9 +124,16 @@ public class GameFlow {
                     }
                     // reset điểm và quay về menu
                     globalScore.reset();
+
+                    SoundManager.getInstance().playMusic(AudioResource.BACKGROUND_MUSIC.name());
+
                     new menu.MainMenuScene(input, stage, () -> {}, highScoreTable).show();
                 }
         );
         runner.run(gameOver);
+    }
+
+    public GameController getGameController() {
+        return gameController;
     }
 }
