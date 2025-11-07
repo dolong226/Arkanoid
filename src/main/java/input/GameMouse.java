@@ -75,4 +75,10 @@ public class GameMouse implements Mouse {
     public void update() {
         state.resetJustPressed();
     }
+
+    @Override
+    public void reset() {
+        state.resetJustPressed();
+    }
+
 }

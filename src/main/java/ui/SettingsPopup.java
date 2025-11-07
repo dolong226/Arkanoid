@@ -95,7 +95,7 @@ public class SettingsPopup {
         btn.setStyle("-fx-background-color: #4444aa; -fx-text-fill: white; -fx-font-size: 14; -fx-padding: 10 30;");
         btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #6666ff; -fx-text-fill: white;"));
         btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: #4444aa; -fx-text-fill: white;"));
-        // Chưa xử lý click – bạn làm sau
+        // todo
         return btn;
     }
 }
