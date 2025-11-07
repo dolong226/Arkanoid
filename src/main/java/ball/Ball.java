@@ -5,10 +5,12 @@ import collidable.Block;
 import collidable.Collidable;
 import game.Sprite;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import collidable.CollisionInfo;
 import game.GameEnvironment;
 import geometry.*;
+import ui.ImageLoader;
 
 /**
  * File này định nghĩa về bóng, làm thế nào để tạo ra bóng, thay đổi vận tốc bóng trước khi có va chạm và update trạng thái bóng sau 1 khoảng thời gian
@@ -43,6 +45,8 @@ public class Ball implements Sprite {
      */
     private GameEnvironment gameEnvironment;
 
+    private Image ballImage;
+
     /**
      * Khởi tạo bóng
      * @param center tâm bóng
@@ -52,12 +56,14 @@ public class Ball implements Sprite {
      * @param gameEnvironment môi trường quản lý va chạm
      */
     public Ball(Point center, double radius, Color color, Velocity velocity, GameEnvironment gameEnvironment){
+        this.baseRadius = radius;
         this.radius = radius;
         this.center = center;
         this.velocity = velocity;
         this.color = color;
         this.gameEnvironment = gameEnvironment;
         this.type = BallType.NORMAL;
+        loadBallImage();
     }
 
     /**
@@ -77,7 +83,9 @@ public class Ball implements Sprite {
         this.color = color;
         this.gameEnvironment = gameEnvironment;
         this.type = type;
+
         updateBallType();
+        loadBallImage();
     }
 
     @Override
@@ -86,13 +94,41 @@ public class Ball implements Sprite {
      */
     public void render(GraphicsContext gc) {
         gc.save();
-        gc.setFill(color);
-        double upperLeftX = center.getX() - radius;
-        double upperLeftY = center.getY() - radius;
-        double length = radius*2;
-        double width = radius*2;
-        gc.fillOval(upperLeftX, upperLeftY, width, length);
+        if (ballImage != null) {
+            double size = radius * 2;
+            gc.drawImage(ballImage, center.getX() - radius, center.getY() - radius, size, size);
+        } else {
+            // fallback: vẽ hình tròn nếu ảnh lỗi
+            gc.setFill(color);
+            gc.fillOval(center.getX() - radius, center.getY() - radius, radius * 2, radius * 2);
+            gc.setStroke(Color.RED);
+            gc.setLineWidth(2);
+            gc.strokeOval(center.getX() - radius, center.getY() - radius, radius * 2, radius * 2);
+        }
+
         gc.restore();
+    }
+    private void loadBallImage() {
+        String path;
+        switch (type) {
+            case NORMAL:
+                path = "/Default/ball_blue_large.png";
+                break;
+            case FIRE:
+                path = "/Default/ball_red_large.png";
+                break;
+            case BIG:
+                path = "/Default/ball_blue_large.png";
+                break;
+            default:
+                path = "/Default/ball_blue_large.png";
+        }
+        this.ballImage = ImageLoader.load(path);
+
+        // debug
+        if (this.ballImage == null) {
+            System.err.println("Không load được ảnh bóng: " + path + " cho type: " + type);
+        }
     }
 
     @Override
@@ -110,8 +146,8 @@ public class Ball implements Sprite {
 
         if (collision != null) {
             Point p = collision.getClosetPoint();
-
             Collidable obj = collision.getCollidable();
+
             boolean shouldPenetrate = canPenetrate() && obj instanceof Block && !((Block) obj).isDeathRegion();
 
             if(shouldPenetrate){
@@ -119,8 +155,10 @@ public class Ball implements Sprite {
                 this.center = intended;
             }
             else{
-                this.velocity = obj.hit(this, p, velocity);
-                double speed = Math.hypot(velocity.getDx(), velocity.getDy());
+                Velocity newVelocity = obj.hit(this, p, velocity);
+                this.velocity = newVelocity;
+
+                double speed = Math.hypot(newVelocity.getDx(), newVelocity.getDy());
                 if (speed > 0) {
                     double offset = 1.0;
                     this.center = new Point(
@@ -179,11 +217,16 @@ public class Ball implements Sprite {
     public void setType(BallType newType) {
         this.type = newType;
         updateBallType();
+        loadBallImage();
     }
 
     public void updateBallType(){
+        if (this.type == null) {
+            this.type = BallType.NORMAL;
+        }
         this.radius = baseRadius * this.type.getSizeBallMultiplier();
         this.color = this.type.getColor();
+        loadBallImage();
     }
 
     public boolean canPenetrate(){

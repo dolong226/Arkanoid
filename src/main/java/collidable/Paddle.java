@@ -6,10 +6,12 @@ import ball.Ball;
 import ball.Velocity;
 import geometry.*;
 import game.Sprite;
+import javafx.scene.image.Image;
 import listener.HitListener;
 
 import javafx.scene.paint.Color;
 import javafx.scene.canvas.GraphicsContext;
+import ui.ImageLoader;
 
 /**
  * Class này định nghĩa về thanh paddle (người chơi thao tác với game), thao tác di chuyển thanh paddle, tính toán vận tốc khi bóng đập vào thanh 
@@ -48,8 +50,8 @@ public class Paddle implements Sprite, Collidable {
     public Paddle() {
         this.step = 1;
         this.color = new Color(100, 100, 100, 50);
-        this.paddle = new Rectangle(new Point(200, 400), 100, 100);
-        originalWidth = 100;
+        this.paddle = new Rectangle(new Point(200, 400), 300, 50);
+        originalWidth = 300;
     }
 
     /**
@@ -92,15 +94,15 @@ public class Paddle implements Sprite, Collidable {
         Point upperLeft = paddle.getUpperLeft();
         double height = paddle.getHeight();
 
-        double currentCenterX = upperLeft.getX() + height / 2;
-        double newX = currentCenterX - (newWidth / 2.0 * height / paddle.getWidth());
+        double currentCenterX = upperLeft.getX() + getWidth() / 2.0;
+        double newX = currentCenterX - newWidth / 2.0;
 
         if (newX < minBoundary) {
             newX = minBoundary;
         }
 
-        if (newX + height > maxBoundary) {
-            newX = maxBoundary - height;
+        if (newX + newWidth > maxBoundary) {
+            newX = maxBoundary - newWidth;
         }
 
         this.paddle = new Rectangle(new Point(newX, upperLeft.getY()), newWidth, height);
@@ -131,8 +133,8 @@ public class Paddle implements Sprite, Collidable {
      */
     public void moveRight(double dt){
         double newX = this.paddle.getUpperLeft().getX() + this.step*dt;
-        if(newX + this.paddle.getHeight() >= this.maxBoundary){
-            newX = this.maxBoundary - this.paddle.getHeight();
+        if(newX + this.paddle.getWidth() >= this.maxBoundary){
+            newX = this.maxBoundary - this.paddle.getWidth();
         }
         this.paddle = new Rectangle(new Point(newX, this.paddle.getUpperLeft().getY()), this.paddle.getWidth(), this.paddle.getHeight());
     }
@@ -164,12 +166,10 @@ public class Paddle implements Sprite, Collidable {
      * @param gc
      */
     public void render(GraphicsContext gc) {
-        gc.setFill(color);
-        double upperLeftX = this.paddle.getUpperLeft().getX();
-        double upperLeftY = this.paddle.getUpperLeft().getY();
-        double length = this.paddle.getHeight();
-        double width = this.paddle.getWidth();
-        gc.fillRect(upperLeftX, upperLeftY, length,width);
+        Image img = ImageLoader.load("/png/buttonSelected.png");
+        double w = paddle.getWidth();
+        double h = paddle.getHeight();
+        gc.drawImage(img, getX(), getY(), w, h);
     }
 
     /**
@@ -194,13 +194,13 @@ public class Paddle implements Sprite, Collidable {
         double upperLeftX = this.paddle.getUpperLeft().getX();
         double upperLeftY = this.paddle.getUpperLeft().getY();
 
-        if(Math.abs(y - upperLeftY) < epsilon && collisionPoint.getX() >= upperLeftX && collisionPoint.getX() <= upperLeftX + this.paddle.getHeight()){
+        if(Math.abs(y - upperLeftY) < epsilon && collisionPoint.getX() >= upperLeftX && collisionPoint.getX() <= upperLeftX + this.paddle.getWidth()){
             int region = this.checkRegion(collisionPoint);
             upDateVelocity = this.changeVelocity(region, upDateVelocity);
             return upDateVelocity;
         }
-        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.paddle.getHeight())) < epsilon){
-            if(y > upperLeftY && y < upperLeftY + this.paddle.getWidth()){
+        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.paddle.getWidth())) < epsilon){
+            if(y > upperLeftY && y < upperLeftY + this.paddle.getHeight()){
                 upDateVelocity.setDx(upDateVelocity.getDx() *(-1));
             }
             else{
@@ -218,7 +218,7 @@ public class Paddle implements Sprite, Collidable {
      */
     public int checkRegion(Point collisionPoint){
         double UpperLeftX = this.paddle.getUpperLeft().getX();
-        double eachRegionSize = this.paddle.getHeight()/5;
+        double eachRegionSize = this.paddle.getWidth()/5;
         regionBorders[0] = UpperLeftX + eachRegionSize;
         regionBorders[1] = UpperLeftX + eachRegionSize * 2;
         regionBorders[2] = UpperLeftX + eachRegionSize * 3;
@@ -235,7 +235,7 @@ public class Paddle implements Sprite, Collidable {
         if(collisionPoint.getX() >= this.regionBorders[2] && collisionPoint.getX() < this.regionBorders[3]){
             return 4;
         }
-        if(collisionPoint.getX() >= this.regionBorders[3] && collisionPoint.getX() <= UpperLeftX + this.paddle.getHeight()){
+        if(collisionPoint.getX() >= this.regionBorders[3] && collisionPoint.getX() <= UpperLeftX + this.paddle.getWidth()){
             return 5;
         }
         return 0;

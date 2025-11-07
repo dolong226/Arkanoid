@@ -1,4 +1,7 @@
 package geometry;
+import data.HighScoreTable;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,18 +64,18 @@ public class Rectangle {
         corners[0] = this.getUpperLeft();
 
         Point upperRight = new Point();
-        upperRight.setX(x_upperLeft + theHeight);
+        upperRight.setX(x_upperLeft + theWidth);
         upperRight.setY(y_upperLeft);
         corners[1] = upperRight;
 
         Point downLeft = new Point();
         downLeft.setX(x_upperLeft);
-        downLeft.setY(y_upperLeft + theWidth);
+        downLeft.setY(y_upperLeft + theHeight);
         corners[2] = downLeft;
 
         Point downRight = new Point();
-        downRight.setX(x_upperLeft + theHeight);
-        downRight.setY(y_upperLeft + theWidth);
+        downRight.setX(x_upperLeft + theWidth);
+        downRight.setY(y_upperLeft + theHeight);
         corners[3] = downRight;
     }
     
@@ -127,13 +130,13 @@ public class Rectangle {
     public boolean intersects(Rectangle other) {
         double thisX = upperLeft.getX();
         double thisY = upperLeft.getY();
-        double thisRight = thisX + height;
-        double thisBottom = thisY + width;
+        double thisRight = thisX + width;
+        double thisBottom = thisY + height;
 
         double otherX = other.getUpperLeft().getX();
         double otherY = other.getUpperLeft().getY();
-        double otherRight = otherX + other.getHeight();
-        double otherBottom = otherY + other.getWidth();
+        double otherRight = otherX + other.getWidth();
+        double otherBottom = otherY + other.getHeight();
 
         return !(thisRight < otherX || otherRight < thisX ||
                 thisBottom < otherY || otherBottom < thisY);

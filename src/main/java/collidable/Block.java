@@ -4,6 +4,8 @@ import java.util.List;
 
 
 import java.util.ArrayList;
+
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 import game.Sprite;
@@ -14,6 +16,7 @@ import geometry.*;
 import listener.HitEvent;
 import listener.HitListener;
 import powerup.PowerUp;
+import ui.ImageLoader;
 
 /**
  * Hàm này định nghĩa về block (khối hình) trong trò chơi, cập nhật khối hình sau sự kiện, tính toán vận tốc của bóng sau khi va chạm và thông báo sự kiện va chạm
@@ -34,6 +37,7 @@ public class Block implements Sprite, Collidable, HitNotifier {
     private Color color;
 
     private int hitPoints = 1; // Độ cứng của block, có thể điều chỉnh trong level
+    private int maxHitPoints = 1;
 
     private boolean isDeathRegion = false;  // Vùng bên dưới màn hình, bóng ra ngoài sẽ biến mất
 
@@ -107,24 +111,16 @@ public class Block implements Sprite, Collidable, HitNotifier {
      */
     @Override
     public void render(GraphicsContext gc) {
-        gc.save();
-        if (color != null) {
-            gc.setFill(color);
-            gc.fillRect(rectangle.getUpperLeft().getX(),
-                    rectangle.getUpperLeft().getY(),
-                    rectangle.getHeight(),
-                    rectangle.getWidth());
+        double x = rectangle.getUpperLeft().getX();
+        double y = rectangle.getUpperLeft().getY();
+        double w = rectangle.getWidth();
+        double h = rectangle.getHeight();
 
-            // Hiển thị icon nếu có power up
-            if (hasPowerUp()) {
-                gc.setFill(containedPowerUp.getType().getColor());
-                gc.setFont(javafx.scene.text.Font.font("Arial", 12));
-                double centerX = rectangle.getUpperLeft().getX() + rectangle.getHeight() / 2 - 3;
-                double centerY = rectangle.getUpperLeft().getY() + rectangle.getWidth() / 2 + 4;
-                gc.fillText(containedPowerUp.getType().getIcon(), centerX, centerY);
-            }
-        }
-        gc.restore();
+        String imgPath = "/png/buttonSelected.png";
+
+        Image img = ImageLoader.load(imgPath);
+        gc.drawImage(img, x, y, w, h);
+
     }
 
     /**
@@ -142,65 +138,55 @@ public class Block implements Sprite, Collidable, HitNotifier {
      * @return updateVelocity Vận tốc mới 
      */
     public Velocity hit(Ball hitter, Point collisionPoint, Velocity currentVelocity){
-        Velocity upDateVelocity = new Velocity(currentVelocity.getDx(), currentVelocity.getDy());
 
         double upperLeftX = this.rectangle.getUpperLeft().getX();
         double upperLeftY = this.rectangle.getUpperLeft().getY();
+        double width = this.rectangle.getWidth();
+        double height = this.rectangle.getHeight();
+
 
         double x = collisionPoint.getX();
         double y = collisionPoint.getY();
         double epsilon = 0.0001;
-        boolean dxChanged = false;
-        boolean dyChanged = false;
 
-        /**
-         * Nếu bóng va vào cạnh trên và dưới của block
-         */
-        if(Math.abs(y - upperLeftY) < epsilon || Math.abs(y - (upperLeftY + this.rectangle.getWidth())) < epsilon){
-            /**
-             * Bóng va vào giữa cạnh (không tính hai đỉnh biên)
-             */
-            if(x > upperLeftX && x < upperLeftX + this.rectangle.getHeight()){
-            upDateVelocity.setDy(currentVelocity.getDy() * (-1));
-            dyChanged = true;
-        }
-    }
+        double dx = currentVelocity.getDx();
+        double dy = currentVelocity.getDy();
 
-        /**
-         * Nếu bóng va vào cạnh bên trái và phải của block
-         */
-        if(Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.rectangle.getHeight())) < epsilon){
-            /**
-             * Bóng va vào giữa cạnh (Không tính hai đỉnh biên)
-             */
-            if(y > upperLeftY && y < upperLeftY + this.rectangle.getWidth()){
-            upDateVelocity.setDx(currentVelocity.getDx() * (-1));
-            dxChanged = true;
-        }
-    }
-        /**
-         * Nếu bóng va chạm vào góc
-         */
-        if(!dyChanged && !dxChanged){
-            upDateVelocity.setDx(currentVelocity.getDx() * (-1));
-            upDateVelocity.setDy(currentVelocity.getDy() * (-1));
-        }
-        /**
-         * Nếu bóng va chạm rất gần góc (để loại trừ sai số của epsilon)
-         */
-        else if((Math.abs(y - upperLeftY) < epsilon || Math.abs(y - (upperLeftY + this.rectangle.getWidth())) < epsilon) && (Math.abs(x - upperLeftX) < epsilon || Math.abs(x - (upperLeftX + this.rectangle.getHeight())) < epsilon)){
-            if(!dxChanged){
-                upDateVelocity.setDx(currentVelocity.getDx() * (-1));
+        double distTop = Math.abs(y - upperLeftY);
+        double distBottom = Math.abs(y - (upperLeftY + height));
+        double distLeft = Math.abs(x - upperLeftX);
+        double distRight = Math.abs(x - (upperLeftX + width));
+
+        double minDist = Math.min(Math.min(distTop, distBottom), Math.min(distLeft, distRight));
+
+        boolean hitTopOrBottom = false;
+        boolean hitLeftOrRight = false;
+
+        // Va chạm cạnh trên hoặc dưới
+        if (minDist == distTop || minDist == distBottom) {
+            // Kiểm tra điểm va chạm có nằm trong phạm vi chiều rộng không
+            if (x >= upperLeftX - epsilon && x <= upperLeftX + width + epsilon) {
+                dy = -dy;
+                hitTopOrBottom = true;
             }
-            if(!dyChanged){
-                upDateVelocity.setDy(currentVelocity.getDy() * (-1));
         }
-    }
+
+        // Va chạm cạnh trái hoặc phải
+        if (minDist == distLeft || minDist == distRight) {
+            // Kiểm tra điểm va chạm có nằm trong phạm vi chiều cao không
+            if (y >= upperLeftY - epsilon && y <= upperLeftY + height + epsilon) {
+                dx = -dx;
+                hitLeftOrRight = true;
+            }
+        }
+        Velocity updateVelocity = new Velocity(dx, dy);
+        // Giảm hit points và thông báo
         if(this.getHitPoints() > 0){
             this.decreaseHitPoints();
         }
         this.notifyHit(hitter, collisionPoint);
-        return upDateVelocity;
+
+        return updateVelocity;
     }
 
 

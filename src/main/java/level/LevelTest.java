@@ -16,14 +16,19 @@ public class LevelTest implements LevelInformation {
 
     @Override
     public int numberOfBalls() {
-        return 20;
+        return 5;
+    }
+
+    @Override
+    public int numberOfBlocksToRemove() {
+        return 50; // 5x10
     }
 
     @Override
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
-        int numberOfBalls = 20;
-        double speed = 500;
+        int numberOfBalls = this.numberOfBalls();
+        double speed = 350;
 
         // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
         double startAngle = -60;
@@ -44,7 +49,7 @@ public class LevelTest implements LevelInformation {
 
     @Override
     public double paddleWidth() {
-        return 700;
+        return 300;
     }
 
     @Override
@@ -67,7 +72,7 @@ public class LevelTest implements LevelInformation {
                 double x = 50 + col * 70;
                 double y = 100 + row * 30;
                 Point upperLeft = new Point(x, y);
-                Rectangle rect = new Rectangle(upperLeft, 30, 70);
+                Rectangle rect = new Rectangle(upperLeft, 70, 30);
 
                 // Random màu
                 Color color = getRandomColor();
@@ -85,11 +90,6 @@ public class LevelTest implements LevelInformation {
         }
 
         return blocks;
-    }
-
-    @Override
-    public int numberOfBlocksToRemove() {
-        return 50; // 5x10
     }
 
 

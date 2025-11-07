@@ -9,6 +9,7 @@ import ball.Velocity;
 import collidable.Block;
 import collidable.Collidable;
 import collidable.Paddle;
+import data.HighScoreTable;
 import geometry.Point;
 import geometry.Rectangle;
 import input.GameMouse;
@@ -25,6 +26,7 @@ import listener.BlockRemove;
 import listener.ScoreTrackingListener;
 import powerup.PowerUp;
 import powerup.PowerUpType;
+import  ui.GameInfoPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +54,13 @@ public class GameLevel implements Animation {
     private List<Velocity> initialBallVelocities;
     private List<PowerUp> activePowerUps = new ArrayList<>();
 
+    private GameInfoPanel infoPanel;
+    private HighScoreTable highScoreTable;
+
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
+    public static final int PANEL_WIDTH = 180;
+    public static final int TOTAL_WIDTH = SCREEN_WIDTH + PANEL_WIDTH;
     public static final int PADDLE_HEIGHT = 20;
     public static final int BALL_RADIUS = 6;
     public static final int DEATH_REGION_HEIGHT = 50;
@@ -63,6 +70,10 @@ public class GameLevel implements Animation {
         this.input = input;
         this.keyboard = input.getKeyboard();
         this.animationRunner = animationRunner;
+    }
+
+    public void setHighScoreTable(HighScoreTable highScoreTable) {
+        this.highScoreTable = highScoreTable;
     }
 
     public GameEnvironment getEnvironment() {
@@ -89,20 +100,31 @@ public class GameLevel implements Animation {
         remainingBalls = new Counter(levelInfo.numberOfBalls());
         remainingBlocks = new Counter(levelInfo.numberOfBlocksToRemove());
         activePowerUps.clear();
+        final int WALL_THICKNESS = 20;
+
+        // Khởi tạo Info Panel
+        infoPanel = new GameInfoPanel(SCREEN_WIDTH + 10, 10, PANEL_WIDTH - 20, SCREEN_HEIGHT - 20);
+        infoPanel.setLevelName(levelInfo.levelName());
+        infoPanel.setCurrentScore(score);
+        infoPanel.setHighScoreTable(highScoreTable);
+        infoPanel.setRemainingBalls(remainingBalls);
+        infoPanel.setRemainingBlocks(remainingBlocks);
+
         // Background
         Sprite background = levelInfo.getBackground();
         if (background != null) {
             sprites.addSprite(background);
         }
 
+
         // Paddle
         double paddleWidth = levelInfo.paddleWidth();
         double paddleSpeed = levelInfo.paddleSpeed();
         double paddleX = (SCREEN_WIDTH - paddleWidth)/2;
         double paddleY = SCREEN_HEIGHT - PADDLE_HEIGHT - 10;
-        Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), PADDLE_HEIGHT, paddleWidth);
+        Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), paddleWidth, PADDLE_HEIGHT);
         // boundary cho paddle sát tường
-        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, 1 , SCREEN_WIDTH - 1);
+        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, 20 , SCREEN_WIDTH - 20);
 
         sprites.addSprite(paddle);
         environment.addCollidable(paddle);
@@ -135,7 +157,7 @@ public class GameLevel implements Animation {
 
         // Death Region
         Point deathUpperLeft = new Point(0, SCREEN_HEIGHT);
-        Rectangle deathRect = new Rectangle(deathUpperLeft, DEATH_REGION_HEIGHT, SCREEN_WIDTH);
+        Rectangle deathRect = new Rectangle(deathUpperLeft, SCREEN_WIDTH, DEATH_REGION_HEIGHT);
         Block deathBlock = new Block(deathRect, null, 1, true);
         sprites.addSprite(deathBlock);
         environment.addCollidable(deathBlock);
@@ -143,21 +165,21 @@ public class GameLevel implements Animation {
 
         // Tường trên: cao 20px, rộng SCREEN_WIDTH
         Point topLeft = new Point(0, 0);
-        Rectangle topRect = new Rectangle(topLeft, 1, SCREEN_WIDTH);
+        Rectangle topRect = new Rectangle(topLeft, SCREEN_WIDTH, WALL_THICKNESS);
         Block topWall = new Block(topRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(topWall);
         environment.addCollidable(topWall);
 
         // Tường trái: rộng 20px, cao SCREEN_HEIGHT
         Point leftTop = new Point(0, 0);
-        Rectangle leftRect = new Rectangle(leftTop, SCREEN_HEIGHT, 1);
+        Rectangle leftRect = new Rectangle(leftTop, WALL_THICKNESS, SCREEN_HEIGHT);
         Block leftWall = new Block(leftRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(leftWall);
         environment.addCollidable(leftWall);
 
         // Tường phải: rộng 20px, cao SCREEN_HEIGHT
-        Point rightTop = new Point(SCREEN_WIDTH - 1, 0);
-        Rectangle rightRect = new Rectangle(rightTop, SCREEN_HEIGHT, 1);
+        Point rightTop = new Point(SCREEN_WIDTH - WALL_THICKNESS, 0);
+        Rectangle rightRect = new Rectangle(rightTop, WALL_THICKNESS, SCREEN_HEIGHT);
         Block rightWall = new Block(rightRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(rightWall);
         environment.addCollidable(rightWall);
@@ -279,14 +301,16 @@ public class GameLevel implements Animation {
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        // Vẽ background toàn màn hình (bao gồm cả panel)
+        gc.setFill(Color.rgb(20, 20, 30));
+        gc.fillRect(0, 0, TOTAL_WIDTH, SCREEN_HEIGHT);
+
         sprites.render(gc);
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 15));
-        gc.fillText("Score: " + score.getValue(), 10, 20);
-        gc.fillText("Balls: " + remainingBalls.getValue(), 10, 40);
-        gc.fillText("Blocks: " + remainingBlocks.getValue(), 10, 60);
+        // Vẽ Info Panel bên phải
+        if (infoPanel != null) {
+            infoPanel.render(gc);
+        }
 
         //  Hiển thị thông báo chờ Enter
         if (waitingForEnter) {

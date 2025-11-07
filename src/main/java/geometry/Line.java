@@ -510,14 +510,14 @@ public class Line {
 
         // Tạo 4 cạnh của rectangle
         Point ul = rectangle.getUpperLeft();
-        double length = rectangle.getHeight();
+        double height = rectangle.getHeight();
         double width = rectangle.getWidth();
 
         Line[] sidesOfRectangle = new Line[4];
-        sidesOfRectangle[0] = new Line(ul.getX(), ul.getY(), ul.getX() + length, ul.getY()); // top
-        sidesOfRectangle[1] = new Line(ul.getX(), ul.getY() + width, ul.getX() + length, ul.getY() + width); // bottom
-        sidesOfRectangle[2] = new Line(ul.getX(), ul.getY(), ul.getX(), ul.getY() + width); // left
-        sidesOfRectangle[3] = new Line(ul.getX() + length, ul.getY(), ul.getX() + length, ul.getY() + width); // right
+        sidesOfRectangle[0] = new Line(ul.getX(), ul.getY(), ul.getX() + width, ul.getY()); // top
+        sidesOfRectangle[1] = new Line(ul.getX(), ul.getY() + height, ul.getX() + width, ul.getY() + height); // bottom
+        sidesOfRectangle[2] = new Line(ul.getX(), ul.getY(), ul.getX(), ul.getY() + height); // left
+        sidesOfRectangle[3] = new Line(ul.getX() +  width, ul.getY(), ul.getX() + width, ul.getY() + height); // right
 
         for (int i = 0; i < 4; i++) {
             Line side = sidesOfRectangle[i];

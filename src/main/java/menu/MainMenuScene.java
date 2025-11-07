@@ -35,10 +35,10 @@ public class MainMenuScene {
     }
 
     public void show() {
-        Canvas canvas = new Canvas(800, 600);
+        Canvas canvas = new Canvas(980, 600);
         StackPane root = new StackPane(canvas);
         root.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 980, 600);
 
 
         // Gắn input vào Scene
