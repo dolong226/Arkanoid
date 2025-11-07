@@ -138,6 +138,9 @@ public class SoundManager {
 
     public void setSFXVolume(double volume) {
         this.sfxVolume = Math.max(0.0, Math.min(1.0, volume));
+        for (AudioClip clip : sfxMap.values()) {
+            clip.setVolume(this.sfxVolume);
+        }
     }
 
     public void setMusicVolume(double volume) {

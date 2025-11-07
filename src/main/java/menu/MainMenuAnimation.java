@@ -25,6 +25,8 @@ public class MainMenuAnimation implements Animation {
     private boolean shouldStop = false;
     private Runnable onStartGame;
     private final HighScoreTable highScoreTable;
+    private final Runnable onSettings;
+    private boolean isSettingsOpen = false;
 
     private static final String IMG_BUTTON_PATH = "/Default/";
     private static final String IMG_BACKGROUND_PATH = "/image/";
@@ -37,13 +39,14 @@ public class MainMenuAnimation implements Animation {
     private Image quitNormal, quitHover;
 
 
-    public MainMenuAnimation(Canvas canvas, PlayerInput input, Runnable onStartGame, HighScoreTable highScoreTable) {
+    public MainMenuAnimation(Canvas canvas, PlayerInput input, Runnable onStartGame, HighScoreTable highScoreTable, Runnable onSettings) {
         this.canvas = canvas;
         this.input = input;
         this.gc = canvas.getGraphicsContext2D();
         this.buttons = new ArrayList<>();
         this.onStartGame = onStartGame;
         this.highScoreTable = highScoreTable;
+        this.onSettings = onSettings;
 
         loadImages();
         createButtons();
@@ -125,6 +128,13 @@ public class MainMenuAnimation implements Animation {
             HighScoreAnimation highScoreAnim = new HighScoreAnimation(canvas, input, highScoreTable);
             AnimationRunner tempRunner = new AnimationRunner(gc, 60);
             tempRunner.run(highScoreAnim);
+        } else if ("SETTINGS".equals(text)) {
+            if (onSettings != null && !isSettingsOpen) {
+                isSettingsOpen = true;
+                onSettings.run();
+                input.getMouse().reset();
+                isSettingsOpen = false;
+            }
         }
     }
 

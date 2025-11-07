@@ -10,4 +10,6 @@ public interface Mouse {
     Point getMousePosition();
 
     void update();
+
+    void reset();
 }

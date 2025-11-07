@@ -20,7 +20,7 @@ public class BallRemove implements HitListener {
     @Override
     public void hitEvent(HitEvent event) {
         Ball hitter = event.getHitter();
-        Block beingHit = event.getTarget();
+        Block beingHit = (Block) event.getHitObject();
 
         if (beingHit.isDeathRegion()) {
             game.removeSprite(hitter);

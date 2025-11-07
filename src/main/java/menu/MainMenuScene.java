@@ -3,6 +3,7 @@ package menu;
 import animation.AnimationRunner;
 import data.HighScoreTable;
 import game.Counter;
+import game.GameController;
 import game.GameFlow;
 import input.GameKeyboard;
 import input.GameMouse;
@@ -19,6 +20,7 @@ import level.LevelTest;
 import level.LevelTest3;
 import sound.AudioResource;
 import sound.SoundManager;
+import ui.SettingsPopup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,13 +74,12 @@ public class MainMenuScene {
 
 
         Counter globalScore = new Counter(0);
-
         GameFlow gameFlow = new GameFlow(runner, input, globalScore, highScoreTable, stage, canvas);
 
         List<LevelInformation> levels = new ArrayList<>();
         levels.add(new LevelTest());
         levels.add(new LevelTest3());
-
+        GameController gameController = new GameController();
         // Callback khi bấm START
         Runnable startGameAction = () -> {
             System.out.println("Starting game...");
@@ -87,7 +88,15 @@ public class MainMenuScene {
         this.onStartGame = startGameAction;
 
         // Tạo và chạy menu
-        MainMenuAnimation menuAnim = new MainMenuAnimation(canvas, input, startGameAction, highScoreTable);
+        MainMenuAnimation menuAnim = new MainMenuAnimation(
+                canvas,
+                input,
+                startGameAction,
+                highScoreTable,
+                () -> javafx.application.Platform.runLater(
+                        () -> new SettingsPopup(stage, gameController).show()
+                )
+        );
         runner.run(menuAnim);
     }
 

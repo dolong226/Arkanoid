@@ -24,6 +24,7 @@ import level.LevelInformation;
 import listener.BallRemove;
 import listener.BlockRemove;
 import listener.ScoreTrackingListener;
+import listener.SoundHitListener;
 import powerup.PowerUp;
 import powerup.PowerUpType;
 import  ui.GameInfoPanel;
@@ -56,6 +57,7 @@ public class GameLevel implements Animation {
 
     private GameInfoPanel infoPanel;
     private HighScoreTable highScoreTable;
+    private GameController gameController;
 
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
@@ -65,11 +67,12 @@ public class GameLevel implements Animation {
     public static final int BALL_RADIUS = 6;
     public static final int DEATH_REGION_HEIGHT = 50;
 
-    public GameLevel(LevelInformation levelInfo, PlayerInput input, AnimationRunner animationRunner) {
+    public GameLevel(LevelInformation levelInfo, PlayerInput input, AnimationRunner animationRunner, GameController gameController) {
         this.levelInfo = levelInfo;
         this.input = input;
         this.keyboard = input.getKeyboard();
         this.animationRunner = animationRunner;
+        this.gameController = gameController;
     }
 
     public void setHighScoreTable(HighScoreTable highScoreTable) {
@@ -124,7 +127,9 @@ public class GameLevel implements Animation {
         double paddleY = SCREEN_HEIGHT - PADDLE_HEIGHT - 10;
         Rectangle paddleRect = new Rectangle(new Point(paddleX, paddleY), paddleWidth, PADDLE_HEIGHT);
         // boundary cho paddle sát tường
-        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, 20 , SCREEN_WIDTH - 20);
+        paddle = new Paddle((int) paddleSpeed, Color.YELLOW, paddleRect, WALL_THICKNESS , SCREEN_WIDTH - WALL_THICKNESS);
+        SoundHitListener soundListener = new SoundHitListener(gameController);
+        paddle.addHitListener(soundListener);
 
         sprites.addSprite(paddle);
         environment.addCollidable(paddle);
@@ -152,6 +157,7 @@ public class GameLevel implements Animation {
                 environment.addCollidable(block);
                 block.addHitListener(new ScoreTrackingListener(score));
                 block.addHitListener(new BlockRemove(this, remainingBlocks));
+                block.addHitListener(soundListener);
             }
         }
 
@@ -162,6 +168,7 @@ public class GameLevel implements Animation {
         sprites.addSprite(deathBlock);
         environment.addCollidable(deathBlock);
         deathBlock.addHitListener(new BallRemove(this, remainingBalls));
+        deathBlock.addHitListener(soundListener);
 
         // Tường trên: cao 20px, rộng SCREEN_WIDTH
         Point topLeft = new Point(0, 0);
@@ -169,6 +176,7 @@ public class GameLevel implements Animation {
         Block topWall = new Block(topRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(topWall);
         environment.addCollidable(topWall);
+        topWall.addHitListener(soundListener);
 
         // Tường trái: rộng 20px, cao SCREEN_HEIGHT
         Point leftTop = new Point(0, 0);
@@ -176,6 +184,7 @@ public class GameLevel implements Animation {
         Block leftWall = new Block(leftRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(leftWall);
         environment.addCollidable(leftWall);
+        leftWall.addHitListener(soundListener);
 
         // Tường phải: rộng 20px, cao SCREEN_HEIGHT
         Point rightTop = new Point(SCREEN_WIDTH - WALL_THICKNESS, 0);
@@ -183,6 +192,7 @@ public class GameLevel implements Animation {
         Block rightWall = new Block(rightRect, Color.WHITE, Integer.MAX_VALUE, true);
         sprites.addSprite(rightWall);
         environment.addCollidable(rightWall);
+        rightWall.addHitListener(soundListener);
 
         running = true;
         // chờ enter
@@ -268,6 +278,7 @@ public class GameLevel implements Animation {
             // Kiểm tra va chạm với paddle
             if (paddleRect.intersects(powerUpRect)) {
                 powerUp.applyEffect(this);
+                gameController.onPowerUpCollected();
                 toRemove.add(powerUp);
                 removeSprite(powerUp);
                 removeCollidable(powerUp);
