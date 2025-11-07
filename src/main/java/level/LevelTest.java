@@ -8,6 +8,7 @@ import geometry.Rectangle;
 import javafx.scene.paint.Color;
 import powerup.PowerUp;
 import powerup.PowerUpType;
+import sound.AudioResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,10 @@ public class LevelTest implements LevelInformation {
         return blocks;
     }
 
+    @Override
+    public String getBackgroundMusic() {
+        return AudioResource.BACKGROUND_MUSIC.name();
+    }
 
     private Color getRandomColor() {
         Color[] colors = {

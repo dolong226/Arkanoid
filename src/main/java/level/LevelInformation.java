@@ -3,6 +3,7 @@ package level;
 import ball.Velocity;
 import collidable.Block;
 import game.Sprite;
+import sound.AudioResource;
 
 import java.util.*;
 
@@ -50,4 +51,6 @@ public interface LevelInformation {
      * Số block cần phá để win.
      */
     int numberOfBlocksToRemove();
+
+    String getBackgroundMusic();
 }

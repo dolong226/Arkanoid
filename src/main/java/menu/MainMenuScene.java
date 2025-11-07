@@ -17,6 +17,8 @@ import javafx.scene.canvas.Canvas;
 import level.LevelInformation;
 import level.LevelTest;
 import level.LevelTest3;
+import sound.AudioResource;
+import sound.SoundManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,11 @@ public class MainMenuScene {
         canvas.setOnMousePressed(mouse::onMousePressed);
         canvas.setOnMouseReleased(mouse::onMouseReleased);
         canvas.setOnMouseMoved(mouse::onMouseMoved);
+
+        SoundManager soundManager = SoundManager.getInstance();
+        soundManager.preloadAll();
+        soundManager.playMusic(AudioResource.BACKGROUND_MUSIC.name());
+
 
         stage.setScene(scene);
         stage.setTitle("MENU");
