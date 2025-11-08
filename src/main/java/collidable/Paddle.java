@@ -13,7 +13,7 @@ import listener.HitListener;
 import javafx.scene.paint.Color;
 import javafx.scene.canvas.GraphicsContext;
 import listener.HitNotifier;
-import ui.ImageLoader;
+import ui.ImageLoad;
 
 /**
  * Class này định nghĩa về thanh paddle (người chơi thao tác với game), thao tác di chuyển thanh paddle, tính toán vận tốc khi bóng đập vào thanh 
@@ -168,7 +168,7 @@ public class Paddle implements Sprite, Collidable, HitNotifier {
      * @param gc
      */
     public void render(GraphicsContext gc) {
-        Image img = ImageLoader.load("/png/buttonSelected.png");
+        Image img = ImageLoad.load("/Sprite/54-Breakout-Tiles.png");
         double w = paddle.getWidth();
         double h = paddle.getHeight();
         gc.drawImage(img, getX(), getY(), w, h);

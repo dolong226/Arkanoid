@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import collidable.CollisionInfo;
 import game.GameEnvironment;
 import geometry.*;
-import ui.ImageLoader;
+import ui.ImageLoad;
 
 /**
  * File này định nghĩa về bóng, làm thế nào để tạo ra bóng, thay đổi vận tốc bóng trước khi có va chạm và update trạng thái bóng sau 1 khoảng thời gian
@@ -123,7 +123,7 @@ public class Ball implements Sprite {
             default:
                 path = "/Default/ball_blue_large.png";
         }
-        this.ballImage = ImageLoader.load(path);
+        this.ballImage = ImageLoad.load(path);
 
         // debug
         if (this.ballImage == null) {

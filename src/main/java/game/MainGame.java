@@ -7,9 +7,10 @@ import input.PlayerInput;
 import javafx.application.Application;
 import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
-import level.LevelTest;
+import level.Level_1;
 import data.HighScoreTable;
-import level.LevelTest3;
+import level.Level_2;
+import level.Level_3;
 import menu.MainMenuScene;
 
 import java.util.Arrays;
@@ -35,12 +36,11 @@ public class MainGame extends Application {
             Counter score = new Counter();
             AnimationRunner runner = new AnimationRunner(canvas.getGraphicsContext2D(), FPS);
             GameFlow gameFlow = new GameFlow(runner, input, score, highScoreTable, primaryStage, canvas);
-            gameFlow.runLevels(Arrays.asList(new LevelTest(), new LevelTest3()));
+            gameFlow.runLevels(Arrays.asList(new Level_1(), new Level_2(), new Level_3()));
         };
         MainMenuScene mainMenu = new MainMenuScene(input, primaryStage, startGame, highScoreTable);
         mainMenu.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);

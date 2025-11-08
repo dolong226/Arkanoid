@@ -59,4 +59,5 @@ public class AnimationRunner {
         canvas.widthProperty().bind(parent.widthProperty());
         canvas.heightProperty().bind(parent.heightProperty());
     }
+
 }

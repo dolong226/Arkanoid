@@ -1,15 +1,19 @@
 package game;
 
+import animation.Animation;
 import animation.AnimationRunner;
+import animation.CurtainTransition;
 import animation.GameOverAnimation;
 import input.Keyboard;
 import input.PlayerInput;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 import level.LevelInformation;
 import data.HighScoreTable;
 import sound.AudioResource;
 import sound.SoundManager;
+import sun.plugin.cache.CacheUpdateHelper;
 import sun.security.provider.ConfigFile;
 
 import java.util.List;
@@ -51,14 +55,14 @@ public class GameFlow {
         System.out.println("Am thanh da duoc khoi tao");
 
         // Chạy level đầu tiên
-        runLevel(0, levels);
+        runLevel(0, levels, null);
     }
 
     //  đệ quy để chạy từng level
-    private void runLevel(int levelIndex, List<LevelInformation> levels) {
+    private void runLevel(int levelIndex, List<LevelInformation> levels, Animation previousAnimation) {
         if (levelIndex >= levels.size()) {
             // hoàn thành tất cả các level, hiện gameOver
-            showGameOver();
+            showVictory();
             return;
         }
 
@@ -74,6 +78,7 @@ public class GameFlow {
         soundManager.preloadAll();
         soundManager.playMusic(lv.getBackgroundMusic());
 
+
         // khi hoàn thành level, callback gọi level tiếp theo
         level.setOnLevelComplete(() -> {
             System.out.println("Level " + (levelIndex + 1) + " hoàn thành!");
@@ -86,7 +91,7 @@ public class GameFlow {
             new java.util.Timer().schedule(new java.util.TimerTask() {
                 @Override
                 public void run() {
-                    javafx.application.Platform.runLater(() -> runLevel(levelIndex + 1, levels));
+                    javafx.application.Platform.runLater(() -> runLevel(levelIndex + 1, levels, level));
                 }
             }, 2000);
         });
@@ -102,16 +107,43 @@ public class GameFlow {
             new java.util.Timer().schedule(new java.util.TimerTask() {
                 @Override
                 public void run() {
-                    javafx.application.Platform.runLater(() -> showGameOver());
+                    javafx.application.Platform.runLater(() -> showGameOver(level));
                 }
             }, 2000);
         });
 
-        level.run();
+        if (previousAnimation != null) {
+            CurtainTransition transition = new CurtainTransition(previousAnimation, level, 1.2);
+
+            Animation transitionWrapper = new Animation() {
+                @Override
+                public void update(double dt) {
+                    transition.update(dt);
+                }
+
+                @Override
+                public void render(GraphicsContext gc) {
+                    transition.render(gc);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    if (transition.isFinished()) {
+                        level.run();
+                        return true;
+                    }
+                    return false;
+                }
+            };
+
+            runner.run(transitionWrapper);
+        } else {
+            level.run();
+        }
     }
 
     // hiển thị gameover
-    private void showGameOver() {
+    private void showGameOver(Animation from) {
         GameOverAnimation gameOver = new GameOverAnimation(
                 canvas,
                 input,
@@ -130,7 +162,13 @@ public class GameFlow {
                     new menu.MainMenuScene(input, stage, () -> {}, highScoreTable).show();
                 }
         );
+
+        CurtainTransition transition = new CurtainTransition(from, gameOver, 1.0);
         runner.run(gameOver);
+    }
+
+    private void showVictory() {
+        // to do
     }
 
     public GameController getGameController() {

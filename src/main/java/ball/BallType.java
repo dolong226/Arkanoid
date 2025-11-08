@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 public enum BallType {
     NORMAL(1.0, Color.WHITE, false),
     FIRE(1.0, Color.ORANGE, true),
-    BIG(2.0, Color.GREENYELLOW, false);
+    BIG(1.25, Color.GREENYELLOW, false);
 
     private double sizeBallMultiplier;
     private Color defaultColor;

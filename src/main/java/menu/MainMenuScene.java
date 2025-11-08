@@ -16,8 +16,9 @@ import javafx.stage.Stage;
 
 import javafx.scene.canvas.Canvas;
 import level.LevelInformation;
-import level.LevelTest;
-import level.LevelTest3;
+import level.Level_1;
+import level.Level_2;
+import level.Level_3;
 import sound.AudioResource;
 import sound.SoundManager;
 import ui.SettingsPopup;
@@ -77,8 +78,9 @@ public class MainMenuScene {
         GameFlow gameFlow = new GameFlow(runner, input, globalScore, highScoreTable, stage, canvas);
 
         List<LevelInformation> levels = new ArrayList<>();
-        levels.add(new LevelTest());
-        levels.add(new LevelTest3());
+        levels.add(new Level_1());
+        levels.add(new Level_2());
+        levels.add(new Level_3());
         GameController gameController = new GameController();
         // Callback khi bấm START
         Runnable startGameAction = () -> {
@@ -97,6 +99,8 @@ public class MainMenuScene {
                         () -> new SettingsPopup(stage, gameController).show()
                 )
         );
+        // runner.run(menuAnim);
+        menuAnim = new MainMenuAnimation(canvas, input, startGameAction, highScoreTable, () -> javafx.application.Platform.runLater(() -> new SettingsPopup(stage, gameController).show()));
         runner.run(menuAnim);
     }
 

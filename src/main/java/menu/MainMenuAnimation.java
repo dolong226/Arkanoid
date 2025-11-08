@@ -29,7 +29,7 @@ public class MainMenuAnimation implements Animation {
     private boolean isSettingsOpen = false;
 
     private static final String IMG_BUTTON_PATH = "/Default/";
-    private static final String IMG_BACKGROUND_PATH = "/image/";
+    private static final String IMG_BACKGROUND_PATH = "/Default/";
 
     private Image backgroundMenu;
 
@@ -56,16 +56,16 @@ public class MainMenuAnimation implements Animation {
     private void loadImages() {
         Class<?> clazz = getClass();
 
-        backgroundMenu = new Image(clazz.getResourceAsStream(IMG_BACKGROUND_PATH + "background2.jpg"));
+        backgroundMenu = new Image(clazz.getResourceAsStream(IMG_BACKGROUND_PATH + "menu_bg.jpg"));
 
-        startNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
-        startHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
-        highScoreNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
-        highScoreHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
-        settingsNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
-        settingsHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
-        quitNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_grey.png"));
-        quitHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "button_blue.png"));
+        startNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "start1.png"));
+        startHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "start2.png"));
+        highScoreNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "score1.png"));
+        highScoreHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "score2.png"));
+        settingsNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "setting1.png"));
+        settingsHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "setting2.png"));
+        quitNormal = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "quit1.png"));
+        quitHover = new Image(clazz.getResourceAsStream(IMG_BUTTON_PATH + "quit2.png"));
     }
 
     private void createButtons() {
@@ -103,7 +103,7 @@ public class MainMenuAnimation implements Animation {
     public void render(GraphicsContext gc) {
         // Nền
         if (backgroundMenu != null) {
-            gc.drawImage(backgroundMenu,0,0, 800, 600);
+            gc.drawImage(backgroundMenu,0,0, 980, 600);
         } else {
             gc.setFill(Color.BLACK);
             gc.fillRect(0,0,800,600);

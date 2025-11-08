@@ -16,7 +16,7 @@ import geometry.*;
 import listener.HitEvent;
 import listener.HitListener;
 import powerup.PowerUp;
-import ui.ImageLoader;
+import ui.ImageLoad;
 
 /**
  * Hàm này định nghĩa về block (khối hình) trong trò chơi, cập nhật khối hình sau sự kiện, tính toán vận tốc của bóng sau khi va chạm và thông báo sự kiện va chạm
@@ -35,6 +35,8 @@ public class Block implements Sprite, Collidable, HitNotifier {
      * Màu khối
      */
     private Color color;
+    private String imagePath = null;
+    private Image cachedImage = null;
 
     private int hitPoints = 1; // Độ cứng của block, có thể điều chỉnh trong level
     private int maxHitPoints = 1;
@@ -65,6 +67,19 @@ public class Block implements Sprite, Collidable, HitNotifier {
         this.hitPoints = hitPoints;
         this.rectangle = rectangle;
         this.isDeathRegion = isDeathRegion;
+    }
+
+    public Block(Rectangle rectangle, Color color, int hitPoints, boolean isDeathRegion, String imagePath) {
+        this.rectangle = rectangle;
+        this.color = color;
+        this.hitPoints = hitPoints;
+        this.maxHitPoints = hitPoints;
+        this.isDeathRegion = isDeathRegion;
+        this.imagePath = imagePath;
+        this.hitListeners = new ArrayList<>();
+        if (imagePath != null) {
+            this.cachedImage = ImageLoad.load(imagePath);
+        }
     }
 
     /**
@@ -111,15 +126,23 @@ public class Block implements Sprite, Collidable, HitNotifier {
      */
     @Override
     public void render(GraphicsContext gc) {
+        if (color == null) {
+            return;
+        }
         double x = rectangle.getUpperLeft().getX();
         double y = rectangle.getUpperLeft().getY();
         double w = rectangle.getWidth();
         double h = rectangle.getHeight();
 
-        String imgPath = "/png/buttonSelected.png";
+        if (cachedImage != null) {
+            gc.drawImage(cachedImage, x, y, w, h);
+            return;
+        }
 
-        Image img = ImageLoader.load(imgPath);
-        gc.drawImage(img, x, y, w, h);
+        if (color != null) {
+            gc.setFill(color);
+            gc.fillRect(x, y, w, h);
+        }
 
     }
 
