@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import listener.SoundHitListener;
 import sound.SoundManager;
 
 public class SettingsPopup {

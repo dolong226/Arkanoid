@@ -4,7 +4,6 @@ package game;
 import animation.Animation;
 import animation.AnimationRunner;
 import ball.Ball;
-import ball.BallType;
 import ball.Velocity;
 import collidable.Block;
 import collidable.Collidable;
@@ -16,17 +15,16 @@ import input.GameMouse;
 import input.Key;
 import input.Keyboard;
 import input.PlayerInput;
-import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import level.LevelInformation;
 import listener.BallRemove;
 import listener.BlockRemove;
 import listener.ScoreTrackingListener;
 import listener.SoundHitListener;
 import powerup.PowerUp;
-import powerup.PowerUpType;
 import  ui.GameInfoPanel;
 
 import java.util.ArrayList;
@@ -63,8 +61,8 @@ public class GameLevel implements Animation {
     public static final int SCREEN_HEIGHT = 600;
     public static final int PANEL_WIDTH = 180;
     public static final int TOTAL_WIDTH = SCREEN_WIDTH + PANEL_WIDTH;
-    public static final int PADDLE_HEIGHT = 20;
-    public static final int BALL_RADIUS = 6;
+    public static final int PADDLE_HEIGHT = 17;
+    public static final int BALL_RADIUS = 7;
     public static final int DEATH_REGION_HEIGHT = 50;
 
     public GameLevel(LevelInformation levelInfo, PlayerInput input, AnimationRunner animationRunner, GameController gameController) {
@@ -172,24 +170,24 @@ public class GameLevel implements Animation {
 
         // Tường trên: cao 20px, rộng SCREEN_WIDTH
         Point topLeft = new Point(0, 0);
-        Rectangle topRect = new Rectangle(topLeft, SCREEN_WIDTH, WALL_THICKNESS);
-        Block topWall = new Block(topRect, Color.WHITE, Integer.MAX_VALUE, true);
+        Rectangle topRect = new Rectangle(topLeft, SCREEN_WIDTH, WALL_THICKNESS + 10) ;
+        Block topWall = new Block(topRect, null, Integer.MAX_VALUE, true);
         sprites.addSprite(topWall);
         environment.addCollidable(topWall);
         topWall.addHitListener(soundListener);
 
         // Tường trái: rộng 20px, cao SCREEN_HEIGHT
         Point leftTop = new Point(0, 0);
-        Rectangle leftRect = new Rectangle(leftTop, WALL_THICKNESS, SCREEN_HEIGHT);
-        Block leftWall = new Block(leftRect, Color.WHITE, Integer.MAX_VALUE, true);
+        Rectangle leftRect = new Rectangle(leftTop, WALL_THICKNESS + 10, SCREEN_HEIGHT);
+        Block leftWall = new Block(leftRect, null, Integer.MAX_VALUE, true);
         sprites.addSprite(leftWall);
         environment.addCollidable(leftWall);
         leftWall.addHitListener(soundListener);
 
         // Tường phải: rộng 20px, cao SCREEN_HEIGHT
-        Point rightTop = new Point(SCREEN_WIDTH - WALL_THICKNESS, 0);
+        Point rightTop = new Point(SCREEN_WIDTH - WALL_THICKNESS - 10, 0);
         Rectangle rightRect = new Rectangle(rightTop, WALL_THICKNESS, SCREEN_HEIGHT);
-        Block rightWall = new Block(rightRect, Color.WHITE, Integer.MAX_VALUE, true);
+        Block rightWall = new Block(rightRect, null, Integer.MAX_VALUE, true);
         sprites.addSprite(rightWall);
         environment.addCollidable(rightWall);
         rightWall.addHitListener(soundListener);
@@ -316,7 +314,9 @@ public class GameLevel implements Animation {
         gc.setFill(Color.rgb(20, 20, 30));
         gc.fillRect(0, 0, TOTAL_WIDTH, SCREEN_HEIGHT);
 
-        sprites.render(gc);
+        if (sprites != null) {
+            sprites.render(gc);
+        }
 
         // Vẽ Info Panel bên phải
         if (infoPanel != null) {
@@ -324,10 +324,11 @@ public class GameLevel implements Animation {
         }
 
         //  Hiển thị thông báo chờ Enter
-        if (waitingForEnter) {
-            gc.setFont(new javafx.scene.text.Font(30));
-            gc.setFill(Color.YELLOW);
-            gc.fillText("Press ENTER to Launch!", SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT / 2);
+        if (waitingForEnter && sprites != null) {
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 30));
+            gc.setFill(Color.rgb(147, 88, 94));
+            gc.fillText("PRESS ENTER TO LAUNCH!", SCREEN_WIDTH / 2 - 195,
+                    SCREEN_HEIGHT / 2 + 100);
         }
     }
 

@@ -83,12 +83,12 @@ public class GameInfoPanel {
         }
 
         // Vẽ nội dung
-        double contentX = x + 20;
-        double startY = 60;
+        double contentX = x + 10;
+        double startY = 100;
         double lineHeight = 60;
 
         gc.setFill(TITLE_COLOR);
-        gc.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 28));
+        gc.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 24));
         gc.setTextAlign(TextAlignment.LEFT);
         gc.fillText("GAME INFO", contentX, startY);
 

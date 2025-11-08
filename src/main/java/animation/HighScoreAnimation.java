@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import level.ImageBackground;
 
 import java.util.List;
 
@@ -29,8 +30,8 @@ public class HighScoreAnimation implements Animation {
     public void update(double dt) {
         Point mouse = input.getMousePosition();
 
-        // Thoát bằng ESC hoặc click
-        if (input.isExit() || input.isClickLeft()) {
+        // Thoát bằng ESC
+        if (input.isExit()) {
             shouldStop = true;
         }
 
@@ -39,14 +40,14 @@ public class HighScoreAnimation implements Animation {
 
     @Override
     public void render(GraphicsContext gc) {
-        // Nền đen
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, 800, 600);
+        // background
+        ImageBackground bg = new ImageBackground("/Default/background_blue.png");
+        bg.render(gc);
 
         // Tiêu đề
         gc.setFill(Color.GOLD);
         gc.setFont(Font.font("Arial", 48));
-        gc.fillText("HIGH SCORES", 250, 100);
+        gc.fillText("HIGH SCORES", 350, 100);
 
         // Bảng điểm
         List<HighScoreTable.ScoreEntry> topScores = highScoreTable.getTopScores();
@@ -75,9 +76,9 @@ public class HighScoreAnimation implements Animation {
         }
 
         // Hướng dẫn thoát
-        gc.setFill(Color.GRAY);
+        gc.setFill(Color.BLACK);
         gc.setFont(Font.font("Arial", 20));
-        gc.fillText("Nhấn ESC hoặc Click để quay lại", 200, 520);
+        gc.fillText("Nhấn ESC để quay lại", 300, 520);
     }
 
     @Override
