@@ -13,7 +13,6 @@ import level.LevelInformation;
 import data.HighScoreTable;
 import sound.AudioResource;
 import sound.SoundManager;
-import sun.plugin.cache.CacheUpdateHelper;
 import sun.security.provider.ConfigFile;
 
 import java.util.List;

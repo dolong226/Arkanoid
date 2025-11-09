@@ -5,10 +5,12 @@ import collidable.Block;
 import game.Sprite;
 import geometry.Point;
 import geometry.Rectangle;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import powerup.PowerUp;
 import powerup.PowerUpType;
 import sound.AudioResource;
+import ui.ImageLoad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,19 +19,19 @@ public class Level_2 implements LevelInformation {
 
     @Override
     public int numberOfBalls() {
-        return 30;
+        return 1;
     }
 
     @Override
     public int numberOfBlocksToRemove() {
-        return 50; // 5x10
+        return 56;
     }
 
     @Override
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
         int numberOfBalls = this.numberOfBalls();
-        double speed = 350;
+        double speed = 320;
 
         // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
         double startAngle = -60;
@@ -50,12 +52,12 @@ public class Level_2 implements LevelInformation {
 
     @Override
     public double paddleWidth() {
-        return 200;
+        return 170;
     }
 
     @Override
     public String levelName() {
-        return "Test Level";
+        return "EERIE";
     }
 
     @Override
@@ -63,33 +65,46 @@ public class Level_2 implements LevelInformation {
         return new ImageBackground("/Default/level2_bg.jpg");
     }
 
+    private final double[][][] BLOCK_POSITIONS = {
+            {{40,45}, {40,72}, {40,99}, {40,126}, {40,153}, {40,180}, {40,207}, {40,234}},
+            {{120,45}, {120,72}, {120,99}, {120,126}, {120,153}, {120,180}, {120,207}, {120,234}},
+            {{280,45}, {280,72}, {280,99}, {280,126}, {280,153}, {280,180}, {280,207}, {280,234}},
+            {{360,45}, {360,72}, {360,99}, {360,126}, {360,153}, {360,180}, {360,207}, {360,234}},
+            {{440,45}, {440,72}, {440,99}, {440,126}, {440,153}, {440,180}, {440,207}, {440,234}},
+            {{600,45}, {600,72}, {600,99}, {600,126}, {600,153}, {600,180}, {600,207}, {600,234}},
+            {{680,45}, {680,72}, {680,99}, {680,126}, {680,153}, {680,180}, {680,207}, {680,234}}
+    };
+    private final String[] LAYER_IMAGES = {
+            "/Sprite/02-Breakout-Tiles.png",
+            "/Sprite/04-Breakout-Tiles.png",
+            "/Sprite/06-Breakout-Tiles.png",
+            "/Sprite/08-Breakout-Tiles.png",
+            "/Sprite/10-Breakout-Tiles.png",
+            "/Sprite/16-Breakout-Tiles.png",
+            "/Sprite/18-Breakout-Tiles.png",
+    };
     @Override
     public List<Block> blocks() {
         List<Block> blocks = new ArrayList<>();
+        final double WIDTH = 80;
+        final double HEIGHT = 27;
 
-        // Chỉ dùng 2 ảnh duy nhất
-        final String IMG_1 = "/png/buttonSelected.png";
-        final String IMG_2 = "/png/element_blue_rectangle_glossy.png";
+         for (int layer = 0; layer < BLOCK_POSITIONS.length; layer++) {
+            String imgPath = LAYER_IMAGES[layer];
+            Image blockImage = ImageLoad.load(imgPath);
 
-        // Quy tắc: xen kẽ theo hàng và cột
-        for (int row = 0; row < 5; row++) {
-            for (int col = 0; col < 10; col++) {
-                double x = 50 + col * 70;
-                double y = 100 + row * 30;
+            for (double[] pos : BLOCK_POSITIONS[layer]) {
+                double x = pos[0];
+                double y = pos[1];
                 Point upperLeft = new Point(x, y);
-                Rectangle rect = new Rectangle(upperLeft, 70, 30);
+                Rectangle rect = new Rectangle(upperLeft, WIDTH, HEIGHT);
 
-                // Gán ảnh xen kẽ: (row + col) chẵn -> IMG_1, lẻ -> IMG_2
-                String imgPath = ((row + col) % 2 == 0) ? IMG_1 : IMG_2;
+                Block block = new Block(rect, Color.RED, 1, false, imgPath);
 
-                // Tạo block với ảnh tùy chỉnh (color = null để không vẽ màu)
-                Block block = new Block(rect, Color.BLACK, 1, false, imgPath);
-
-                // Power-up ngẫu nhiên (30% cơ hội)
-                if (Math.random() < 0.3) {
+                if (Math.random() < 0.1)  {
                     PowerUpType type = getRandomPowerUpType();
-                    Point powerUpPos = new Point(x + 35, y + 15);
-                    PowerUp powerUp = new PowerUp(type, powerUpPos, null);
+                    Point center = new Point(x + WIDTH/2, y + HEIGHT/2);
+                    PowerUp powerUp = new PowerUp(type, center, null);
                     block.setPowerUp(powerUp);
                 }
 
