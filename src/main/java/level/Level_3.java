@@ -67,11 +67,18 @@ public class Level_3 implements LevelInformation {
 
     private final double[][][] BLOCK_POSITIONS = {
         {{280,45}, {360,45}, {440,45}, {280,72}, {360,72}, {440,72}, {280,99}, {360,99}, {440,99}},
-        {{280,153}, {360,153}, {440,153}, {280,180}, {360,180}, {440,180}, {280,207}, {360,207}, {440,207}, {280,234}, {360,234}, {440,234}},
+        {{280,180}, {360,180}, {440,180}, {280,207}, {360,207}, {440,207}, {280,234}, {360,234}, {440,234}},
         {{40,72}, {120,72}, {200,72}, {520,72}, {600,72}, {680,72}},
         {{40,180}, {120,180}, {200,180}, {40,207}, {120,207}, {200,207}, {520,180}, {600,180}, {680,180}, {520,207}, {600,207}, {680,207}},
         {{40,99}, {120,99}, {40,126}, {120,126}, {40,153}, {120,153}, {200,126}, {280,126}, {360,126}, {440,126}, {520,126}, {600,99}, {680,99}, {600,126}, {680,126}, {600,153}, {680,153}}
     };
+
+    private final double[][] PERMANENT_BLOCK_POSITIONS =
+        {{40,234}, {120,234}, {280,153}, {360,153},
+        {440,153}, {600,234}, {680,234}};
+    
+    
+    private final String PERMANENT_BLOCK_IMAGE = "/Sprite/17-Breakout-Tiles.png";
 
     private final String[] LAYER_IMAGES = {
             "/Sprite/02-Breakout-Tiles.png",
@@ -86,6 +93,15 @@ public class Level_3 implements LevelInformation {
         List<Block> blocks = new ArrayList<>();
         final double WIDTH = 80;
         final double HEIGHT = 27;
+
+        for (double[] pos : PERMANENT_BLOCK_POSITIONS) {
+            double x = pos[0];
+            double y = pos[1];
+            Point upperLeft = new Point(x, y);
+            Rectangle rect = new Rectangle(upperLeft, WIDTH, HEIGHT);
+            Block permanentBlock = new Block(rect, Color.GRAY, 10000, false, PERMANENT_BLOCK_IMAGE);
+            blocks.add(permanentBlock);
+         }
 
         for (int layer = 0; layer < BLOCK_POSITIONS.length; layer++) {
             String imgPath = LAYER_IMAGES[layer];
