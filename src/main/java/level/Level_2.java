@@ -24,7 +24,7 @@ public class Level_2 implements LevelInformation {
 
     @Override
     public int numberOfBlocksToRemove() {
-        return 56;
+        return 50;
     }
 
     @Override
@@ -68,12 +68,17 @@ public class Level_2 implements LevelInformation {
     private final double[][][] BLOCK_POSITIONS = {
             {{40,45}, {40,72}, {40,99}, {40,126}, {40,153}, {40,180}, {40,207}, {40,234}},
             {{120,45}, {120,72}, {120,99}, {120,126}, {120,153}, {120,180}, {120,207}, {120,234}},
-            {{280,45}, {280,72}, {280,99}, {280,126}, {280,153}, {280,180}, {280,207}, {280,234}},
-            {{360,45}, {360,72}, {360,99}, {360,126}, {360,153}, {360,180}, {360,207}, {360,234}},
-            {{440,45}, {440,72}, {440,99}, {440,126}, {440,153}, {440,180}, {440,207}, {440,234}},
+            {{280,45}, {280,72}, {280,99}, {280,126}, {280,153}, {280,180}},
+            {{360,45}, {360,72}, {360,99}, {360,126}, {360,153}, {360,180}},
+            {{440,45}, {440,72}, {440,99}, {440,126}, {440,153}, {440,180}},
             {{600,45}, {600,72}, {600,99}, {600,126}, {600,153}, {600,180}, {600,207}, {600,234}},
             {{680,45}, {680,72}, {680,99}, {680,126}, {680,153}, {680,180}, {680,207}, {680,234}}
     };
+
+    private final double[][] PERMANENT_BLOCK_POSITIONS =
+        {{200,207}, {280,207}, {360,207}, {440,207}, {520,207},
+        {200,234}, {280,234}, {360,234}, {440,234}, {520,234}};
+
     private final String[] LAYER_IMAGES = {
             "/Sprite/02-Breakout-Tiles.png",
             "/Sprite/04-Breakout-Tiles.png",
@@ -83,11 +88,23 @@ public class Level_2 implements LevelInformation {
             "/Sprite/16-Breakout-Tiles.png",
             "/Sprite/18-Breakout-Tiles.png",
     };
+
+    private final String PERMANENT_BLOCK_IMAGE = "/Sprite/17-Breakout-Tiles.png";
+
     @Override
     public List<Block> blocks() {
         List<Block> blocks = new ArrayList<>();
         final double WIDTH = 80;
         final double HEIGHT = 27;
+
+         for (double[] pos : PERMANENT_BLOCK_POSITIONS) {
+            double x = pos[0];
+            double y = pos[1];
+            Point upperLeft = new Point(x, y);
+            Rectangle rect = new Rectangle(upperLeft, WIDTH, HEIGHT);
+            Block permanentBlock = new Block(rect, Color.GRAY, 10000, false, PERMANENT_BLOCK_IMAGE);
+            blocks.add(permanentBlock);
+         }
 
          for (int layer = 0; layer < BLOCK_POSITIONS.length; layer++) {
             String imgPath = LAYER_IMAGES[layer];
