@@ -56,12 +56,25 @@ public class Block implements Sprite, Collidable, HitNotifier {
         hitListeners = new ArrayList<>();
     }
 
+    /**
+     * Khởi tạo block
+     * @param hitPoints Số điểm va chạm để phá block
+     * @param color Màu 
+     * @param rectangle Khối block
+     */
     public Block(int hitPoints, Color color, Rectangle rectangle) {
         this.hitPoints = hitPoints;
         this.color = color;
         this.rectangle = rectangle;
     }
 
+    /**
+     * Khởi tạo block
+     * @param rectangle Khối block
+     * @param color Màu
+     * @param hitPoints Số điểm va chạm để phá block
+     * @param isDeathRegion Có phải vùng "chết" không
+     */
     public Block(Rectangle rectangle, Color color, int hitPoints, boolean isDeathRegion) {
         this.color = color;
         this.hitPoints = hitPoints;
@@ -69,6 +82,14 @@ public class Block implements Sprite, Collidable, HitNotifier {
         this.isDeathRegion = isDeathRegion;
     }
 
+    /**
+     * Khởi tạo block
+     * @param rectangle Khối block
+     * @param color Màu
+     * @param hitPoints Số điểm va chạm để phá block
+     * @param isDeathRegion Có phải vùng "chết" không
+     * @param imagePath Đường dẫn ảnh khối block
+     */
     public Block(Rectangle rectangle, Color color, int hitPoints, boolean isDeathRegion, String imagePath) {
         this.rectangle = rectangle;
         this.color = color;
@@ -93,6 +114,10 @@ public class Block implements Sprite, Collidable, HitNotifier {
         hitListeners = new ArrayList<>();
     }
 
+    /**
+     * Trả về khả năng liệu bóng có đang rơi vào vùng "chết" hay không
+     * @return khả năng bóng rơi vào vùng "chết" hay không
+     */
     public boolean isDeathRegion() {
         return isDeathRegion;
     }
@@ -102,6 +127,9 @@ public class Block implements Sprite, Collidable, HitNotifier {
         return hitPoints;
     }
 
+    /**
+     * Giảm số hit points (độ cứng của block) khi xảy ra va chạm
+     */
     public void decreaseHitPoints() {
         if (hitPoints > 0) {
             hitPoints--;
@@ -113,10 +141,18 @@ public class Block implements Sprite, Collidable, HitNotifier {
         this.containedPowerUp = powerUp;
     }
 
+    /**
+     * Trả về khả năng block có chứa các vật phẩm hay không
+     * @return khả năng block chứa các vật phẩm
+     */
     public boolean hasPowerUp() {
         return containedPowerUp != null;
     }
 
+    /**
+     * Trả về vật phẩm block chứa
+     * @return vật phẩm block chứa
+     */
     public PowerUp getPowerUp() {
         return containedPowerUp;
     }

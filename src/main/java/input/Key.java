@@ -11,5 +11,7 @@ public enum Key {
     CHAR_INPUT,
     MOUSE_LEFT,
     MOUSE_RIGHT,
-    MOUSE_MIDDLE
+    MOUSE_MIDDLE,
+    SPACE
+
 }

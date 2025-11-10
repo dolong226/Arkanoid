@@ -32,6 +32,8 @@ public class GameKeyboard implements Keyboard {
                 return Key.RESUME;
             case C:
                 return Key.CONFIRM;
+            case SPACE:
+                return Key.SPACE;
             default:
                 return null;
         }

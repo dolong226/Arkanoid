@@ -64,8 +64,6 @@ public class Paddle implements Sprite, Collidable, HitNotifier {
      * @param minBound giới hạn min cửa sổ
      * @param maxBound giới hạn max cửa sổ
      */
-
-
     public Paddle(int step, Color color, Rectangle paddle, double minBound, double maxBound){
         this.step = step;
         this.color = color;
@@ -76,22 +74,42 @@ public class Paddle implements Sprite, Collidable, HitNotifier {
         originalWidth = paddle.getWidth();
     }
 
+    /**
+     * Lấy tọa độ X của góc bên trái cùng của thanh paddle
+     * @return tọa độ X 
+     */
     public double getX() {
         return paddle.getUpperLeft().getX();
     }
 
+    /**
+     * Lấy tọa độ Y của góc bên trái cùng của thanh paddle
+     * @return tọa độ Y
+     */
     public double getY() {
         return paddle.getUpperLeft().getY();
     }
 
+    /**
+     * Lấy width thanh paddle
+     * @return width thanh paddle
+     */
     public double getWidth() {
         return paddle.getWidth();
     }
 
+    /**
+     * Lấy width ban đầu của thanh paddle
+     * @return width ban đầu
+     */
     public double getOriginalWidth() {
         return originalWidth;
     }
 
+    /**
+     * 
+     * @param newWidth
+     */
     public void setWidth(double newWidth) {
         Point upperLeft = paddle.getUpperLeft();
         double height = paddle.getHeight();

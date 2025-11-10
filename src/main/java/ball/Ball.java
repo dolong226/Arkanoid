@@ -108,6 +108,10 @@ public class Ball implements Sprite {
 
         gc.restore();
     }
+
+    /**
+     *Load hình ảnh của bóng 
+     */
     private void loadBallImage() {
         String path;
         switch (type) {
@@ -214,12 +218,19 @@ public class Ball implements Sprite {
         return this.type;
     }
 
+    /**
+     * Đặt loại bóng
+     * @param newType loại bóng
+     */
     public void setType(BallType newType) {
         this.type = newType;
         updateBallType();
         loadBallImage();
     }
 
+    /**
+     * Cập nhật loại bóng
+     */
     public void updateBallType(){
         if (this.type == null) {
             this.type = BallType.NORMAL;
@@ -229,6 +240,10 @@ public class Ball implements Sprite {
         loadBallImage();
     }
 
+    /**
+     * Kiểm tra xem bóng có thể xuyên qua block được không
+     * @return Khả năng xuyên qua block
+     */
     public boolean canPenetrate(){
         return this.type.getPenetration();
     }
