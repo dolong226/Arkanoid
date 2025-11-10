@@ -25,6 +25,7 @@ import listener.BlockRemove;
 import listener.ScoreTrackingListener;
 import listener.SoundHitListener;
 import powerup.PowerUp;
+import thread.GameLoopThread;
 import  ui.GameInfoPanel;
 
 import java.util.ArrayList;
@@ -56,6 +57,21 @@ public class GameLevel implements Animation {
     private GameInfoPanel infoPanel;
     private HighScoreTable highScoreTable;
     private GameController gameController;
+
+    /**
+     * Thread riêng để chạy game loop.
+     */
+    private GameLoopThread gameLoopThread;
+    /**
+     * Object để đồng bộ giữa GameLoopThread và JavaFX thread
+     * Cả 2 threads đều phải lock object này khi update game state, render game state.
+     */
+
+    private final Object updateLock = new Object();
+    /**
+     * Có đang sử dụng thread này hay không.
+     */
+    private boolean useThreading = true;
 
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
@@ -116,7 +132,6 @@ public class GameLevel implements Animation {
         if (background != null) {
             sprites.addSprite(background);
         }
-
 
         // Paddle
         double paddleWidth = levelInfo.paddleWidth();
@@ -196,7 +211,70 @@ public class GameLevel implements Animation {
         // chờ enter
         waitingForEnter = true;
         ballsLaunched = false;
+
+        // Khởi tạo game loop thread
+        if (useThreading) {
+            initGameLoopThread();
+        }
     }
+
+    /**
+     * Khởi tạo và start game loop thread.
+     */
+    private void initGameLoopThread() {
+        if (gameLoopThread != null) {
+            // Nếu có thread cũ, dừng nó trước.
+            gameLoopThread.stopGameLoop();
+        }
+
+        gameLoopThread = new GameLoopThread(this);
+
+        System.out.println("GameLevel GameLoopThread initialized");
+    }
+
+    /**
+     * Bắt đầu game loop thread.
+     */
+    public void startGameLoop() {
+        if (useThreading && gameLoopThread != null) {
+            gameLoopThread.startGameLoop();
+            System.out.println("GameLevel Gameloopthread started");
+        }
+    }
+
+    /**
+     * Dừng game loop thread
+     * Gọi khi level kết thúc hoặc game over
+     */
+    public void stopGameLoop() {
+        if (useThreading && gameLoopThread != null) {
+            gameLoopThread.stopGameLoop();
+            gameLoopThread = null;
+            System.out.println("GameLevel GameLoopThread stopped");
+        }
+    }
+
+    /**
+     * Pause game loop
+     * Gọi khi người chơi pause game
+     */
+    public void pauseGameLoop() {
+        if (useThreading && gameLoopThread != null) {
+            gameLoopThread.pauseGameLoop();
+            System.out.println("GameLevel paused");
+        }
+    }
+
+    /**
+     * Resume game loop sau khi pause
+     */
+    public void resumeGameLoop() {
+        if (useThreading && gameLoopThread != null) {
+            gameLoopThread.resumeGameLoop();
+            System.out.println("GameLevel resumed");
+        }
+    }
+
 
     public void run() {
         initialize();
@@ -229,6 +307,16 @@ public class GameLevel implements Animation {
 
     @Override
     public void update(double dt) {
+        // Lock để đảm bảo chỉ 1 thread có thể update tại 1 thời điểm
+        synchronized (updateLock) {
+            updateGameLogic(dt);
+        }
+    }
+
+    /**
+     * Logic thật sự.
+     */
+    public void updateGameLogic(double dt) {
         keyboard.update();
 
         ((GameMouse) input.getMouse()).update();
@@ -255,6 +343,11 @@ public class GameLevel implements Animation {
                 }
                 waitingForEnter = false;
                 ballsLaunched = true;
+
+                // Start game loop khi bắn bóng
+                if (useThreading && gameLoopThread != null && !gameLoopThread.isRunning()) {
+                    startGameLoop();
+                }
             }
 
             return;
@@ -296,6 +389,7 @@ public class GameLevel implements Animation {
             System.out.println("Hết bóng!");
             running = false;
             pendingCallback = onGameOver;
+            stopGameLoop();
             return;
         }
 
@@ -304,12 +398,20 @@ public class GameLevel implements Animation {
             score.increase(100);
             running = false;
             pendingCallback = onLevelComplete;
+
+            stopGameLoop();
             return;
         }
     }
 
     @Override
     public void render(GraphicsContext gc) {
+        synchronized (updateLock) {
+            renderGameGraphics(gc);
+        }
+    }
+
+    public void renderGameGraphics(GraphicsContext gc) {
         // Vẽ background toàn màn hình (bao gồm cả panel)
         gc.setFill(Color.rgb(20, 20, 30));
         gc.fillRect(0, 0, TOTAL_WIDTH, SCREEN_HEIGHT);
@@ -337,6 +439,8 @@ public class GameLevel implements Animation {
         if (!running && pendingCallback != null) {
             Runnable callback = pendingCallback;
             pendingCallback = null;
+
+            stopGameLoop();
 
             callback.run();
         }

@@ -50,7 +50,7 @@ public class GameFlow {
         System.out.println("Đang load âm thanh");
         SoundManager soundManager = SoundManager.getInstance();
         soundManager.preloadAll();
-        soundManager.playMusic(AudioResource.BACKGROUND_MUSIC.name());
+        soundManager.playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
         System.out.println("Am thanh da duoc khoi tao");
 
         // Chạy level đầu tiên
@@ -75,7 +75,7 @@ public class GameFlow {
         SoundManager soundManager = SoundManager.getInstance();
         soundManager.stopAllMusic();
         soundManager.preloadAll();
-        soundManager.playMusic(lv.getBackgroundMusic());
+        soundManager.playMusicAsync(lv.getBackgroundMusic());
 
 
         // khi hoàn thành level, callback gọi level tiếp theo
@@ -156,7 +156,7 @@ public class GameFlow {
                     // reset điểm và quay về menu
                     globalScore.reset();
 
-                    SoundManager.getInstance().playMusic(AudioResource.BACKGROUND_MUSIC.name());
+                    SoundManager.getInstance().playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
 
                     new menu.MainMenuScene(input, stage, () -> {}, highScoreTable).show();
                 }

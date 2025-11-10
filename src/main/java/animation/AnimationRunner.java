@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 
+
 public class AnimationRunner {
     private final double fps;
     private final GraphicsContext gc;

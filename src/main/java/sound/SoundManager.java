@@ -1,12 +1,26 @@
 package sound;
 
+import thread.AudioThread;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.media.AudioClip;
 
+/**
+ * SoundManager - Quản lý âm thanh trong game
+ */
 public class SoundManager {
+
     private static SoundManager instance;
+
+    public static synchronized SoundManager getInstance() {
+        if (instance == null) {
+            instance = new SoundManager();
+        }
+        return instance;
+    }
+
+
     private Map<String, AudioClip> sfxMap = new HashMap<>();
     private Map<String, AudioClip> musicMap = new HashMap<>();
     private double sfxVolume = 1.0;
@@ -14,24 +28,27 @@ public class SoundManager {
     private boolean muted = false;
     private boolean isInitialized = false;
 
+    /**
+     * AudioThread để play sound bất đồng bộ
+     * Chỉ khởi tạo khi preloadAll() được gọi
+     */
+    private AudioThread audioThread;
+
     private SoundManager() {
         this.sfxMap = new HashMap<>();
         this.musicMap = new HashMap<>();
     }
 
-    public static synchronized SoundManager getInstance() {
-        if (instance == null ) {
-            instance = new SoundManager();
-        }
-        return instance;
-    }
-
+    /**
+     * load sound
+     */
     private void loadSounds() {
-        for ( AudioResource resource : AudioResource.values()) {
+        for (AudioResource resource : AudioResource.values()) {
             String key = resource.name();
             String path = null;
             boolean isMusic = false;
-            switch ( resource ) {
+
+            switch (resource) {
                 case BACKGROUND_MUSIC:
                     path = "/sound/sound-background.mp3";
                     isMusic = true;
@@ -61,46 +78,52 @@ public class SoundManager {
                     path = "/sound/sound-game-over.mp3";
                     break;
             }
+
             if (path != null) {
                 loadAudioClip(key, path, isMusic);
             } else {
-                System.out.println("Warning: AudioResource " + key + " not found.");
+                System.out.println("SoundManager Warning: AudioResource " + key + " not found.");
             }
         }
     }
 
-    private void loadAudioClip (String key, String path, boolean isMusic) {
+    private void loadAudioClip(String key, String path, boolean isMusic) {
         try {
             URL url = SoundManager.class.getResource(path);
             if (url == null) {
-                System.out.println("Resource not found in classpath: " + path);
+                System.out.println("SoundManager Resource not found: " + path);
                 return;
             }
             AudioClip clip = new AudioClip(url.toExternalForm());
-            if(isMusic) {
+            if (isMusic) {
                 musicMap.put(key, clip);
             } else {
                 sfxMap.put(key, clip);
             }
         } catch (Exception e) {
-            System.out.println("Error loading" + key + ":" + e.getMessage());
+            System.out.println("SoundManager Error loading " + key + ": " + e.getMessage());
         }
     }
 
+
+    /**
+     * Play sound effect
+     */
     public void playSFX(String key) {
         playSFX(key, sfxVolume);
     }
 
     public void playSFX(String key, double volume) {
-        if ( muted || !isInitialized ) {
+        if (muted || !isInitialized) {
             return;
         }
+
         AudioClip clip = sfxMap.get(key);
         if (clip != null) {
             clip.setVolume(volume * sfxVolume);
             clip.play();
         } else {
-            System.out.println("SFX not found: " + key);
+            System.out.println("SoundManager SFX not found: " + key);
         }
     }
 
@@ -108,16 +131,51 @@ public class SoundManager {
         playMusic(key, true);
     }
 
+
     public void playMusic(String key, boolean loop) {
-        if ( muted || !isInitialized ) {
+        if (muted || !isInitialized) {
             return;
         }
+
+        // Stop all music trước (đồng bộ)
         stopAllMusic();
+
         AudioClip newClip = musicMap.get(key);
         if (newClip != null) {
             newClip.setCycleCount(loop ? AudioClip.INDEFINITE : 1);
             newClip.setVolume(musicVolume);
             newClip.play();
+        } else {
+            System.out.println("[SoundManager] Music not found: " + key);
+        }
+    }
+
+
+    public void playSFXAsync(String key) {
+        if (audioThread != null && !audioThread.isShutdown()) {
+            audioThread.playSFXAsync(key);
+        } else {
+            playSFX(key);
+        }
+    }
+
+    public void playSFXAsync(String key, double volume) {
+        if (audioThread != null && !audioThread.isShutdown()) {
+            audioThread.playSFXAsync(key, volume);
+        } else {
+            playSFX(key, volume);
+        }
+    }
+
+    public void playMusicAsync(String key) {
+        playMusicAsync(key, true);
+    }
+
+    public void playMusicAsync(String key, boolean loop) {
+        if (audioThread != null && !audioThread.isShutdown()) {
+            audioThread.playMusicAsync(key, loop);
+        } else {
+            playMusic(key, loop);
         }
     }
 
@@ -129,7 +187,7 @@ public class SoundManager {
         }
     }
 
-    public void stopSFX (String key) {
+    public void stopSFX(String key) {
         AudioClip clip = sfxMap.get(key);
         if (clip != null) {
             clip.stop();
@@ -148,7 +206,6 @@ public class SoundManager {
         for (AudioClip clip : musicMap.values()) {
             clip.setVolume(this.musicVolume);
         }
-
     }
 
     public void setMasterVolume(double volume) {
@@ -173,6 +230,7 @@ public class SoundManager {
         return muted;
     }
 
+
     public boolean isMusicPlaying(String key) {
         AudioClip clip = musicMap.get(key);
         return clip != null && clip.isPlaying();
@@ -186,20 +244,52 @@ public class SoundManager {
         return musicVolume;
     }
 
+
     public void preloadAll() {
+        System.out.println("SoundManager Preloading sounds");
+
+        // Load tất cả audio clips
         loadSounds();
+
+        // Khởi tạo AudioThread
+        this.audioThread = AudioThread.getInstance(this);
+
         this.isInitialized = true;
+        System.out.println("[SoundManager] Preload complete - " +
+                sfxMap.size() + " SFX, " +
+                musicMap.size() + " music tracks loaded");
     }
 
+
+    /**
+     * Có thể dùng để clear cache nếu cần
+     */
     public void cleanup() {
-
+        // todo
     }
 
+    /**
+     * Dispose - dọn dẹp hoàn toàn khi thoát game
+     * Stop tất cả sounds, shutdown AudioThread, clear maps
+     */
     public final void dispose() {
+        System.out.println("SoundManager Disposing");
+
+        // Stop tất cả sounds
         stopAllMusic();
         sfxMap.values().forEach(AudioClip::stop);
+
+        // Shutdown AudioThread
+        if (audioThread != null) {
+            audioThread.shutdown();
+            audioThread = null;
+        }
+
+        // Clear maps
         sfxMap.clear();
         musicMap.clear();
+
+        // Reset singleton
         instance = null;
     }
 }
