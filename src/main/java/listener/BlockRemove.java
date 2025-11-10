@@ -32,7 +32,7 @@ public class BlockRemove implements HitListener {
                 PowerUp powerUp = beingHit.getPowerUp();
                 game.addSprite(powerUp);
                 game.addCollidable(powerUp);
-                SoundManager.getInstance().playSFX(AudioResource.POWERUP_SPAWN.name());
+                SoundManager.getInstance().playSFXAsync(AudioResource.POWERUP_SPAWN.name());
                 System.out.println("power up");
             }
             game.removeSprite(beingHit);

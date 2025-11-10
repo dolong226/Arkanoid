@@ -59,7 +59,7 @@ public class MainMenuScene {
 
         SoundManager soundManager = SoundManager.getInstance();
         soundManager.preloadAll();
-        soundManager.playMusic(AudioResource.BACKGROUND_MUSIC.name());
+        soundManager.playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
 
 
         stage.setScene(scene);
