@@ -104,7 +104,7 @@ public class GameLevel implements Animation {
         final int WALL_THICKNESS = 20;
 
         // Khởi tạo Info Panel
-        infoPanel = new GameInfoPanel(SCREEN_WIDTH + 10, 10, PANEL_WIDTH - 20, SCREEN_HEIGHT - 20);
+        infoPanel = new GameInfoPanel(SCREEN_WIDTH,0, PANEL_WIDTH, SCREEN_HEIGHT);
         infoPanel.setLevelName(levelInfo.levelName());
         infoPanel.setCurrentScore(score);
         infoPanel.setHighScoreTable(highScoreTable);

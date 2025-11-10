@@ -66,13 +66,6 @@ public class SettingsPopup {
             soundManager.setSFXVolume(vol);
         });
 
-        // Nút chọn Level
-        Label levelLabel = new Label("Select Level");
-        levelLabel.setStyle("-fx-text-fill: #00ff88; -fx-font-size: 16; -fx-font-weight: bold;");
-
-        Button level1 = createLevelButton("LEVEL 1");
-        Button level2 = createLevelButton("LEVEL 2");
-        Button level3 = createLevelButton("LEVEL 3");
 
         // Nút Close
         Button close = new Button("Close");
@@ -80,8 +73,7 @@ public class SettingsPopup {
         close.setOnAction(e -> stage.close());
 
         root.getChildren().addAll(
-                title, musicLabel, musicSlider, sfxLabel, sfxSlider,
-                levelLabel, level1, level2, level3, close
+                title, musicLabel, musicSlider, sfxLabel, sfxSlider, close
         );
 
         Scene scene = new Scene(root);

@@ -1,4 +1,4 @@
-// animation/GameOverAnimation.java
+
 package animation;
 
 import data.HighScoreTable;
@@ -9,6 +9,10 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import geometry.Point;
+import menu.MenuImageButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameOverAnimation implements Animation {
     private final Canvas canvas;
@@ -17,16 +21,12 @@ public class GameOverAnimation implements Animation {
     private final int finalScore;
     private final HighScoreTable highScoreTable;
     private final Runnable onBackToMenu;
+    private final List<MenuImageButton> buttons;
 
     private Image gameOverBg;
 
-    // Nút HOME
-    private double homeX = 300, homeY = 350, homeW = 200, homeH = 60;
-    private boolean homeHovered = false;
-
-    // Nút EXIT
-    private double exitX = 300, exitY = 430, exitW = 200, exitH = 60;
-    private boolean exitHovered = false;
+    private Image quitNormal, quitHover;
+    private Image homeNormal, homeHover;
 
     private boolean shouldStop = false;
 
@@ -35,45 +35,59 @@ public class GameOverAnimation implements Animation {
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
         this.input = input;
+        this.buttons = new ArrayList<>();
         this.finalScore = finalScore;
         this.highScoreTable = highScoreTable;
         this.onBackToMenu = onBackToMenu;
 
         loadImage();
-
+        createButtons();
     }
 
     public void loadImage() {
         Class<?> clazz = getClass();
 
-        gameOverBg = new Image(clazz.getResourceAsStream("/image/game_over_temp_image.jpg"));
+        gameOverBg = new Image(clazz.getResourceAsStream("/Default/gameover_bg.jpg"));
+
+        quitNormal = new Image(clazz.getResourceAsStream("/Default/quit1.png"));
+        quitHover = new Image(clazz.getResourceAsStream("/Default/quit2.png"));
+        homeNormal = new Image(clazz.getResourceAsStream("/Default/quit1.png"));
+        homeHover = new Image(clazz.getResourceAsStream("/Default/quit2.png"));
+
     }
     @Override
     public void update(double dt) {
         Point mouse = input.getMousePosition();
 
-        // Cập nhật hover
-        homeHovered = isInside(mouse, homeX, homeY, homeW, homeH);
-        exitHovered = isInside(mouse, exitX, exitY, exitW, exitH);
+        //  Hover
+        for (MenuImageButton btn : buttons) {
+            btn.updateHover(mouse);
+        }
 
-        // Xử lý click
+        //  Click (trước khi reset)
         if (input.isClickLeft()) {
-            if (homeHovered) {
-                shouldStop = true;
-                onBackToMenu.run();
-            } else if (exitHovered) {
-                System.exit(0);
+            for (MenuImageButton btn : buttons) {
+                if (btn.isClicked(mouse)) {
+                    handleClick(btn.text);
+                    return;
+                }
             }
         }
 
+        //  Reset justPressed
         input.getMouse().update();
+    }
+
+    private void createButtons() {
+        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 400, 240, 200, 60));
+        buttons.add(new MenuImageButton("HOME", homeNormal, homeHover, 400, 340, 200, 60));
     }
 
     @Override
     public void render(GraphicsContext gc) {
         // Nền
         if (gameOverBg != null) {
-            gc.drawImage(gameOverBg, 0, 0, 800, 600);
+            gc.drawImage(gameOverBg, 0, 0, 980, 600);
         } else {
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, 800, 600);
@@ -84,28 +98,21 @@ public class GameOverAnimation implements Animation {
         gc.setFont(Font.font("Arial", 36));
         gc.fillText("Score: " + finalScore, 300, 250);
 
-        // Vẽ nút HOME
-        drawButton(gc, homeX, homeY, homeW, homeH, "HOME", Color.GREEN.darker(), Color.GREEN, homeHovered);
-
-        // Vẽ nút EXIT
-        drawButton(gc, exitX, exitY, exitW, exitH, "EXIT", Color.RED.darker(), Color.RED, exitHovered);
+        for (MenuImageButton btn : buttons) {
+            btn.render(gc);
+        };
     }
 
-    private void drawButton(GraphicsContext gc, double x, double y, double w, double h,
-                            String text, Color base, Color hover, boolean isHovered) {
-        gc.setFill(isHovered ? hover : base);
-        gc.fillRoundRect(x, y, w, h, 20, 20);
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 28));
-        double textWidth = gc.getFont().getSize() * text.length() / 3.0;
-        double textX = x + (w - textWidth) / 2;
-        double textY = y + h / 2 + 10;
-        gc.fillText(text, textX, textY);
-    }
 
-    private boolean isInside(Point p, double x, double y, double w, double h) {
-        return p.getX() >= x && p.getX() <= x + w && p.getY() >= y && p.getY() <= y + h;
+    private void handleClick(String text) {
+        System.out.println("Clicked: " + text);
+        if ("QUIT".equals(text)) {
+            System.exit(0);
+        } else if ("HOME".equals(text)) {
+            shouldStop = true;
+            onBackToMenu.run();
+        }
     }
 
     @Override

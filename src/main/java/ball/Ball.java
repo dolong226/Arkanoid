@@ -112,16 +112,16 @@ public class Ball implements Sprite {
         String path;
         switch (type) {
             case NORMAL:
-                path = "/Default/ball_blue_large.png";
+                path = "/Sprite/58-Breakout-Tiles.png";
                 break;
             case FIRE:
                 path = "/Default/ball_red_large.png";
                 break;
             case BIG:
-                path = "/Default/ball_blue_large.png";
+                path = "/Sprite/58-Breakout-Tiles.png";
                 break;
             default:
-                path = "/Default/ball_blue_large.png";
+                path = "/Sprite/58-Breakout-Tiles.png";
         }
         this.ballImage = ImageLoad.load(path);
 

@@ -6,8 +6,10 @@ import geometry.Point;
 import input.PlayerInput;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import level.ImageBackground;
 
 import java.util.List;
@@ -41,20 +43,15 @@ public class HighScoreAnimation implements Animation {
     @Override
     public void render(GraphicsContext gc) {
         // background
-        ImageBackground bg = new ImageBackground("/Default/background_blue.png");
-        bg.render(gc);
-
-        // Tiêu đề
-        gc.setFill(Color.GOLD);
-        gc.setFont(Font.font("Arial", 48));
-        gc.fillText("HIGH SCORES", 350, 100);
+        Image bg = new Image("/Default/highscore_Bg.png");
+        gc.drawImage(bg, 0 ,0, 980, 600);
 
         // Bảng điểm
         List<HighScoreTable.ScoreEntry> topScores = highScoreTable.getTopScores();
-        gc.setFont(Font.font("Arial", 24));
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 25));
         gc.setFill(Color.WHITE);
 
-        int y = 180;
+        int y = 230;
         for (int i = 0; i < 5; i++) {
             String rank = "#" + (i + 1);
             String name = i < topScores.size() ? topScores.get(i).name : "---";
@@ -62,23 +59,20 @@ public class HighScoreAnimation implements Animation {
 
             // Rank (màu vàng cho top 3)
             gc.setFill(i < 3 ? Color.GOLD : Color.WHITE);
-            gc.fillText(rank, 200, y);
+            gc.fillText(rank, 150, y);
 
-            // Tên
-            gc.setFill(Color.CYAN);
-            gc.fillText(name, 350, y);
 
             // Điểm
-            gc.setFill(Color.GREEN);
-            gc.fillText(score, 550, y);
+            gc.setFill(Color.BROWN);
+            gc.fillText(score, 470, y);
 
             y += 50;
         }
 
         // Hướng dẫn thoát
         gc.setFill(Color.BLACK);
-        gc.setFont(Font.font("Arial", 20));
-        gc.fillText("Nhấn ESC để quay lại", 300, 520);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 23));
+        gc.fillText("NHẤN ESC ĐỂ QUAY LẠI", 400, 520);
     }
 
     @Override
