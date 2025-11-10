@@ -75,7 +75,7 @@ public class SoundManager {
                     path = "/sound/sound-level.mp3";
                     break;
                 case GAME_OVER:
-                    path = "/sound/sound-game-over.mp3";
+                    path = "/sound/sound_when_you_lose.mp3";
                     break;
             }
 
