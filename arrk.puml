@@ -1,0 +1,1043 @@
+@startuml
+interface level.BlockCreator {
+~ Block createBlock(double,double)
+~ double getBlockWidth()
+~ double getBlockHeight()
+}
+
+class game.GameController {
+- SoundManager soundManager
+- String currentMusicKey
++ void initialize()
++ void onBallHitPaddle()
++ void onBallHitBrick()
++ void onBrickDestroy()
++ void onPowerUpCollected()
++ void onGameOver()
++ void onLevelComplete()
++ void toggleSound()
++ void setCurrentMusic(String)
++ void onGamePause()
++ void onGameResume()
+}
+
+
+class animation.PauseAnimation {
+- long durationMs
+- long startTime
++ <<Create>> PauseAnimation(long)
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
+}
+
+
+class animation.GameOverAnimation {
+- Canvas canvas
+- GraphicsContext gc
+- PlayerInput input
+- int finalScore
+- HighScoreTable highScoreTable
+- Runnable onBackToMenu
+- List<MenuImageButton> buttons
+- Image gameOverBg
+- Image quitNormal
+- Image homeNormal
+- boolean shouldStop
++ <<Create>> GameOverAnimation(Canvas,PlayerInput,int,HighScoreTable,Runnable)
++ void loadImage()
++ void update(double)
+- void createButtons()
++ void render(GraphicsContext)
+- void handleClick(String)
++ boolean isFinished()
+}
+
+
+class collidable.Block {
+- List<HitListener> hitListeners
+- Rectangle rectangle
+- Color color
+- String imagePath
+- Image cachedImage
+- int hitPoints
+- int maxHitPoints
+- boolean isDeathRegion
+- PowerUp containedPowerUp
++ <<Create>> Block(Rectangle,Color)
++ <<Create>> Block(int,Color,Rectangle)
++ <<Create>> Block(Rectangle,Color,int,boolean)
++ <<Create>> Block(Rectangle,Color,int,boolean,String)
++ <<Create>> Block(Point,int,int)
++ boolean isDeathRegion()
++ int getHitPoints()
++ void decreaseHitPoints()
++ void setPowerUp(PowerUp)
++ boolean hasPowerUp()
++ PowerUp getPowerUp()
++ void render(GraphicsContext)
++ void update(double)
++ Velocity hit(Ball,Point,Velocity)
++ void addHitListener(HitListener)
++ void removeHitListener(HitListener)
++ void notifyHit(Ball,Point)
++ Rectangle getCollisionRectangle()
++ Color getColor()
+}
+
+
+class game.SpriteCollection {
+- List<Sprite> sprites
++ List<Sprite> getSprites()
++ void addSprite(Sprite)
++ void removeSprite(Sprite)
++ void update(double)
++ void render(GraphicsContext)
+}
+
+
+enum sound.AudioResource {
++  BALL_HIT_PADDLE
++  BALL_HIT_BRICK
++  BRICK_DESTROY
++  POWERUP_COLLECT
++  POWERUP_SPAWN
++  WALL_HIT
++  GAME_OVER
++  LEVEL_COMPLETE
++  BACKGROUND_MUSIC
+}
+
+class listener.HitEvent {
+- Ball hitter
+- Collidable hitObject
+- Point collisionPoint
++ <<Create>> HitEvent(Ball,Collidable,Point)
++ Ball getHitter()
++ Collidable getHitObject()
++ Point getCollisionPoint()
+}
+
+
+class game.GameFlow {
+- AnimationRunner runner
+- Keyboard keyboard
+- Counter globalScore
+- PlayerInput input
+- HighScoreTable highScoreTable
+- Stage stage
+- Canvas canvas
+- GameController gameController
++ <<Create>> GameFlow(AnimationRunner,PlayerInput,Counter,HighScoreTable,Stage,Canvas)
++ void runLevels(List<LevelInformation>)
+- void runLevel(int,List<LevelInformation>,Animation)
+- void showGameOver(Animation)
+- void showVictory()
++ GameController getGameController()
+}
+
+
+class menu.Selection {
+- Rectangle rectangle
+- Color color
+- String message
+- T returnVal
++ <<Create>> Selection(String,T,Rectangle,Color)
++ boolean isClicked(Mouse)
++ T getReturnVal()
++ String getMessage()
++ void render(GraphicsContext)
+}
+
+
+class thread.AudioThread {
+- {static} AudioThread instance
+- ExecutorService executor
+- SoundManager soundManager
+- boolean isShutdown
+- <<Create>> AudioThread(SoundManager)
++ {static} AudioThread getInstance(SoundManager)
++ {static} AudioThread getInstance()
++ void playSFXAsync(String)
++ void playSFXAsync(String,double)
++ void playMusicAsync(String,boolean)
++ void stopMusicAsync(String)
++ void stopAllMusicAsync()
++ void shutdown()
++ boolean isShutdown()
++ int getPendingTaskCount()
+}
+
+
+interface level.LevelInformation {
+~ int numberOfBalls()
+~ List<Velocity> initialBallVelocities()
+~ double paddleSpeed()
+~ double paddleWidth()
+~ String levelName()
+~ Sprite getBackground()
+~ List<Block> blocks()
+~ int numberOfBlocksToRemove()
+~ String getBackgroundMusic()
+}
+
+class menu.MenuAnimation {
+- List<Selection<T>> selections
+- T status
+- PlayerInput input
+- Sprite background
++ <<Create>> MenuAnimation(Sprite,PlayerInput)
++ void addSelection(String,T,Rectangle,Color)
++ T getStatus()
++ void reset()
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
+}
+
+
+class input.MouseState {
+- Set<Key> pressedButtons
+- Set<Key> justPressedButtons
+- Point mousePosition
++ <<Create>> MouseState()
++ void pressButton(Key)
++ void releaseButton(Key)
++ void setMousePosition(double,double)
++ boolean isPressed(Key)
++ boolean isJustPressed(Key)
++ Point getMousePosition()
++ void resetJustPressed()
+}
+
+
+class ui.GameInfoPanel {
+- double x
+- double y
+- double width
+- double height
+- String levelName
+- Counter currentScore
+- HighScoreTable highScoreTable
+- Counter remainingBalls
+- Counter remainingBlocks
+- Image backgroundImage
+- boolean imageLoaded
+- {static} Color PANEL_BG
+- {static} Color BORDER_COLOR
+- {static} Color TITLE_COLOR
+- {static} Color TEXT_COLOR
+- {static} Color VALUE_COLOR
++ <<Create>> GameInfoPanel(double,double,double,double)
+- void loadBackground()
++ void setLevelName(String)
++ void setRemainingBalls(Counter)
++ void setRemainingBlocks(Counter)
++ void setCurrentScore(Counter)
++ void setHighScoreTable(HighScoreTable)
++ void render(GraphicsContext)
+- int getHighScore()
+}
+
+
+interface animation.Animation {
+~ void update(double)
+~ void render(GraphicsContext)
+~ boolean isFinished()
+}
+
+class level.GradientBackground {
+- LinearGradient gradient
++ <<Create>> GradientBackground()
++ void render(GraphicsContext)
++ void update(double)
+}
+
+
+enum powerup.PowerUpType {
++  EXPAND_PADDLE
++  SHRINK_PADDLE
++  EXTRA_BALL
++  MULTI_BALL
++  FIRE_BALL
++  BIG_BALL
++  SLOW_BALL
++  FAST_BALL
++  EXTRA_LIFE
+- Color color
+- String icon
+- double duration
+- String displayName
+~ <<Create>> PowerUpType(Color,String,double,String)
++ Color getColor()
++ double getDuration()
++ String getIcon()
++ boolean isPermanent()
++ String getDisplayName()
++ {static} PowerUpType random()
+}
+
+
+interface collidable.Collidable {
+~ Rectangle getCollisionRectangle()
+~ Velocity hit(Ball,Point,Velocity)
+}
+
+class animation.HighScoreAnimation {
+- Canvas canvas
+- GraphicsContext gc
+- PlayerInput input
+- HighScoreTable highScoreTable
+- boolean shouldStop
++ <<Create>> HighScoreAnimation(Canvas,PlayerInput,HighScoreTable)
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
+}
+
+
+class sound.SoundManager {
+- {static} SoundManager instance
+- Map<String,AudioClip> sfxMap
+- Map<String,AudioClip> musicMap
+- double sfxVolume
+- double musicVolume
+- boolean muted
+- boolean isInitialized
+- AudioThread audioThread
+- <<Create>> SoundManager()
++ {static} SoundManager getInstance()
+- void loadSounds()
+- void loadAudioClip(String,String,boolean)
++ void playSFX(String)
++ void playSFX(String,double)
++ void playMusic(String)
++ void playMusic(String,boolean)
++ void playSFXAsync(String)
++ void playSFXAsync(String,double)
++ void playMusicAsync(String)
++ void playMusicAsync(String,boolean)
++ void stopAllMusic()
++ void stopSFX(String)
++ void setSFXVolume(double)
++ void setMusicVolume(double)
++ void setMasterVolume(double)
++ void setMuted(boolean)
++ boolean toggleMuted()
++ boolean isMuted()
++ boolean isMusicPlaying(String)
++ double getSFXVolume()
++ double getMusicVolume()
++ void preloadAll()
++ void cleanup()
++ void dispose()
+}
+
+
+class listener.ScoreTrackingListener {
+- Counter score
++ <<Create>> ScoreTrackingListener(Counter)
++ void hitEvent(HitEvent)
+}
+
+
+class ui.SettingsPopup {
+- Stage stage
+- SoundManager soundManager
+- GameController gameController
++ <<Create>> SettingsPopup(Stage,GameController)
++ void show()
+- Button createLevelButton(String)
+}
+
+
+class level.Level_3 {
+- double[][][] BLOCK_POSITIONS
+- double[][] PERMANENT_BLOCK_POSITIONS
+- String PERMANENT_BLOCK_IMAGE
+- String[] LAYER_IMAGES
++ int numberOfBalls()
++ int numberOfBlocksToRemove()
++ List<Velocity> initialBallVelocities()
++ double paddleSpeed()
++ double paddleWidth()
++ String levelName()
++ Sprite getBackground()
++ List<Block> blocks()
++ String getBackgroundMusic()
+- Color getRandomColor()
+- PowerUpType getRandomPowerUpType()
+}
+
+
+interface game.Sprite {
+~ void render(GraphicsContext)
+~ void update(double)
+}
+
+class input.PlayerInput {
+- Keyboard keyboard
+- Mouse mouse
++ <<Create>> PlayerInput(Keyboard,Mouse)
++ Keyboard getKeyboard()
++ Mouse getMouse()
++ boolean isMoveLeft()
++ boolean isMoveRight()
++ boolean isActivatePower()
++ boolean isPause()
++ boolean isExit()
++ boolean isConfirm()
++ char readChar()
++ boolean isClickLeft()
++ Point getMousePosition()
+}
+
+
+class data.HighScoreTable {
+- {static} int MAX_SCORES
+- {static} String FILENAME
+- List<ScoreEntry> scores
++ <<Create>> HighScoreTable()
++ void addScore(String,int)
++ List<ScoreEntry> getTopScores()
+- void loadFromFile()
+- void saveToFile()
+}
+
+
+class data.HighScoreTable$ScoreEntry {
++ String name
++ int score
++ <<Create>> ScoreEntry(String,int)
+}
+
+
+class input.KeyboardState {
+- Set<Key> pressedKeys
+- Set<Key> justPressedKeys
+- Set<Key> previousPressedKeys
++ <<Create>> KeyboardState()
++ <<Create>> KeyboardState(Set<Key>,Set<Key>,Set<Key>)
++ void pressedKey(Key)
++ void releaseKey(Key)
++ boolean isPressed(Key)
++ boolean wasJustPressed(Key)
++ void update()
+}
+
+
+interface input.Keyboard {
+~ boolean isPressed(Key)
+~ boolean wasJustPressed(Key)
+~ void update()
+}
+
+class game.GameLevel {
+- LevelInformation levelInfo
+- SpriteCollection sprites
+- GameEnvironment environment
+- AnimationRunner animationRunner
+- Paddle paddle
+- Counter score
+- List<Ball> balls
+- Counter remainingBlocks
+- Counter remainingBalls
+- Keyboard keyboard
+- boolean running
+- PlayerInput input
+- Runnable onLevelComplete
+- Runnable onGameOver
+- Runnable pendingCallback
+- boolean waitingForEnter
+- boolean ballsLaunched
+- List<Velocity> initialBallVelocities
+- List<PowerUp> activePowerUps
+- GameInfoPanel infoPanel
+- HighScoreTable highScoreTable
+- GameController gameController
+- GameLoopThread gameLoopThread
+- Object updateLock
+- boolean useThreading
+- boolean isPaused
++ {static} int SCREEN_WIDTH
++ {static} int SCREEN_HEIGHT
++ {static} int PANEL_WIDTH
++ {static} int TOTAL_WIDTH
++ {static} int PADDLE_HEIGHT
++ {static} int BALL_RADIUS
++ {static} int DEATH_REGION_HEIGHT
++ <<Create>> GameLevel(LevelInformation,PlayerInput,AnimationRunner,GameController)
++ void setHighScoreTable(HighScoreTable)
++ GameEnvironment getEnvironment()
++ void setOnLevelComplete(Runnable)
++ void setOnGameOver(Runnable)
++ Counter getScore()
++ int getRemainingBlocks()
++ Counter getRemainingBalls()
++ List<Ball> getBalls()
++ Paddle getPaddle()
++ void initialize()
+- void initGameLoopThread()
++ void startGameLoop()
++ void stopGameLoop()
++ void pauseGameLoop()
++ void resumeGameLoop()
++ void run()
++ void playOneTurn()
++ void update(double)
++ void updateGameLogic(double)
+- void pauseGame()
+- void resumeGame()
++ boolean isPaused()
++ void render(GraphicsContext)
++ void renderGameGraphics(GraphicsContext)
++ boolean isFinished()
++ void addSprite(Sprite)
++ void addCollidable(Collidable)
++ void removeSprite(Sprite)
++ void removeCollidable(Collidable)
+}
+
+
+class listener.BlockRemove {
+- GameLevel game
+- Counter remainingBlocks
++ <<Create>> BlockRemove(GameLevel,Counter)
++ void hitEvent(HitEvent)
+}
+
+
+class ball.Velocity {
+- double Dx
+- double Dy
++ <<Create>> Velocity(double,double)
++ {static} Velocity fromAngleAndSpeed(double,double)
++ Point applyToPoint(Point)
++ Point applyToPoint(Point,double)
++ double getDx()
++ double getDy()
++ void setDx(double)
++ void setDy(double)
+}
+
+
+interface input.Mouse {
+~ boolean isPressed(Key)
+~ boolean wasJustPressed(Key)
+~ Point getMousePosition()
+~ void update()
+~ void reset()
+}
+
+class game.GameEnvironment {
+- List<Collidable> collisionList
++ void addCollidable(Collidable)
++ void removeCollidable(Collidable)
++ CollisionInfo getClosetCollision(Line)
++ List<Collidable> getCollisionList()
+}
+
+
+class input.MultiInputHandler {
+- List<PlayerInput> players
++ <<Create>> MultiInputHandler()
++ <<Create>> MultiInputHandler(GameKeyboard,GameMouse)
++ PlayerInput getPlayerInput(int)
+}
+
+
+class input.GameKeyboard {
+- KeyboardState state
+- KeyTimer timer
++ <<Create>> GameKeyboard()
++ <<Create>> GameKeyboard(KeyboardState,KeyTimer)
+- Key mapKeyCodeToKey(KeyEvent)
++ void onKeyPressed(KeyEvent)
++ void onKeyReleased(KeyEvent)
++ boolean isPressed(Key)
++ boolean wasJustPressed(Key)
++ void update()
+}
+
+
+class geometry.Line {
+- Point start
+- Point end
+- {static} double EPSILON
++ <<Create>> Line(Point,Point)
++ <<Create>> Line(double,double,double,double)
++ Point getStart()
++ Point getEnd()
++ boolean isIntersecting(Line)
++ Point intersectionPoint(Line)
++ Point closestIntersectionToStartOfLine(Rectangle)
+}
+
+
+class ui.ImageLoad {
+- {static} Map<String,Image> cache
+- {static} ResourceLoaderThread loaderThread
++ {static} void initialize()
++ {static} Image load(String)
+- {static} Image loadFromInputStream(String)
++ {static} Future<Image> loadAsync(String)
+- {static} Future<Image> wrapFutureWithCache(String,Future<Image>)
++ {static} Future<Void> preload(List<String>)
++ {static} boolean preloadSync(String)
++ {static} Image getFromCache(String)
++ {static} boolean isLoaded(String)
++ {static} void clearCache()
++ {static} int getCacheSize()
++ {static} void shutdown()
+}
+
+
+class level.Level_1 {
+- double[][][] BLOCK_POSITIONS
+- String[] LAYER_IMAGES
++ int numberOfBalls()
++ int numberOfBlocksToRemove()
++ List<Velocity> initialBallVelocities()
++ double paddleSpeed()
++ double paddleWidth()
++ String levelName()
++ Sprite getBackground()
++ List<Block> blocks()
++ String getBackgroundMusic()
+- Color getRandomColor()
+- PowerUpType getRandomPowerUpType()
+}
+
+
+enum input.Key {
++  LEFT
++  RIGHT
++  ENTER
++  ESC
++  PAUSE
++  RESUME
++  CONFIRM
++  CHAR_INPUT
++  MOUSE_LEFT
++  MOUSE_RIGHT
++  MOUSE_MIDDLE
+}
+
+enum ball.BallType {
++  NORMAL
++  FIRE
++  BIG
+- double sizeBallMultiplier
+- Color defaultColor
+- boolean canPenetrate
+~ <<Create>> BallType(double,Color,boolean)
++ double getSizeBallMultiplier()
++ Color getColor()
++ boolean getPenetration()
+}
+
+
+class ui.GameOver {
+- Stage stage
+- int finalScore
+- HighScoreTable highScoreTable
+- Runnable onBackToMenu
++ <<Create>> GameOver(Stage,int,HighScoreTable,Runnable)
++ void show()
+- Button createButton(String,String,String,Runnable)
+}
+
+
+class collidable.Paddle {
+- int step
+- Color color
+- Rectangle paddle
+- double minBoundary
+- double maxBoundary
+- double[] regionBorders
+- double originalWidth
+- List<HitListener> hitListeners
++ <<Create>> Paddle()
++ <<Create>> Paddle(int,Color,Rectangle,double,double)
++ double getX()
++ double getY()
++ double getWidth()
++ double getOriginalWidth()
++ void setWidth(double)
++ void setX(double)
++ void moveLeft(double)
++ void moveRight(double)
++ Rectangle getCollisionRectangle()
++ void expandWidth(double)
++ void resetWidth()
++ void render(GraphicsContext)
++ void update(double)
++ Velocity hit(Ball,Point,Velocity)
++ int checkRegion(Point)
++ void differentVelocity(Velocity,Velocity[])
++ Velocity changeVelocity(int,Velocity)
++ void addHitListener(HitListener)
++ void removeHitListener(HitListener)
+- void notifyHit(Ball,Point)
+}
+
+
+class animation.AnimationRunner {
+- double fps
+- GraphicsContext gc
+- AnimationTimer currentTimer
++ <<Create>> AnimationRunner(GraphicsContext,double)
++ GraphicsContext getGraphicsContext()
++ void run(Animation)
++ {static} void makeCanvasResizable(Canvas,Pane)
+}
+
+
+class thread.GameLoopThread {
+- {static} double TARGET_FPS
+- {static} long FRAME_TIME_MS
+- {static} double DELTA_TIME
+- GameLevel gameLevel
+- boolean running
+- boolean paused
+- Object pauseLock
++ <<Create>> GameLoopThread(GameLevel)
++ void startGameLoop()
++ void stopGameLoop()
++ void pauseGameLoop()
++ void resumeGameLoop()
++ boolean isRunning()
++ boolean isPaused()
++ void run()
+}
+
+
+class geometry.Rectangle {
+- double width
+- double height
+- Point upperLeft
++ <<Create>> Rectangle(Point,double,double)
++ Point getUpperLeft()
++ double getWidth()
++ double getHeight()
++ void rectangle4Corners(Point[])
++ void rectangle4Sides(Line[],Point[])
++ java.util.List<Point> intersectionPoints(Line)
++ boolean contains(Point)
++ boolean intersects(Rectangle)
+}
+
+
+class input.KeyTimer {
+- Map<Key,Long> lastPressedTime
+- long debounceDelay
++ {static} long DEFAULT_DEBOUNCE_DELAY
++ <<Create>> KeyTimer(long)
++ long getDebounceDelay()
++ void setDebounceDelay(long)
++ boolean canTrigger(Key)
++ void updatePressTime(Key)
+}
+
+
+class listener.BallRemove {
+- GameLevel game
+- Counter remainingBalls
++ <<Create>> BallRemove(GameLevel,Counter)
++ void hitEvent(HitEvent)
+}
+
+
+class game.MainGame {
++ {static} int SCREEN_WIDTH
++ {static} int SCREEN_HEIGHT
++ {static} double FPS
++ void start(Stage)
+- void initializeThreads()
+- void preloadResources()
+- void preloadImages()
+- void setupCleanupHandler(Stage)
++ void stop()
+- void cleanupThreads()
++ {static} void main(String[])
+}
+
+
+interface listener.HitListener {
+~ void hitEvent(HitEvent)
+}
+
+class input.GameMouse {
+- MouseState state
+- KeyTimer timer
+- Canvas canvas
++ <<Create>> GameMouse()
++ <<Create>> GameMouse(Canvas)
+- Key mapButtonToKey(MouseButton)
++ void onMousePressed(MouseEvent)
++ void onMouseReleased(MouseEvent)
++ void onMouseMoved(MouseEvent)
++ boolean isPressed(Key)
++ boolean wasJustPressed(Key)
++ Point getMousePosition()
++ void update()
++ void reset()
+}
+
+
+class game.Counter {
+- int value
++ {static} Counter ZERO
++ <<Create>> Counter()
++ <<Create>> Counter(int)
++ void increase(int)
++ void decrease(int)
++ void setValue(int)
++ int getValue()
++ void reset()
+}
+
+
+interface listener.HitNotifier {
+~ void addHitListener(HitListener)
+~ void removeHitListener(HitListener)
+}
+
+interface menu.Menu {
+~ void addSelection(String,T,Rectangle,Color)
+~ T getStatus()
+~ void reset()
+}
+
+class menu.MainMenuScene {
+- Stage stage
+- PlayerInput input
+- Runnable onStartGame
+- HighScoreTable highScoreTable
++ <<Create>> MainMenuScene(PlayerInput,Stage,Runnable,HighScoreTable)
++ void show()
+}
+
+
+class listener.SoundHitListener {
+- GameController controller
++ <<Create>> SoundHitListener(GameController)
++ void hitEvent(HitEvent)
+}
+
+
+class menu.MenuImageButton {
++ String text
+- Image normalImage
+- Image hoverImage
+- Image currentImage
+- Rectangle rect
+- boolean isHovered
++ <<Create>> MenuImageButton(String,Image,Image,double,double,double,double)
++ <<Create>> MenuImageButton(String,Image,double,double,double,double)
++ boolean isClicked(Point)
++ void updateHover(Point)
++ void render(GraphicsContext)
++ String getText()
+}
+
+
+class level.Level_2 {
+- double[][][] BLOCK_POSITIONS
+- double[][] PERMANENT_BLOCK_POSITIONS
+- String[] LAYER_IMAGES
+- String PERMANENT_BLOCK_IMAGE
++ int numberOfBalls()
++ int numberOfBlocksToRemove()
++ List<Velocity> initialBallVelocities()
++ double paddleSpeed()
++ double paddleWidth()
++ String levelName()
++ Sprite getBackground()
++ List<Block> blocks()
++ String getBackgroundMusic()
+- Color getRandomColor()
+- PowerUpType getRandomPowerUpType()
+}
+
+
+class animation.CurtainTransition {
+- Animation fromAnimation
+- Animation toAnimation
+- double duration
+- double elapsed
+- State state
+- boolean shouldStop
++ <<Create>> CurtainTransition(Animation,Animation,double)
++ void update(double)
++ void render(GraphicsContext)
++ boolean isFinished()
+}
+
+
+enum animation.State {
++  FROM_FADE
++  CURTAIN_DROP
++  TO_FADE_IN
+}
+
+class menu.MainMenuAnimation {
+- Canvas canvas
+- GraphicsContext gc
+- PlayerInput input
+- List<MenuImageButton> buttons
+- boolean shouldStop
+- Runnable onStartGame
+- HighScoreTable highScoreTable
+- Runnable onSettings
+- boolean isSettingsOpen
+- {static} String IMG_BUTTON_PATH
+- {static} String IMG_BACKGROUND_PATH
+- Image backgroundMenu
+- Image startNormal
+- Image highScoreNormal
+- Image settingsNormal
+- Image quitNormal
++ <<Create>> MainMenuAnimation(Canvas,PlayerInput,Runnable,HighScoreTable,Runnable)
+- void loadImages()
+- void createButtons()
++ void update(double)
++ void render(GraphicsContext)
+- void handleClick(String)
++ boolean isFinished()
+}
+
+
+class geometry.Point {
+- double x
+- double y
++ <<Create>> Point()
++ <<Create>> Point(double,double)
++ double getX()
++ double getY()
++ void setX(double)
++ void setY(double)
++ double distance(Point)
++ void setLocation(double,double)
++ Point getLocation()
+}
+
+
+class ball.Ball {
+- double radius
+- Point center
+- double baseRadius
+- Color color
+- Velocity velocity
+- BallType type
+- GameEnvironment gameEnvironment
+- Image ballImage
++ <<Create>> Ball(Point,double,Color,Velocity,GameEnvironment)
++ <<Create>> Ball(Point,double,Color,Velocity,GameEnvironment,BallType)
++ void render(GraphicsContext)
+- void loadBallImage()
++ void update(double)
++ void setVelocity(double,double)
++ void setVelocity(Velocity)
++ Velocity getVelocity()
++ Point getCenter()
++ BallType getType()
++ void setType(BallType)
++ void updateBallType()
++ boolean canPenetrate()
+}
+
+
+class thread.ResourceLoaderThread {
+- {static} ResourceLoaderThread instance
+- ExecutorService executor
+- Map<String,Image> imageCache
+- Map<String,Future<Image>> loadingFutures
+- boolean isShutdown
+- <<Create>> ResourceLoaderThread()
++ {static} ResourceLoaderThread getInstance()
++ Future<Image> loadImageAsync(String)
++ Future<Void> preloadImages(List<String>)
++ Image loadImageSync(String)
++ Image getFromCache(String)
++ boolean isLoaded(String)
++ void clearCache()
++ int getCacheSize()
++ void shutdown()
++ boolean isShutdown()
+}
+
+
+class powerup.PowerUp {
+- PowerUpType type
+- Point position
+- Velocity velocity
+- double size
+- boolean collected
+- GameEnvironment environment
++ <<Create>> PowerUp(PowerUpType,Point,GameEnvironment)
++ void render(GraphicsContext)
++ void update(double)
++ Rectangle getCollisionRectangle()
++ Velocity hit(Ball,Point,Velocity)
++ boolean isOutOfBounds()
++ void applyEffect(GameLevel)
+- void scheduleReset(Paddle)
+- void scheduleResetBallType(List<Ball>,double)
++ boolean isCollected()
++ PowerUpType getType()
+}
+
+
+class collidable.CollisionInfo {
+~ Point closetPoint
+~ Collidable closetCollidable
++ <<Create>> CollisionInfo()
++ <<Create>> CollisionInfo(Point,Collidable)
++ Point getClosetPoint()
++ Collidable getCollidable()
+}
+
+
+class level.ImageBackground {
+- Image image
++ <<Create>> ImageBackground(String)
++ void render(GraphicsContext)
++ void update(double)
+}
+
+
+
+
+animation.Animation <|.. animation.PauseAnimation
+animation.Animation <|.. animation.GameOverAnimation
+game.Sprite <|.. collidable.Block
+collidable.Collidable <|.. collidable.Block
+listener.HitNotifier <|.. collidable.Block
+menu.Menu <|.. menu.MenuAnimation
+animation.Animation <|.. menu.MenuAnimation
+game.Sprite <|.. level.GradientBackground
+animation.Animation <|.. animation.HighScoreAnimation
+listener.HitListener <|.. listener.ScoreTrackingListener
+level.LevelInformation <|.. level.Level_3
+data.HighScoreTable +.. data.HighScoreTable$ScoreEntry
+animation.Animation <|.. game.GameLevel
+listener.HitListener <|.. listener.BlockRemove
+input.Keyboard <|.. input.GameKeyboard
+level.LevelInformation <|.. level.Level_1
+game.Sprite <|.. collidable.Paddle
+collidable.Collidable <|.. collidable.Paddle
+listener.HitNotifier <|.. collidable.Paddle
+thread.Thread <|-- thread.GameLoopThread
+listener.HitListener <|.. listener.BallRemove
+javafx.application.Application <|-- game.MainGame
+input.Mouse <|.. input.GameMouse
+listener.HitListener <|.. listener.SoundHitListener
+level.LevelInformation <|.. level.Level_2
+animation.Animation <|.. animation.CurtainTransition
+animation.Animation <|.. menu.MainMenuAnimation
+game.Sprite <|.. ball.Ball
+game.Sprite <|.. powerup.PowerUp
+collidable.Collidable <|.. powerup.PowerUp
+game.Sprite <|.. level.ImageBackground
+@enduml

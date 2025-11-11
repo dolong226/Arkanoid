@@ -5,9 +5,11 @@ import sound.AudioResource;
 
 public class GameController {
     private final SoundManager soundManager = SoundManager.getInstance();
+    private String currentMusicKey = null;
 
     public void initialize() {
         soundManager.preloadAll();
+        currentMusicKey = AudioResource.BACKGROUND_MUSIC.name();
         soundManager.playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
     }
 
@@ -30,11 +32,13 @@ public class GameController {
     public void onGameOver() {
         soundManager.stopAllMusic();
         soundManager.playSFXAsync(AudioResource.GAME_OVER.name());
+        currentMusicKey = null;
     }
 
     public void onLevelComplete() {
         soundManager.stopAllMusic();
         soundManager.playSFXAsync(AudioResource.LEVEL_COMPLETE.name());
+        currentMusicKey = null;
     }
 
     public void toggleSound() {
@@ -49,4 +53,19 @@ public class GameController {
             }
         }
     }
+
+    public void setCurrentMusic(String musicKey) {
+        this.currentMusicKey = musicKey;
+    }
+
+    public void onGamePause() {
+        soundManager.stopAllMusic();
+    }
+
+    public void onGameResume() {
+        if (currentMusicKey != null) {
+            soundManager.playMusicAsync(currentMusicKey, true);
+        }
+    }
+
 }

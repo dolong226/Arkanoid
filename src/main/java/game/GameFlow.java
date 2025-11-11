@@ -77,6 +77,8 @@ public class GameFlow {
         soundManager.preloadAll();
         soundManager.playMusicAsync(lv.getBackgroundMusic());
 
+        gameController.setCurrentMusic(lv.getBackgroundMusic());
+
 
         // khi hoàn thành level, callback gọi level tiếp theo
         level.setOnLevelComplete(() -> {

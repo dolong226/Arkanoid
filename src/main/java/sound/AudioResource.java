@@ -9,8 +9,5 @@ public enum AudioResource {
     WALL_HIT, // bong cham tuong
     GAME_OVER, // tro choi ket thuc
     LEVEL_COMPLETE, // hoan thanh cap do
-    BACKGROUND_MUSIC,
-    LEVEL_1_MUSIC,
-    LEVEL_2_MUSIC,
-    LEVEL_3_MUSIC
+    BACKGROUND_MUSIC
 }
