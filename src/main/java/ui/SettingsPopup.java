@@ -7,24 +7,25 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import sound.SoundManager;
+import ui.ImageLoad;
 
 public class SettingsPopup {
     private final Stage stage;
     private final SoundManager soundManager = SoundManager.getInstance();
     private final GameController gameController;
 
-
-    /**
-     * Tạo cửa số settings
-     * popup modal: chặn tương tác với cửa sổ khác
-     * dùng kiểu cửa sổ tiện ích (Utility)
-     * @param parentStage cửa sổ cha
-     */
     public SettingsPopup(Stage parentStage, GameController controller) {
         this.gameController = controller;
         this.stage = new Stage();
@@ -38,55 +39,103 @@ public class SettingsPopup {
     }
 
     public void show() {
-        VBox root = new VBox(20);
-        root.setPadding(new Insets(20));
-        root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: #2c2c2c; -fx-border-color: #555; -fx-border-width: 2;");
+        StackPane root = new StackPane();
+        root.setPrefSize(stage.getWidth(), stage.getHeight());
+
+        Image bgImage = ImageLoad.load("/Default/panel_bg.png");
+        if (bgImage != null) {
+            ImageView bgView = new ImageView(bgImage);
+            bgView.setFitWidth(stage.getWidth());
+            bgView.setFitHeight(stage.getHeight());
+            bgView.setPreserveRatio(false);
+            root.getChildren().add(bgView);
+        } else {
+            root.setStyle("-fx-background-color: #222;");
+        }
+
+        VBox content = new VBox(12);
+        content.setPadding(new Insets(18));
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(stage.getWidth() - 40);
 
         Label title = new Label("GAME SETTINGS");
-        title.setStyle("-fx-font-size: 20; -fx-text-fill: #00ff88; -fx-font-weight: bold;");
+        title.setFont(Font.font("System", FontWeight.BOLD, 18));
+        title.setTextFill(Color.web("#e6ffe6"));
 
-        // Thanh truot am luong nhac
         Label musicLabel = new Label("Music Volume");
-        musicLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14;");
-        Slider musicSlider = new Slider(0,1, soundManager.getMusicVolume());
-        musicSlider.setMajorTickUnit(0.2);
-        musicSlider.valueProperty().addListener((obs, old, newVal) -> {
-            double vol = Math.round(newVal.doubleValue() * 100) / 100.0;
-            soundManager.setMusicVolume(vol);
-        });
+        musicLabel.setFont(Font.font("System", 13));
+        musicLabel.setTextFill(Color.WHITE);
 
-        // Thanh truot SFX
-        Label sfxLabel = new Label("Sound Effects");
-        sfxLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14;");
-        Slider sfxSlider = new Slider(0, 1, soundManager.getSFXVolume());
-        sfxSlider.setMajorTickUnit(0.2);
-        sfxSlider.valueProperty().addListener((obs, old, newVal) -> {
-            double vol = Math.round(newVal.doubleValue() * 100) / 100.0;
-            soundManager.setSFXVolume(vol);
-        });
-
-
-        // Nút Close
-        Button close = new Button("Close");
-        close.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white; -fx-font-size: 14; -fx-padding: 8 20;");
-        close.setOnAction(e -> stage.close());
-
-        root.getChildren().addAll(
-                title, musicLabel, musicSlider, sfxLabel, sfxSlider, close
+        Slider musicSlider = new Slider(0, 1, soundManager.getMusicVolume());
+        musicSlider.setShowTickMarks(false);
+        musicSlider.valueProperty().addListener((obs, old, nw) ->
+                soundManager.setMusicVolume(Math.round(nw.doubleValue() * 100) / 100.0)
         );
+
+        Label sfxLabel = new Label("Sound Effects");
+        sfxLabel.setFont(Font.font("System", 13));
+        sfxLabel.setTextFill(Color.WHITE);
+
+        Slider sfxSlider = new Slider(0, 1, soundManager.getSFXVolume());
+        sfxSlider.setShowTickMarks(false);
+        sfxSlider.valueProperty().addListener((obs, old, nw) ->
+                soundManager.setSFXVolume(Math.round(nw.doubleValue() * 100) / 100.0)
+        );
+
+        Button close = createImageButton("/Default/quit1.png", "/Default/quit2.png", "Close", () -> stage.close());
+        close.setPrefWidth(160);
+        close.setPrefHeight(44);
+
+        content.getChildren().addAll(title, musicLabel, musicSlider, sfxLabel, sfxSlider, close);
+        root.getChildren().add(content);
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.showAndWait();
     }
 
-    private Button createLevelButton(String text) {
-        Button btn = new Button(text);
-        btn.setStyle("-fx-background-color: #4444aa; -fx-text-fill: white; -fx-font-size: 14; -fx-padding: 10 30;");
-        btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #6666ff; -fx-text-fill: white;"));
-        btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: #4444aa; -fx-text-fill: white;"));
-        // todo
+    private Button createImageButton(String normalPath, String hoverPath, String text, Runnable onAction) {
+        Image normal = ImageLoad.load(normalPath);
+        Image hover = ImageLoad.load(hoverPath);
+
+        Button btn = new Button();
+        btn.setBackground(null);
+        btn.setPadding(Insets.EMPTY);
+
+        if (normal != null) {
+            ImageView ivNormal = new ImageView(normal);
+            ivNormal.setFitWidth(160);
+            ivNormal.setFitHeight(44);
+            ivNormal.setPreserveRatio(false);
+
+            ImageView ivHover = null;
+            if (hover != null) {
+                ivHover = new ImageView(hover);
+                ivHover.setFitWidth(160);
+                ivHover.setFitHeight(44);
+                ivHover.setPreserveRatio(false);
+            }
+
+            btn.setGraphic(ivNormal);
+
+            ImageView finalIvHover = ivHover;
+
+            btn.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+                if (finalIvHover != null) btn.setGraphic(finalIvHover);
+                btn.setScaleX(1.03);
+                btn.setScaleY(1.03);
+            });
+            btn.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+                btn.setGraphic(ivNormal);
+                btn.setScaleX(1.0);
+                btn.setScaleY(1.0);
+            });
+
+            btn.setOnAction(e -> {
+                if (onAction != null) onAction.run();
+            });
+        }
+
         return btn;
     }
 }
