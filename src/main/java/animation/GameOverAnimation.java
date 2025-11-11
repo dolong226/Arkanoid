@@ -47,12 +47,12 @@ public class GameOverAnimation implements Animation {
     public void loadImage() {
         Class<?> clazz = getClass();
 
-        gameOverBg = new Image(clazz.getResourceAsStream("/Default/gameover_bg.jpg"));
+        gameOverBg = new Image(clazz.getResourceAsStream("/Default/gameover_bg.png"));
 
         quitNormal = new Image(clazz.getResourceAsStream("/Default/quit1.png"));
         quitHover = new Image(clazz.getResourceAsStream("/Default/quit2.png"));
-        homeNormal = new Image(clazz.getResourceAsStream("/Default/quit1.png"));
-        homeHover = new Image(clazz.getResourceAsStream("/Default/quit2.png"));
+        homeNormal = new Image(clazz.getResourceAsStream("/Default/home1.png"));
+        homeHover = new Image(clazz.getResourceAsStream("/Default/home2.png"));
 
     }
     @Override

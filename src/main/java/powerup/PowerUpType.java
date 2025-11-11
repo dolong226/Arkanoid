@@ -3,20 +3,17 @@ package powerup;
 import javafx.scene.paint.Color;
 
 public enum PowerUpType {
-    EXPAND_PADDLE(Color.GREEN, "↔", 10.0, "Expand Paddle"),
-    SHRINK_PADDLE(Color.RED, "←→", 10.0, "Shrink Paddle"),
+    EXPAND_PADDLE(Color.GREEN, "EP", 10.0, "Expand Paddle"),
+    SHRINK_PADDLE(Color.RED, "SP", 10.0, "Shrink Paddle"),
 
-    EXTRA_BALL(Color.CYAN, "+", -1, "Extra Ball"),
     MULTI_BALL(Color.MAGENTA, "×3", -1, "Multi Ball"),
 
 
-    FIRE_BALL(Color.ORANGE, "🔥", 15.0, "Fire Ball"),
-    BIG_BALL(Color.GREENYELLOW, "●", 12.0, "Big Ball"),
+    FIRE_BALL(Color.ORANGE, "F", 15.0, "Fire Ball"),
+    BIG_BALL(Color.GREENYELLOW, "B", 12.0, "Big Ball"),
 
-    SLOW_BALL(Color.BLUE, "S", 15.0, "Slow Motion"),
-    FAST_BALL(Color.YELLOW, "F", 10.0, "Fast Ball"),
-
-    EXTRA_LIFE(Color.LIGHTGREEN, "♥", -1, "Extra Life");
+    SLOW_BALL(Color.BLUE, "S", 15.0, "Slow Motion");
+    
 
     private final Color color;
     private final String icon;

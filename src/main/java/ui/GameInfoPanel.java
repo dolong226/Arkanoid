@@ -42,7 +42,7 @@ public class GameInfoPanel {
 
     private void loadBackground() {
         try {
-            backgroundImage = new Image("/Default/background_blue.png");
+            backgroundImage = new Image("/Default/panel_bg.png");
             imageLoaded = true;
         } catch (Exception e) {
             System.out.println("Khong thay anh");

@@ -33,7 +33,7 @@ public class Level_1 implements LevelInformation {
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
         int numberOfBalls = this.numberOfBalls();
-        double speed = 250;
+        double speed = 120;
 
         // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
         double startAngle = -60;
@@ -143,10 +143,9 @@ public class Level_1 implements LevelInformation {
 
     private PowerUpType getRandomPowerUpType() {
         PowerUpType[] types = {
+                PowerUpType.MULTI_BALL,
+                PowerUpType.BIG_BALL,
                 PowerUpType.EXPAND_PADDLE,
-                PowerUpType.EXTRA_BALL,
-                PowerUpType.FIRE_BALL,
-                PowerUpType.BIG_BALL
         };
         return types[(int)(Math.random() * types.length)];
     }

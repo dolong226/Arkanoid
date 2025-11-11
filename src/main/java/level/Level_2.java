@@ -148,7 +148,6 @@ public class Level_2 implements LevelInformation {
     private PowerUpType getRandomPowerUpType() {
         PowerUpType[] types = {
                 PowerUpType.EXPAND_PADDLE,
-                PowerUpType.EXTRA_BALL,
                 PowerUpType.FIRE_BALL,
                 PowerUpType.BIG_BALL
         };

@@ -30,7 +30,7 @@ public class PowerUp implements Sprite, Collidable {
     public PowerUp(PowerUpType type, Point position, GameEnvironment environment) {
         this.type = type;
         this.position = position;
-        this.velocity = new Velocity(0, 80); // Rơi xuống với tốc độ 80 pixels/s
+        this.velocity = new Velocity(0, 50); // Rơi xuống với tốc độ 80 pixels/s
         this.environment = environment;
     }
 
@@ -105,34 +105,9 @@ public class PowerUp implements Sprite, Collidable {
                 System.out.println("Expand Paddle");
                 break;
 
-            case EXTRA_BALL:
-                // Tạo thêm 1 bóng
-                if (!game.getBalls().isEmpty()) {
-                    Ball existingBall = game.getBalls().get(0);
-                    Point center = new Point(
-                            existingBall.getCenter().getX(),
-                            existingBall.getCenter().getY()
-                    );
-                    Velocity vel = new Velocity(
-                            -existingBall.getVelocity().getDx(),
-                            existingBall.getVelocity().getDy()
-                    );
-                    Ball newBall = new Ball(
-                            center,
-                            GameLevel.BALL_RADIUS,
-                            Color.WHITE,
-                            vel,
-                            gameEnv
-                    );
-                    game.addSprite(newBall);
-                    game.getBalls().add(newBall);
-                    remainingBalls.increase(1);
-                    System.out.println("Extra Ball");
-                }
-                break;
 
             case SLOW_BALL:
-            // Giảm tốc độ bóng
+                // Giảm tốc độ bóng
                 for (Ball ball: game.getBalls()) {
                     Velocity v = ball.getVelocity();
                     ball.setVelocity(v.getDx() * 0.7, v.getDy() * 0.7);
@@ -140,42 +115,53 @@ public class PowerUp implements Sprite, Collidable {
                 System.out.println("SNOW BALL");
                 break;
 
+
             case MULTI_BALL:
                 // Tạo thêm 2 bóng
                 if (!game.getBalls().isEmpty()) {
                     Ball original = game.getBalls().get(0);
-                    double speed = Math.sqrt(
-                            original.getVelocity().getDx() * original.getVelocity().getDx() +
-                                    original.getVelocity().getDy() * original.getVelocity().getDy()
-                    );
+                    Velocity oriVel =  original.getVelocity();
+                    double dx = oriVel.getDx();
+                    double dy = oriVel.getDy();
+                    double speed = Math.hypot(dx, dy);
+                    if (speed == 0) {
+                        speed = 200;
+                        dx = speed;
+                        dy = 0;
+                    }
 
-                    // Bóng 1: góc -30 độ
-                    Point center1 = new Point(
-                            original.getCenter().getX(),
-                            original.getCenter().getY()
-                    );
-                    Velocity vel1 = Velocity.fromAngleAndSpeed(-30, speed);
-                    Ball ball1 = new Ball(
-                            center1,
-                            GameLevel.BALL_RADIUS,
-                            Color.WHITE,
-                            vel1,
-                            gameEnv
-                    );
+                    double  norm = Math.hypot(dx, dy);
+                    double px = -dy / norm;
+                    double py = dx/norm;
+                    double offset = GameLevel.BALL_RADIUS * 2.0;
 
-                    // Bóng 2: góc 30 độ
-                    Point center2 = new Point(
-                            original.getCenter().getX(),
-                            original.getCenter().getY()
-                    );
-                    Velocity vel2 = Velocity.fromAngleAndSpeed(30, speed);
-                    Ball ball2 = new Ball(
-                            center2,
-                            GameLevel.BALL_RADIUS,
-                            Color.WHITE,
-                            vel2,
-                            environment
-                    );
+                    Point center1 = new Point(original.getCenter().getX() + px * offset,
+                            original.getCenter().getY() + py * offset);
+
+                    Point center2 = new Point( original.getCenter().getX()- px * offset,
+                            original.getCenter().getY() - py * offset);
+
+                    // tránh spawn trong death region
+                    double safeY = GameLevel.SCREEN_HEIGHT - GameLevel.DEATH_REGION_HEIGHT - GameLevel.BALL_RADIUS - 1;
+                    if (center1.getY() > safeY) {
+                        center1 = new Point(original.getCenter().getX() - px * offset,
+                                original.getCenter().getY() - py * offset);
+                        if (center1.getY() > safeY) center1.setY(safeY);
+                    }
+                    if (center2.getY() > safeY) {
+                        center2 = new Point(original.getCenter().getX() + px * offset,
+                                original.getCenter().getY() + py * offset);
+                        if (center2.getY() > safeY) center2.setY(safeY);
+                    }
+
+                    double baseAngle = Math.toDegrees(Math.atan2(dy, dx));
+
+                    // Tạo hai vận tốc lệch 30/-30 độ so với góc gốc
+                    Velocity vel1 = Velocity.fromAngleAndSpeed(baseAngle - 30.0, speed);
+                    Velocity vel2 = Velocity.fromAngleAndSpeed(baseAngle + 30, speed);
+
+                    Ball ball1 = new Ball (center1, GameLevel.BALL_RADIUS, Color.WHITE, vel1, gameEnv);
+                    Ball ball2 = new Ball (center2, GameLevel.BALL_RADIUS, Color.WHITE, vel2, gameEnv);
 
                     game.addSprite(ball1);
                     game.addSprite(ball2);

@@ -19,6 +19,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import level.LevelInformation;
 import listener.BallRemove;
 import listener.BlockRemove;
@@ -178,7 +179,7 @@ public class GameLevel implements Animation {
 
         // Death Region
         Point deathUpperLeft = new Point(0, SCREEN_HEIGHT);
-        Rectangle deathRect = new Rectangle(deathUpperLeft, SCREEN_WIDTH, DEATH_REGION_HEIGHT);
+        Rectangle deathRect = new Rectangle(deathUpperLeft, SCREEN_WIDTH - DEATH_REGION_HEIGHT, DEATH_REGION_HEIGHT);
         Block deathBlock = new Block(deathRect, null, 1, true);
         sprites.addSprite(deathBlock);
         environment.addCollidable(deathBlock);
@@ -485,6 +486,33 @@ public class GameLevel implements Animation {
             gc.setFill(Color.rgb(147, 88, 94));
             gc.fillText("PRESS ENTER TO LAUNCH!", SCREEN_WIDTH / 2 - 195,
                     SCREEN_HEIGHT / 2 + 100);
+        }
+
+        // Hiển thị overlay khi pause
+        if (isPaused) {
+            gc.save();
+
+            // vẽ nền mờ phía trò chơi (chỉ vùng trò chơi, không che panel bên phải)
+            gc.setFill(Color.rgb(0, 0, 0, 0.55));
+            gc.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+            // Tieu de
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+            String title = "PAUSED";
+            Text text = new Text(title);
+            text.setFont(gc.getFont());
+            double titleWidth = text.getLayoutBounds().getWidth();
+            gc.fillText(title, (SCREEN_WIDTH - titleWidth) / 2, SCREEN_HEIGHT / 2 - 10);
+
+            gc.setFont(Font.font("Arial", FontWeight.NORMAL, 30));
+            String hint = "Press ESC hoặc P để resume";
+            Text hintText = new Text(hint);
+            hintText.setFont(gc.getFont());
+            double hintWidth = hintText.getLayoutBounds().getWidth();
+            gc.fillText(hint, (SCREEN_WIDTH - hintWidth) / 2, SCREEN_HEIGHT / 2 + 30);
+
+            gc.restore();
         }
     }
 
