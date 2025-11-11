@@ -73,6 +73,8 @@ public class GameLevel implements Animation {
      */
     private boolean useThreading = true;
 
+    private boolean isPaused = false;
+
     public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
     public static final int PANEL_WIDTH = 180;
@@ -216,6 +218,11 @@ public class GameLevel implements Animation {
         if (useThreading) {
             initGameLoopThread();
         }
+
+        String levelMusic = levelInfo.getBackgroundMusic();
+        if (levelMusic != null) {
+            gameController.setCurrentMusic(levelMusic);
+        }
     }
 
     /**
@@ -259,20 +266,23 @@ public class GameLevel implements Animation {
      * Gọi khi người chơi pause game
      */
     public void pauseGameLoop() {
+        isPaused = true;
         if (useThreading && gameLoopThread != null) {
             gameLoopThread.pauseGameLoop();
             System.out.println("GameLevel paused");
         }
+        gameController.onGamePause();
     }
 
     /**
      * Resume game loop sau khi pause
      */
     public void resumeGameLoop() {
+        isPaused = false;
         if (useThreading && gameLoopThread != null) {
             gameLoopThread.resumeGameLoop();
-            System.out.println("GameLevel resumed");
         }
+        gameController.onGameResume();
     }
 
 
@@ -317,10 +327,28 @@ public class GameLevel implements Animation {
      * Logic thật sự.
      */
     public void updateGameLogic(double dt) {
-        keyboard.update();
+//        keyboard.update();
 
-        ((GameMouse) input.getMouse()).update();
-        if (!running) return;
+        try {
+            ((GameMouse) input.getMouse()).update();
+            if (!running) return;
+
+            if (keyboard.wasJustPressed(Key.PAUSE) || keyboard.wasJustPressed(Key.ESC)) {
+                if (!isPaused) {
+                    pauseGame();
+                } else {
+                    resumeGame();
+                }
+                return;
+            }
+            if (isPaused) {
+                return;
+            }
+
+        } finally {
+            keyboard.update();
+        }
+
 
         // Xử lý chờ Enter
         if (waitingForEnter) {
@@ -402,6 +430,32 @@ public class GameLevel implements Animation {
             stopGameLoop();
             return;
         }
+    }
+
+    private void pauseGame() {
+        isPaused = true;
+
+        // Pause game loop thread
+        if (useThreading && gameLoopThread != null) {
+            pauseGameLoop();
+        }
+
+        // todo
+    }
+
+    private void resumeGame() {
+        isPaused = false;
+
+        // Resume game loop thread
+        if (useThreading && gameLoopThread != null) {
+            resumeGameLoop();
+        }
+
+        // todo
+    }
+
+    public boolean isPaused() {
+        return isPaused;
     }
 
     @Override
