@@ -327,23 +327,28 @@ public class GameLevel implements Animation {
      * Logic thật sự.
      */
     public void updateGameLogic(double dt) {
-        keyboard.update();
+//        keyboard.update();
 
-        ((GameMouse) input.getMouse()).update();
-        if (!running) return;
+        try {
+            ((GameMouse) input.getMouse()).update();
+            if (!running) return;
 
-        if (keyboard.wasJustPressed(Key.PAUSE) || keyboard.wasJustPressed(Key.ESC)) {
-            if (!isPaused) {
-                pauseGame();
-            } else {
-                resumeGame();
+            if (keyboard.wasJustPressed(Key.PAUSE) || keyboard.wasJustPressed(Key.ESC)) {
+                if (!isPaused) {
+                    pauseGame();
+                } else {
+                    resumeGame();
+                }
+                return;
             }
-            return;
+            if (isPaused) {
+                return;
+            }
+
+        } finally {
+            keyboard.update();
         }
 
-        if (isPaused) {
-            return;
-        }
 
         // Xử lý chờ Enter
         if (waitingForEnter) {

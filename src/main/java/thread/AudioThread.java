@@ -46,9 +46,10 @@ public class AudioThread {
             return;
         }
 
+        // Gọi phương thức đồng bộ của SoundManager bên trong task để tránh recursion
         executor.submit(() -> {
             try {
-                soundManager.playSFXAsync(soundName);
+                soundManager.playSFX(soundName);
 
             } catch (Exception e) {
                 System.err.println("AudioThread Error playing SFX: " + soundName);
@@ -80,7 +81,7 @@ public class AudioThread {
 
         executor.submit(() -> {
             try {
-                soundManager.playMusicAsync(musicName, loop);
+                soundManager.playMusic(musicName, loop);
             } catch (Exception e) {
                 System.err.println("AudioThread Error playing music: " + musicName);
                 e.printStackTrace();
@@ -95,7 +96,10 @@ public class AudioThread {
 
         executor.submit(() -> {
             try {
-                soundManager.stopSFX(musicName);
+                // Theo UML SoundManager không có stopMusic(key), nên nếu track đó đang phát thì dừng tất cả
+                if (soundManager.isMusicPlaying(musicName)) {
+                    soundManager.stopAllMusic();
+                }
             } catch (Exception e) {
                 System.err.println("AudioThread Error stopping music: " + musicName);
                 e.printStackTrace();
