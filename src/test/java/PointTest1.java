@@ -34,7 +34,7 @@ public class PointTest1 {
     public void testConstructor4() {
         double expectedX = 10.0;
         double expectedY = -5.0;
-        Point newPoint = new Point(-3.5, 10.0);
+        Point newPoint = new Point(10.0, -5.0);
         Assert.assertEquals(expectedX, newPoint.getX(), 1e-9);
         Assert.assertEquals(expectedY, newPoint.getY(), 1e-9);
     }

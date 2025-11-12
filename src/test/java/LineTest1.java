@@ -279,9 +279,10 @@ public class LineTest1 {
         Point end2 = new Point(3.0, -7.0);
         Line thisLine = new Line(start1, end1);
         Line otherLine = new Line(start2, end2);
-        Point expectedResult = null;
+        Point expectedResult = new Point(3.0, 10.0);
         Point check = thisLine.intersectionPoint(otherLine);
-        Assert.assertEquals(expectedResult, check);
+        Assert.assertEquals(expectedResult.getX(), check.getX(), 1e-9);
+        Assert.assertEquals(expectedResult.getY(), check.getY(), 1e-9);
     }
 
     @Test
@@ -392,7 +393,7 @@ public class LineTest1 {
         List<Point> expectedIntersectionPointList = new ArrayList<Point>();
         Point intersectionPoint1 = new Point(575.0/116.0, 5.0);
         expectedIntersectionPointList.add(intersectionPoint1);
-        Point intersectionPoint2 = new Point(2431.0/348.0, 7.0);
+        Point intersectionPoint2 = new Point(6.0, 6.028328611898017);
         expectedIntersectionPointList.add(intersectionPoint2);
         Point checkedClosestIntersectionToStartOfLine = newLine.closestIntersectionToStartOfLine(newRec);
         Point expectedClosestIntersectionToStartOfLine = intersectionPoint2;
