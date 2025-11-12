@@ -79,8 +79,8 @@ public class GameOverAnimation implements Animation {
     }
 
     private void createButtons() {
-        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 400, 240, 200, 60));
-        buttons.add(new MenuImageButton("HOME", homeNormal, homeHover, 400, 340, 200, 60));
+        buttons.add(new MenuImageButton("QUIT", quitNormal, quitHover, 587, 430, 301, 70));
+        buttons.add(new MenuImageButton("HOME", homeNormal, homeHover, 95, 430, 301, 70));
     }
 
     @Override
@@ -92,11 +92,6 @@ public class GameOverAnimation implements Animation {
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, 800, 600);
         }
-
-        // Điểm
-        gc.setFill(Color.YELLOW);
-        gc.setFont(Font.font("Arial", 36));
-        gc.fillText("Score: " + finalScore, 300, 250);
 
         for (MenuImageButton btn : buttons) {
             btn.render(gc);
