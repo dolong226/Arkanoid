@@ -5,34 +5,36 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 
-
 public class AnimationRunner {
     private final double fps;
     private final GraphicsContext gc;
-    private AnimationTimer currentTimer;
 
     public AnimationRunner(GraphicsContext gc, double fps) {
         this.gc = gc;
         this.fps = fps;
     }
 
-    public GraphicsContext getGraphicsContext() {
-        return gc;
-    }
-
     public void run(Animation animation) {
-        if (currentTimer != null) {
-            currentTimer.stop();
+        if ( gc == null ) {
+            while (!animation.isFinished()) {
+                animation.update(1.0/fps);
+                try {
+                    Thread.sleep((long) (1000 / fps));
+                } catch (InterruptedException e ) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+            return;
         }
 
-        currentTimer = new AnimationTimer() {
+        new AnimationTimer() {
             private long lastTime = -1;
             private double accumulator = 0;
             private final double timePerFrame = 1.0 / fps;
 
-            @Override
-            public void handle(long now) {
-                if (lastTime < 0) {
+            public void handle (long now) {
+                if (lastTime < 0 ) {
                     lastTime = now;
                     return;
                 }
@@ -44,21 +46,19 @@ public class AnimationRunner {
                     animation.update(timePerFrame);
                     accumulator -= timePerFrame;
                 }
-
+                double canvasWidth = gc.getCanvas().getWidth();
+                double canvasHeight = gc.getCanvas().getHeight();
                 animation.render(gc);
 
                 if (animation.isFinished()) {
                     stop();
-                    currentTimer = null; // xóa tham chiếu
                 }
             }
-        };
-        currentTimer.start();
+        }.start();
     }
 
     public static void makeCanvasResizable(Canvas canvas, Pane parent) {
         canvas.widthProperty().bind(parent.widthProperty());
         canvas.heightProperty().bind(parent.heightProperty());
     }
-
 }

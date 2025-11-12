@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="EndScreenLose">
+   <children>
+      <Label fx:id="GameOver" layoutX="170.0" layoutY="61.0" prefHeight="62.0" prefWidth="282.0" text="GAME OVER" textFill="#3600e9">
+         <font>
+            <Font name="Berlin Sans FB Demi Bold" size="48.0" />
+         </font>
+      </Label>
+      <Label fx:id="YouLose" layoutX="228.0" layoutY="117.0" text="YOU LOSE" textFill="#3600e9">
+         <font>
+            <Font name="Berlin Sans FB Demi Bold" size="36.0" />
+         </font>
+      </Label>
+      <Button fx:id="Replay" layoutX="250.0" layoutY="204.0" mnemonicParsing="false" onAction="#handleReplay" text="REPLAY">
+         <font>
+            <Font name="Berlin Sans FB Demi Bold" size="24.0" />
+         </font>
+      </Button>
+      <Button fx:id="Exit" layoutX="270.0" layoutY="281.0" mnemonicParsing="false" onAction="#handleExit" text="EXIT">
+         <font>
+            <Font name="Berlin Sans FB Demi Bold" size="24.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
