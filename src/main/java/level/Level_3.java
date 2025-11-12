@@ -31,7 +31,7 @@ public class Level_3 implements LevelInformation {
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
         int numberOfBalls = this.numberOfBalls();
-        double speed = 320;
+        double speed = 220;
 
         // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
         double startAngle = -60;
@@ -47,7 +47,7 @@ public class Level_3 implements LevelInformation {
 
     @Override
     public double paddleSpeed() {
-        return 300;
+        return 200;
     }
 
     @Override
@@ -145,8 +145,9 @@ public class Level_3 implements LevelInformation {
     private PowerUpType getRandomPowerUpType() {
         PowerUpType[] types = {
                 PowerUpType.EXPAND_PADDLE,
-                PowerUpType.FIRE_BALL,
-                PowerUpType.BIG_BALL
+                PowerUpType.BIG_BALL,
+                PowerUpType.MULTI_BALL,
+                PowerUpType.SLOW_BALL
         };
         return types[(int)(Math.random() * types.length)];
     }

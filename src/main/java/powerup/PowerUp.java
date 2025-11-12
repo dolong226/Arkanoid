@@ -13,7 +13,9 @@ import geometry.Point;
 import geometry.Rectangle;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
+import ui.ImageLoad;
 
 import java.util.List;
 import java.util.Timer;
@@ -23,39 +25,56 @@ public class PowerUp implements Sprite, Collidable {
     private PowerUpType type;
     private Point position; // Vị trí hiện tại
     private Velocity velocity; // Vận tốc rơi xuống
-    private double size = 25;
+    private double size = 50;
     private boolean collected = false; // đã được thu thập chưa
     private GameEnvironment environment;
+    private Image cachedImage;
 
     public PowerUp(PowerUpType type, Point position, GameEnvironment environment) {
         this.type = type;
         this.position = position;
         this.velocity = new Velocity(0, 50); // Rơi xuống với tốc độ 80 pixels/s
         this.environment = environment;
+        loadImage();
+    }
+
+    /**
+     * Load ảnh từ file, còn nếu không có thì dùng fallback là vẽ hình tròn
+     */
+    private void loadImage() {
+        try {
+            cachedImage = ImageLoad.load(type.getImagePath());
+        } catch (Exception e) {
+            System.err.println("Không thể load ảnh power-up: " + type.getImagePath());
+            cachedImage = null; // Sẽ dùng fallback rendering
+        }
     }
 
     @Override
     public void render(GraphicsContext gc) {
         gc.save();
 
-        // Vẽ hình tròn chính
-        gc.setFill(type.getColor());
-        gc.fillOval(position.getX() - size / 2, position.getY() - size / 2, size, size);
+        if(cachedImage != null) {
+            gc.drawImage(cachedImage, position.getX() - size/2, position.getY() - size/2, size, size);
+        } else {
+           // Vẽ hình tròn chính
+           gc.setFill(type.getColor());
+           gc.fillOval(position.getX() - size / 2, position.getY() - size / 2, size, size);
 
-        // Vẽ viền trắng
-        gc.setStroke(Color.WHITE);
-        gc.setLineWidth(2);
-        gc.strokeOval(position.getX() - size / 2, position.getY() - size / 2, size, size);
+           // Vẽ viền trắng
+           gc.setStroke(Color.WHITE);
+           gc.setLineWidth(2);
+           gc.strokeOval(position.getX() - size / 2, position.getY() - size / 2, size, size);
 
-        // Vẽ icon
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", 14));
-        String icon = type.getIcon();
+           // Vẽ icon
+           gc.setFill(Color.WHITE);
+           gc.setFont(Font.font("Arial", 14));
+           String icon = type.getIcon();
 
-        // Tính toán để căn giữa text
-        double textWidth = icon.length() * 7; // Ước lượng
-        gc.fillText(icon, position.getX() - textWidth / 2, position.getY() + 5);
-
+           // Tính toán để căn giữa text
+           double textWidth = icon.length() * 7; // Ước lượng
+           gc.fillText(icon, position.getX() - textWidth / 2, position.getY() + 5);
+        }
         gc.restore();
     }
 

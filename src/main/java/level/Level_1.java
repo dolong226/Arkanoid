@@ -33,7 +33,7 @@ public class Level_1 implements LevelInformation {
     public List<Velocity> initialBallVelocities() {
         List<Velocity> velocities = new ArrayList<>();
         int numberOfBalls = this.numberOfBalls();
-        double speed = 120;
+        double speed = 170;
 
         // Góc bắt đầu từ -60 đến +60, chia đều cho 20 bóng
         double startAngle = -60;
@@ -49,7 +49,7 @@ public class Level_1 implements LevelInformation {
 
     @Override
     public double paddleSpeed() {
-        return 300;
+        return 200;
     }
 
     @Override

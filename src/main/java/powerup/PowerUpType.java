@@ -3,22 +3,23 @@ package powerup;
 import javafx.scene.paint.Color;
 
 public enum PowerUpType {
-    EXPAND_PADDLE(Color.GREEN, "EP", 10.0, "Expand Paddle"),
-    SHRINK_PADDLE(Color.RED, "SP", 10.0, "Shrink Paddle"),
+    EXPAND_PADDLE(Color.GREEN, "EP", 10.0, "Expand Paddle", "/Sprite/EXPAND_PADDLE.png"),
+    SHRINK_PADDLE(Color.RED, "SP", 10.0, "Shrink Paddle", null),
 
-    MULTI_BALL(Color.MAGENTA, "×3", -1, "Multi Ball"),
+    MULTI_BALL(Color.MAGENTA, "×3", -1, "Multi Ball", "/Sprite/MULTI_BALL.png"),
 
 
-    FIRE_BALL(Color.ORANGE, "F", 15.0, "Fire Ball"),
-    BIG_BALL(Color.GREENYELLOW, "B", 12.0, "Big Ball"),
+    FIRE_BALL(Color.ORANGE, "F", 15.0, "Fire Ball", "/Sprite/FIRE_BALL.png"),
+    BIG_BALL(Color.GREENYELLOW, "B", 12.0, "Big Ball", "/Sprite/BIG_BALL.png"),
 
-    SLOW_BALL(Color.BLUE, "S", 15.0, "Slow Motion");
+    SLOW_BALL(Color.BLUE, "S", 15.0, "Slow Motion", "/Sprite/SLOW_BALL.png");
     
 
     private final Color color;
     private final String icon;
     private final double duration;
     private final String displayName;
+    private final String imagePath;
 
     /**
      * Constructor cho PowerUpType
@@ -27,11 +28,12 @@ public enum PowerUpType {
      * @param duration Thời gian hiệu lực (giây), -1 nếu vĩnh viễn
      * @param displayName Tên hiển thị
      */
-    PowerUpType(Color color, String icon, double duration, String displayName) {
+    PowerUpType(Color color, String icon, double duration, String displayName, String imagePath) {
         this.color = color;
         this.icon = icon;
         this.duration = duration;
         this.displayName = displayName;
+        this.imagePath = imagePath;
     }
 
     public Color getColor() {
@@ -46,6 +48,10 @@ public enum PowerUpType {
         return icon;
     }
 
+    public String getImagePath(){
+        return imagePath;
+    }
+    
     /**
      * Kiểm tra power-up có hiệu lực vĩnh viễn không
      */
