@@ -24,7 +24,7 @@ public class Level_3 implements LevelInformation {
 
     @Override
     public int numberOfBlocksToRemove() {
-        return 56; // 5x10
+        return 56;
     }
 
     @Override

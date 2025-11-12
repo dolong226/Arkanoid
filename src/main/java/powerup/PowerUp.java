@@ -176,8 +176,8 @@ public class PowerUp implements Sprite, Collidable {
                     double baseAngle = Math.toDegrees(Math.atan2(dy, dx));
 
                     // Tạo hai vận tốc lệch 30/-30 độ so với góc gốc
-                    Velocity vel1 = Velocity.fromAngleAndSpeed(baseAngle - 30.0, speed);
-                    Velocity vel2 = Velocity.fromAngleAndSpeed(baseAngle + 30, speed);
+                    Velocity vel1 = Velocity.fromAngleAndSpeed(baseAngle, speed);
+                    Velocity vel2 = Velocity.fromAngleAndSpeed(baseAngle, speed);
 
                     Ball ball1 = new Ball (center1, GameLevel.BALL_RADIUS, Color.WHITE, vel1, gameEnv);
                     Ball ball2 = new Ball (center2, GameLevel.BALL_RADIUS, Color.WHITE, vel2, gameEnv);

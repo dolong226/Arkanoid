@@ -49,7 +49,7 @@ public class Velocity {
          */
         if(angle >=0  && angle <= 90){
             angle = Math.toRadians(angle);
-            double dx = speed * Math.sin(angle);
+            double dx = speed * Math.sin(angle); 
             double dy = -speed * Math.cos(angle);
             return new Velocity(dx, dy);
         }
@@ -60,8 +60,8 @@ public class Velocity {
         else if(angle > 90 && angle <= 180){
             angle = angle - 90;
             angle = Math.toRadians(angle);
-            double dx = speed * Math.cos(angle);
-            double dy = speed * Math.sin(angle);
+            double dx = speed * Math.cos(angle );
+            double dy = speed * Math.sin(angle );
             return new Velocity(dx, dy);
         }
 

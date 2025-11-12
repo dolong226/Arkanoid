@@ -192,7 +192,6 @@ public class Paddle implements Sprite, Collidable, HitNotifier {
         double y = collisionPoint.getY();
 
         double epsilon = 0.0001;
-
         double upperLeftX = this.paddle.getUpperLeft().getX();
         double upperLeftY = this.paddle.getUpperLeft().getY();
 

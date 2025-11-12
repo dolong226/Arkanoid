@@ -13,14 +13,14 @@ public class Point {
     /**
      * Khởi tạo 1 điểm với giá trị mặc định là 0.
      */
-    public Point(){}
+    public Point() {}
     
     /**
      * Khởi tạo 1 điểm với giá trị tọa độ x và y cho trước.
      * @param x tọa độ x.
      * @param y tọa độ y.
      */
-    public Point(double x, double y){
+    public Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -29,7 +29,7 @@ public class Point {
      * Trả về tọa độ X của 1 điểm.
      * @return tọa độ X.
      */
-    public double getX(){
+    public double getX() {
         return this.x;
     }
 
@@ -37,7 +37,7 @@ public class Point {
      * Trả về tọa độ Y của 1 điểm.
      * @return tọa độ Y.
      */
-    public double getY(){
+    public double getY() {
         return this.y;
     }
     
@@ -45,7 +45,7 @@ public class Point {
      * Khởi tạo giá trị tọa độ X.
      * @param x giá trị tọa độ X.
      */
-    public void setX(double x){
+    public void setX(double x) {
         this.x = x;
     }
 
@@ -53,7 +53,7 @@ public class Point {
      * Khởi tạo giá trị tọa độ Y.
      * @param y giá trị tọa độ Y.
      */
-    public void setY(double y){
+    public void setY(double y) {
         this.y = y;
     }
 
@@ -68,11 +68,20 @@ public class Point {
         return distance;
     }
 
+    /**
+     * Set vị trí tọa độ của điểm.
+     * @param x Tọa độ x.
+     * @param y Tọa độ y.
+     */
     public void setLocation(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Trả về vị trí điểm hiện tại.
+     * @return Điểm hiện tại.
+     */
     public Point getLocation() {
         return new Point(x,y);
     }
