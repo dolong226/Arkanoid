@@ -139,7 +139,14 @@ public class MainGame extends Application {
                 "/Sprite/18-Breakout-Tiles.png",
                 "/Sprite/20-Breakout-Tiles.png",
                 "/Sprite/54-Breakout-Tiles.png",
-                "/Sprite/58-Breakout-Tiles.png"
+                "/Sprite/58-Breakout-Tiles.png",
+                "/story/1.png",
+                "/story/2.png",
+                "/story/3.png",
+                "/story/4.png",
+                "/story/5.png",
+                "/story/6.png",
+                "/story/7.png"
 
         );
 
