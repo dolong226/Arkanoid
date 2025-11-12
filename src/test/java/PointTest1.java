@@ -119,6 +119,13 @@ public class PointTest1 {
         Assert.assertEquals(-3.3, p.getY(), 1e-9);
     }
 
+    @Test
+    public void testSetLocation5() {
+        Point p = new Point(2.2, 3.3);
+        p.setLocation(-4.4, 8.8);
+        Assert.assertEquals(-4.4, p.getX(), 1e-9);
+        Assert.assertEquals(8.8, p.getY(), 1e-9);
+    }
 
     @Test
     public void testGetLocation1() {
@@ -227,6 +234,15 @@ public class PointTest1 {
         Point p2 = new Point(0.0, 0.0);
         double distance = p1.distance(p2);
         double expected = 5.0; // 3-4-5 triangle
+        Assert.assertEquals(expected, distance, 1e-9);
+    }
+
+    @Test
+    public void testDistance9() {
+        Point p1 = new Point(-4.0, 2.0);
+        Point p2 = new Point(1.0, -2.0);
+        double distance = p1.distance(p2);
+        double expected = Math.sqrt(41); // (1 - (-4))^2 + (-2 - 2)^2 = 25 + 16 = 41
         Assert.assertEquals(expected, distance, 1e-9);
     }
 }
