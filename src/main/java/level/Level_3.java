@@ -115,7 +115,7 @@ public class Level_3 implements LevelInformation {
 
                 Block block = new Block(rect, Color.RED, 1, false, imgPath);
 
-                if (Math.random() < 0.1)  {
+                if (Math.random() < 0.15)  {
                     PowerUpType type = getRandomPowerUpType();
                     Point center = new Point(x + WIDTH/2, y + HEIGHT/2);
                     PowerUp powerUp = new PowerUp(type, center, null);

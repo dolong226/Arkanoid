@@ -26,7 +26,7 @@ public class Level_1 implements LevelInformation {
 
     @Override
     public int numberOfBlocksToRemove() {
-        return 60;
+        return 1;//60;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class Level_1 implements LevelInformation {
 
                 Block block = new Block(rect, Color.RED, 1, false, imgPath);
 
-                if (Math.random() < 0.1)  {
+                if (Math.random() < 0.2)  {
                     PowerUpType type = getRandomPowerUpType();
                     Point center = new Point(x + WIDTH/2, y + HEIGHT/2);
                     PowerUp powerUp = new PowerUp(type, center, null);
@@ -146,6 +146,8 @@ public class Level_1 implements LevelInformation {
                 PowerUpType.MULTI_BALL,
                 PowerUpType.BIG_BALL,
                 PowerUpType.EXPAND_PADDLE,
+                PowerUpType.FIRE_BALL,
+                PowerUpType.SLOW_BALL
         };
         return types[(int)(Math.random() * types.length)];
     }

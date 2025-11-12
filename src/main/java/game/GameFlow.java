@@ -13,6 +13,8 @@ import level.LevelInformation;
 import data.HighScoreTable;
 import sound.AudioResource;
 import sound.SoundManager;
+import story.StoryAnimation;
+import story.StoryConfig;
 import sun.security.provider.ConfigFile;
 
 import java.util.List;
@@ -49,12 +51,39 @@ public class GameFlow {
         // Khởi tạo âm thanh khi bắt đầu game
         System.out.println("Đang load âm thanh");
         SoundManager soundManager = SoundManager.getInstance();
+        soundManager.stopAllMusic();
         soundManager.preloadAll();
         soundManager.playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
         System.out.println("Am thanh da duoc khoi tao");
-
+        showOpeningStory(() -> runLevel(0, levels, null));
         // Chạy level đầu tiên
-        runLevel(0, levels, null);
+       // runLevel(0, levels, null);
+    }
+
+    private void showOpeningStory(Runnable onComplete) {
+        List<String> storyImages = StoryConfig.getOpeningStory();
+        
+        if (storyImages.isEmpty()) {
+            // Nếu không có ảnh cốt truyện, bỏ qua và chạy level luôn
+            System.out.println("Không có cốt truyện, chạy level trực tiếp");
+            onComplete.run();
+            return;
+        }
+        StoryAnimation storyAnim = new StoryAnimation(canvas, input, storyImages, onComplete);
+        runner.run(storyAnim);
+    }
+
+    private void showInterLevelStory(int completedLevel, Runnable onComplete) {
+        List<String> storyImages = StoryConfig.getInterLevelStory(completedLevel);
+        
+        if (storyImages.isEmpty()) {
+            // Không có cốt truyện giữa level này
+            onComplete.run();
+            return;
+        }
+
+        StoryAnimation storyAnim = new StoryAnimation(canvas, input, storyImages, onComplete);
+        runner.run(storyAnim);
     }
 
     //  đệ quy để chạy từng level
@@ -90,11 +119,13 @@ public class GameFlow {
 
             // chay level tiep theo
             new java.util.Timer().schedule(new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    javafx.application.Platform.runLater(() -> runLevel(levelIndex + 1, levels, level));
-                }
-            }, 2000);
+            @Override
+            public void run() {
+                  javafx.application.Platform.runLater(() -> {
+                      showInterLevelStory(levelIndex + 1, () -> runLevel(levelIndex + 1, levels, level));
+              });
+           }
+           }, 2000);
         });
 
         // set call back khi kết thúc
