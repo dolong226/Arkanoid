@@ -6,6 +6,7 @@ import animation.CurtainTransition;
 import animation.GameOverAnimation;
 import input.Keyboard;
 import input.PlayerInput;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
@@ -49,6 +50,7 @@ public class GameFlow {
         // Khởi tạo âm thanh khi bắt đầu game
         System.out.println("Đang load âm thanh");
         SoundManager soundManager = SoundManager.getInstance();
+        soundManager.stopAllMusic();
         soundManager.preloadAll();
         soundManager.playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
         System.out.println("Am thanh da duoc khoi tao");
@@ -71,6 +73,17 @@ public class GameFlow {
 
         level.setHighScoreTable(highScoreTable);
 
+        level.setOnExitToHome(() -> {
+            Platform.runLater(() -> {
+                try {
+                    SoundManager.getInstance().stopAllMusic();
+                } catch (Exception e) {
+
+                }
+
+                new menu.MainMenuScene(input, stage, () -> {}, highScoreTable).show();
+            });
+        });
         // sound
         SoundManager soundManager = SoundManager.getInstance();
         soundManager.stopAllMusic();
@@ -157,6 +170,7 @@ public class GameFlow {
                     }
                     // reset điểm và quay về menu
                     globalScore.reset();
+                    SoundManager.getInstance().stopAllMusic();
 
                     SoundManager.getInstance().playMusicAsync(AudioResource.BACKGROUND_MUSIC.name());
 

@@ -15,6 +15,7 @@ import input.GameMouse;
 import input.Key;
 import input.Keyboard;
 import input.PlayerInput;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -48,6 +49,7 @@ public class GameLevel implements Animation {
     private Runnable onLevelComplete;
     private Runnable onGameOver;
     private Runnable pendingCallback = null;
+    private Runnable onExitToHome;
 
     private boolean waitingForEnter = true;
     private boolean ballsLaunched = false;
@@ -111,7 +113,9 @@ public class GameLevel implements Animation {
     public Counter getRemainingBalls() { return remainingBalls; }
     public List<Ball> getBalls() { return balls; }
     public Paddle getPaddle() { return paddle; }
-
+    public void setOnExitToHome(Runnable onExitToHome) {
+        this.onExitToHome = onExitToHome;
+    }
 
     public void initialize() {
         sprites = new SpriteCollection();
@@ -272,7 +276,6 @@ public class GameLevel implements Animation {
             gameLoopThread.pauseGameLoop();
             System.out.println("GameLevel paused");
         }
-        gameController.onGamePause();
     }
 
     /**
@@ -283,7 +286,6 @@ public class GameLevel implements Animation {
         if (useThreading && gameLoopThread != null) {
             gameLoopThread.resumeGameLoop();
         }
-        gameController.onGameResume();
     }
 
 
@@ -328,13 +330,11 @@ public class GameLevel implements Animation {
      * Logic thật sự.
      */
     public void updateGameLogic(double dt) {
-//        keyboard.update();
-
         try {
             ((GameMouse) input.getMouse()).update();
             if (!running) return;
 
-            if (keyboard.wasJustPressed(Key.PAUSE) || keyboard.wasJustPressed(Key.ESC)) {
+            if (keyboard.wasJustPressed(Key.PAUSE)) {
                 if (!isPaused) {
                     pauseGame();
                 } else {
@@ -343,6 +343,23 @@ public class GameLevel implements Animation {
                 return;
             }
             if (isPaused) {
+                if (keyboard.wasJustPressed(Key.ESC)) {
+                    running = false;
+                    stopGameLoop();
+
+                    gameController.onGamePause();
+
+                    if (this.onExitToHome != null) {
+                        Platform.runLater(() -> {
+                            try {
+                                this.onExitToHome.run();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                    return;
+                }
                 return;
             }
 
@@ -440,7 +457,7 @@ public class GameLevel implements Animation {
         if (useThreading && gameLoopThread != null) {
             pauseGameLoop();
         }
-
+        gameController.onGamePause();
         // todo
     }
 
@@ -451,7 +468,7 @@ public class GameLevel implements Animation {
         if (useThreading && gameLoopThread != null) {
             resumeGameLoop();
         }
-
+        gameController.onGameResume();
         // todo
     }
 
@@ -506,7 +523,7 @@ public class GameLevel implements Animation {
             gc.fillText(title, (SCREEN_WIDTH - titleWidth) / 2, SCREEN_HEIGHT / 2 - 10);
 
             gc.setFont(Font.font("Arial", FontWeight.NORMAL, 30));
-            String hint = "Press ESC hoặc P để resume";
+            String hint = "Press P để resume hoặc ESC để thoát!";
             Text hintText = new Text(hint);
             hintText.setFont(gc.getFont());
             double hintWidth = hintText.getLayoutBounds().getWidth();

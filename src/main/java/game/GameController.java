@@ -64,7 +64,7 @@ public class GameController {
 
     public void onGameResume() {
         if (currentMusicKey != null) {
-            soundManager.playMusicAsync(currentMusicKey, true);
+            soundManager.playMusic(currentMusicKey, true);
         }
     }
 

@@ -155,7 +155,7 @@ public class GameLoopThread extends Thread{
                     Thread.sleep(sleepTime);
                 } else {
                     if (frameProcessingTime > FRAME_TIME_MS * 2) {
-                        System.out.println("[GameLoopThread] WARNING: Frame took "
+                        System.out.println("GameLoopThread WARNING: Frame took "
                                 + frameProcessingTime + "ms (target: " + FRAME_TIME_MS + "ms)");
                     }
                 }
