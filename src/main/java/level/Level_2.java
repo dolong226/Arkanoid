@@ -24,7 +24,7 @@ public class Level_2 implements LevelInformation {
 
     @Override
     public int numberOfBlocksToRemove() {
-        return 1;//50;
+        return 50;//50;
     }
 
     @Override
