@@ -22,7 +22,7 @@ public class Rectangle {
      * @param width Chiều rộng.
      * @param height Chiều dài.
      */
-    public Rectangle(Point upperLeft, double width, double height){
+    public Rectangle(Point upperLeft, double width, double height) {
         this.width = width;
         this.height = height;
         this.upperLeft = upperLeft;
@@ -32,7 +32,7 @@ public class Rectangle {
      * Lấy ra điểm trên cùng bên trái.
      * @return điểm trên cùng bên trái.
      */
-    public Point getUpperLeft(){
+    public Point getUpperLeft() {
         return this.upperLeft;
     }
 
@@ -40,18 +40,18 @@ public class Rectangle {
      * Lấy ra chiều rộng.
      * @return chiều rộng.
      */
-    public double getWidth(){
+    public double getWidth() {
         return this.width;
     }
 
     /**
-     * Lấy ra chiều dài.
-     * @return chiều dài.
+     * Lấy ra chiều cao.
+     * @return chiều cao.
      */
-    public double getHeight(){
+    public double getHeight() {
         return this.height;
     }
-    
+
     /**
      * Tính toán tọa độ của 4 góc hình chữ nhật.
      * @param corners Mảng gồm 4 góc hình chữ nhật.
@@ -78,7 +78,7 @@ public class Rectangle {
         downRight.setY(y_upperLeft + theHeight);
         corners[3] = downRight;
     }
-    
+
     /**
      * Khởi tạo 4 cạnh hình chữ nhật từ 4 đỉnh của hình đó.
      * @param sides Mảng chứa 4 cạnh bắt đầu từ cạnh dài trên cùng, cạnh dài dưới cùng, cạnh rộng bên trái, cạnh rộng bên phải.
@@ -111,7 +111,11 @@ public class Rectangle {
         return intersectionPointList;
     }
 
-    // Kiểm tra xem một điểm có nằm trong hình chữ nhật hay không.
+    /**
+     * Kiểm tra xem một điểm có nằm trong hình chữ nhật hay không.
+     * @param point Điểm cần kiểm tra.
+     * @return Liệu điểm đó có nằm trong hình chữ nhật hay không.
+     */
     public boolean contains(Point point) {
         double x = point.getX();
         double y = point.getY();
@@ -125,7 +129,9 @@ public class Rectangle {
     }
 
     /**
-     * Kiểm tra xem hình chữ nhật này có giao với hình chữ nhật khác không
+     * Kiểm tra xem hình chữ nhật này có giao với hình chữ nhật khác không.
+     * @param other Hình chữ nhật khác.
+     * @return Liệu hai hình chữ nhật có giao nhau không.
      */
     public boolean intersects(Rectangle other) {
         double thisX = upperLeft.getX();
